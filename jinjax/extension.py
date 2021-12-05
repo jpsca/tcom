@@ -5,9 +5,9 @@ from jinja2 import Environment
 from jinja2.ext import Extension
 
 
-START_CALL = "{% call <TAG>.new(<ATTRS>) -%}"
+START_CALL = "{% call <TAG>._new(<ATTRS>) -%}"
 END_CALL = "{%- endcall %}"
-INLINE_CALL = "{{ <TAG>.new(<ATTRS>) }}"
+INLINE_CALL = "{{ <TAG>._new(<ATTRS>) }}"
 
 VAR_START = "VAR_START"
 VAR_END = "VAR_END"

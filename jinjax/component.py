@@ -13,64 +13,78 @@ DEFAULT_STATIC_URL = "/components/"
 LINK = '<link href="URL" rel="stylesheet">'
 SCRIPT = '<script src="URL" defer></script>'
 
+NON_PROPS_ATTRS = ("uses", "init", "props", "render")
+
 
 class Component:
     __name__ = "Component"
     uses: Set[Type["Component"]] = set()
 
     @classmethod
-    def new(cls, caller: Optional[Callable] = None, **kw) -> str:
-        kw["body"] = caller() if caller else ""
+    def _new(cls, caller: Optional[Callable] = None, **kw) -> str:
+        kw["content"] = caller() if caller else ""
         obj = cls(**kw)
         return obj._render()
 
     @classmethod
-    def get_root_path(cls) -> Path:
+    def _get_root_path(cls) -> Path:
         return Path(inspect.getfile(cls)).parent
 
     @classmethod
-    def get_css_path(cls) -> Optional[str]:
-        here = cls.get_root_path()
+    def _get_css_path(cls) -> Optional[str]:
+        here = cls._get_root_path()
         css_path = here / f"{cls.__name__}.css"
         if css_path.exists():
             return f"{here.name}/{cls.__name__}.css"
         return None
 
     @classmethod
-    def get_js_path(cls) -> Optional[str]:
-        here = cls.get_root_path()
+    def _get_js_path(cls) -> Optional[str]:
+        here = cls._get_root_path()
         js_path = here / f"{cls.__name__}.js"
         if js_path.exists():
             return f"{here.name}/{cls.__name__}.js"
         return None
 
     @property
-    def template_name(self) -> str:
-        return f"{self.__class__.__name__}.jinja"
+    def props(self):
+        return {
+            name: getattr(self, name) for name in self.__dir__()
+            if not name.startswith("_") and name not in NON_PROPS_ATTRS
+        }
 
     def __init__(self, **kw) -> None:
         # Make sure this is a set, but also
         # fix the mistake to create an empty set like `{}`
         self.uses = set(self.uses) if self.uses else set()
 
-        attr_names = list(self.__dir__()) + list(self.__annotations__.keys())
-        self.body = kw.pop("body", "")
+        self.content = kw.pop("content", "")
+        self._template_name = f"{self.__class__.__name__}.jinja"
 
-        ignore = ("uses", "template_name")
-        props = {}
-        for name in attr_names:
-            if name.startswith("_") or name in ignore:
-                continue
-            value = getattr(self, name, None)
-            if inspect.ismethod(value):
-                continue
-            props[name] = kw.pop(name, value)
+        attrs = [
+            name for name in list(self.__dir__()) + list(self.__annotations__.keys())
+            if (
+                not name.startswith("_")
+                and name not in NON_PROPS_ATTRS
+                and not inspect.ismethod(getattr(self, name, None))
+            )
+        ]
+
+        extra = {}
+        for name, value in kw.items():
+            if name in attrs:
+                setattr(self, name, value)
+            else:
+                extra[name] = value
+        self.extra = extra
 
         # TODO: type check props if types are available
         # in self.__annotations__
 
-        props["extra"] = kw
-        self.props = props
+        self.init()
+
+    def init(self):
+        pass
 
     def render(self, static_url: str = DEFAULT_STATIC_URL, **globals) -> str:
         components = collect_components(self.uses, set())
@@ -85,12 +99,12 @@ class Component:
             self,
             "jinja_env",
             Environment(
-                loader=FileSystemLoader(self.get_root_path()),
+                loader=FileSystemLoader(self._get_root_path()),
                 extensions=[JinjaX],
             ),
         )
-        tmpl = jinja_env.get_template(self.template_name, globals=globals)
-        return tmpl.render(body=self.body, **self.props)
+        tmpl = jinja_env.get_template(self._template_name, globals=globals)
+        return tmpl.render(**self.props)
 
 
 def collect_components(
@@ -108,10 +122,10 @@ def collect_assets(components: Set[Type[Component]], static_url: str) -> Tuple[s
     css = []
     js = []
     for comp in components:
-        css_path = comp.get_css_path()
+        css_path = comp._get_css_path()
         if css_path:
             css.append(css_path)
-        js_path = comp.get_js_path()
+        js_path = comp._get_js_path()
         if js_path:
             js.append(js_path)
 

@@ -27,9 +27,9 @@ def test_nested(pre):
 
     assert result == """
 <div class="whatever">
-    {% call Card.new(label="Hello") -%}
-        {% call MyButton.new(color="red blue", shadowSize=size) -%}
-            {{ Icon.new(name="ok") }} Click Me
+    {% call Card._new(label="Hello") -%}
+        {% call MyButton._new(color="red blue", shadowSize=size) -%}
+            {{ Icon._new(name="ok") }} Click Me
             {{ whatever }}
         {%- endcall %}
     {%- endcall %}
@@ -41,4 +41,4 @@ def test_expr_prop(pre):
     source = "<MyComponent foo={{1 + 2 + 3 + 4}} />"
     result = pre.preprocess(source)
     print(result)
-    assert result == "{{ MyComponent.new(foo=1 + 2 + 3 + 4) }}"
+    assert result == "{{ MyComponent._new(foo=1 + 2 + 3 + 4) }}"
