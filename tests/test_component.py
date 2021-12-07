@@ -1,3 +1,4 @@
+from jinjax import Component
 from .components.button import Button
 from .components.card import Card
 from .components.greeting import Greeting
@@ -59,10 +60,12 @@ def test_assets_included():
     assert '<script src="/components/card/Greeting.js" defer></script>' not in html
 
 
-def test_render_globals():
-    c = Greeting(message="Hello ")
-    html = c.render(secret="world!").strip()
-    assert html == '<div class="greeting">Hello world!</div>'
+def test_global_values():
+    Component._jinja_globals["secret"] = " world!"
+    c = Page(message="Hello")
+    html = c.render().strip()
+    print(html)
+    assert '<div class="greeting">Hello world!</div>' in html
 
 
 def test_init():

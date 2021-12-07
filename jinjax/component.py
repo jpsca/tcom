@@ -1,6 +1,6 @@
 import inspect
 from pathlib import Path
-from typing import Callable, Optional, Set, Tuple, Type
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type
 
 from jinja2 import Environment, FileSystemLoader
 from markupsafe import Markup
@@ -19,6 +19,9 @@ NON_PROPS_ATTRS = ("uses", "init", "props", "render")
 class Component:
     __name__ = "Component"
     uses: Set[Type["Component"]] = set()
+
+    _jinja_globals: Dict[str, Any] = {}
+    _jinja_extensions: List[Callable] = [JinjaX]
 
     @classmethod
     def _new(cls, caller: Optional[Callable] = None, **kw) -> str:
@@ -81,30 +84,30 @@ class Component:
         # TODO: type check props if types are available
         # in self.__annotations__
 
+        self._jinja_env = Environment(
+            loader=FileSystemLoader(self._get_root_path()),
+            extensions=Component._jinja_extensions,
+        )
+        self._jinja_env.globals.update(Component._jinja_globals)
+
         self.init()
 
     def init(self):
         pass
 
-    def render(self, static_url: str = DEFAULT_STATIC_URL, **globals) -> str:
+    def render(self, static_url: str = DEFAULT_STATIC_URL) -> str:
         components = collect_components(self.uses, set())
         css, js = collect_assets(components, static_url)
-        globals["css_components"] = css
-        globals["js_components"] = js
-        return self._render(**globals)
+        return self._render(css=css, js=js)
 
-    def _render(self, **globals) -> str:
-        globals.update({comp.__name__: comp for comp in self.uses})
-        jinja_env = getattr(
-            self,
-            "jinja_env",
-            Environment(
-                loader=FileSystemLoader(self._get_root_path()),
-                extensions=[JinjaX],
-            ),
-        )
-        tmpl = jinja_env.get_template(self._template_name, globals=globals)
-        return tmpl.render(**self.props)
+    def _render(self, css: str = "", js: str = "") -> str:
+        props = self.props
+        props["css_components"] = css
+        props["js_components"] = js
+        props.update({comp.__name__: comp for comp in self.uses})
+
+        tmpl = self._jinja_env.get_template(self._template_name)
+        return tmpl.render(**props)
 
 
 def collect_components(
