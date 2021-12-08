@@ -46,7 +46,6 @@ class JinjaX(Extension):
     ) -> str:
         source = rx_open_tag.sub(self._process_tag, source)
         source = rx_close_tag.sub(END_CALL, source)
-        print(source, "-" * 20)
         return source
 
     def _process_tag(self, match: re.Match) -> str:

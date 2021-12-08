@@ -20,8 +20,10 @@ class Component:
     __name__ = "Component"
     uses: Set[Type["Component"]] = set()
 
+    _jinja_extensions: List[Callable] = []
     _jinja_globals: Dict[str, Any] = {}
-    _jinja_extensions: List[Callable] = [JinjaX]
+    _jinja_filters: Dict[str, Any] = {}
+    _jinja_tests: Dict[str, Any] = {}
 
     @classmethod
     def _new(cls, caller: Optional[Callable] = None, **kw) -> str:
@@ -86,9 +88,11 @@ class Component:
 
         self._jinja_env = Environment(
             loader=FileSystemLoader(self._get_root_path()),
-            extensions=Component._jinja_extensions,
+            extensions=Component._jinja_extensions + [JinjaX],
         )
         self._jinja_env.globals.update(Component._jinja_globals)
+        self._jinja_env.filters.update(Component._jinja_filters)
+        self._jinja_env.tests.update(Component._jinja_tests)
 
         self.init()
 
