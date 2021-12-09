@@ -1,14 +1,15 @@
 import inspect
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type
+from typing import Any, Callable, Dict, Optional, Sequence, Set, Tuple, Type, Union
 
 from jinja2 import Environment, FileSystemLoader
+from jinja2.ext import Extension
 from markupsafe import Markup
 
 from jinjax.extension import JinjaX
 
 
-DEFAULT_STATIC_URL = "/components/"
+DEFAULT_URL_PREFIX = "/components/"
 
 LINK = '<link href="URL" rel="stylesheet">'
 SCRIPT = '<script src="URL" defer></script>'
@@ -20,7 +21,7 @@ class Component:
     __name__ = "Component"
     uses: Set[Type["Component"]] = set()
 
-    _jinja_extensions: List[Callable] = []
+    _jinja_extensions: Sequence[Union[str, Type[Extension]]] = []
     _jinja_globals: Dict[str, Any] = {}
     _jinja_filters: Dict[str, Any] = {}
     _jinja_tests: Dict[str, Any] = {}
@@ -88,7 +89,7 @@ class Component:
 
         self._jinja_env = Environment(
             loader=FileSystemLoader(self._get_root_path()),
-            extensions=Component._jinja_extensions + [JinjaX],
+            extensions=list(Component._jinja_extensions) + [JinjaX],
         )
         self._jinja_env.globals.update(Component._jinja_globals)
         self._jinja_env.filters.update(Component._jinja_filters)
@@ -99,15 +100,17 @@ class Component:
     def init(self):
         pass
 
-    def render(self, static_url: str = DEFAULT_STATIC_URL) -> str:
-        components = collect_components(self.uses, set())
+    def render(self, static_url: str = DEFAULT_URL_PREFIX) -> str:
+        components = collect_components(self.uses, {self.__class__})
         css, js = collect_assets(components, static_url)
-        return self._render(css=css, js=js)
+        Component._jinja_globals["css_components"] = css
+        Component._jinja_globals["js_components"] = js
+        self._jinja_env.globals["css_components"] = css
+        self._jinja_env.globals["js_components"] = js
+        return self._render()
 
-    def _render(self, css: str = "", js: str = "") -> str:
+    def _render(self) -> str:
         props = self.props
-        props["css_components"] = css
-        props["js_components"] = js
         props.update({comp.__name__: comp for comp in self.uses})
 
         tmpl = self._jinja_env.get_template(self._template_name)

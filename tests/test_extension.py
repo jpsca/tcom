@@ -44,7 +44,6 @@ def test_expr_prop(pre):
     assert result == "{{ MyComponent._new(foo=1 + 2 + 3 + 4) }}"
 
 
-
 def test_multiple_args(pre):
     source = "<MyComponent a={{ a }} b={{ b }} c={{c}} />"
     result = pre.preprocess(source)
