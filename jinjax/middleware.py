@@ -1,8 +1,8 @@
 from pathlib import Path
-from typing import Optional, Sequence, Type, Union
+from typing import Any, Optional, Sequence, Type, Union
 
-from whitenoise import WhiteNoise
-from whitenoise.responders import StaticFile
+from whitenoise import WhiteNoise  # type: ignore
+from whitenoise.responders import StaticFile  # type: ignore
 
 from .component import DEFAULT_URL_PREFIX
 
@@ -28,3 +28,8 @@ class ComponentAssetsMiddleware(WhiteNoise):
         if not url.endswith(self.allowed):
             return None
         return super().find_file(url)
+
+    def add_file_to_dictionary(self, url: str, path: str, stat_cache: Any) -> None:
+        if not url.endswith(self.allowed):
+            return None
+        return super().add_file_to_dictionary(url, path, stat_cache)
