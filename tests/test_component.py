@@ -1,4 +1,6 @@
-from jinjax import Component
+import pytest
+
+from jinjax import Component, MissingRequiredAttribute
 from .components.button import Button
 from .components.card import Card
 from .components.greeting import Greeting
@@ -7,8 +9,8 @@ from .components.page import Page
 
 def test_new_component():
     c = Greeting(message="Hello world!", lorem="ipsum")
-    print(c.props)
-    assert c.props == {
+    print(c.attrs)
+    assert c.attrs == {
         "content": "",
         "message": "Hello world!",
         "with_default": 4,
@@ -61,14 +63,14 @@ def test_assets_included():
 
 
 def test_global_values():
-    Component._jinja_globals["secret"] = " world!"
+    Component._globals["secret"] = " world!"
     c = Page(message="Hello")
     html = c.render().strip()
     print(html)
     assert '<div class="greeting">Hello world!</div>' in html
 
 
-def test_init():
+def test_init_called():
     c = Button(type="primary", content="Text")
     assert c.render().strip() == (
         '<button class="disabled:bg-purple-300 focus:bg-purple-600 '
@@ -83,3 +85,13 @@ def test_init():
         "bg-red-500 text-white cursor-pointer rounded transition duration-200 "
         'text-center p-4 whitespace-nowrap font-bold">Text</button>'
     ).strip()
+
+
+def test_annotated_attr_without_default_are_required():
+    with pytest.raises(MissingRequiredAttribute):
+        Greeting()
+
+
+def test_required_attr_are_required():
+    with pytest.raises(MissingRequiredAttribute):
+        Page()
