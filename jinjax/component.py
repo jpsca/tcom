@@ -14,6 +14,7 @@ from typing import (
 )
 
 from jinja2 import Environment, FileSystemLoader
+from jinja2.exceptions import TemplateSyntaxError
 from jinja2.ext import Extension
 
 from jinjax.extension import JinjaX
@@ -141,7 +142,13 @@ class Component:
         attrs = self.attrs
         attrs.update({comp.__name__: comp for comp in self.uses})
 
-        tmpl = self._jinja_env.get_template(self._template_name)
+        try:
+            tmpl = self._jinja_env.get_template(self._template_name)
+        except TemplateSyntaxError:
+            print("*** Pre-processed source: ***")
+            print(self._jinja_env._preprocessed_source)
+            print("*" * 10)
+            raise
         return tmpl.render(**attrs)
 
 

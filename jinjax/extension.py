@@ -46,6 +46,7 @@ class JinjaX(Extension):
     ) -> str:
         source = rx_open_tag.sub(self._process_tag, source)
         source = rx_close_tag.sub(END_CALL, source)
+        self.environment._preprocessed_source = source
         return source
 
     def _process_tag(self, match: re.Match) -> str:
@@ -54,7 +55,8 @@ class JinjaX(Extension):
         return self._build_call(tag, attrs_list, inline=ht.endswith("/>"))
 
     def _extract_tag(self, ht: str) -> Tuple[str, List[Tuple[str, str]]]:
-        tag, *raw = ht.strip("<> \r\n/").split(" ", 1)
+        ht = ht.strip("<> \r\n/")
+        tag, *raw = re.split("\s+", ht, maxsplit=1)
         tag = tag.strip()
         attrs_list = []
         if raw:
