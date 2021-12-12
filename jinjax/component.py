@@ -1,18 +1,23 @@
 import inspect
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Sequence, Set, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 
 from jinja2 import Environment, FileSystemLoader
 from jinja2.ext import Extension
-from markupsafe import Markup
 
 from jinjax.extension import JinjaX
 
-
-DEFAULT_URL_PREFIX = "/components/"
-
-LINK = '<link href="URL" rel="stylesheet">'
-SCRIPT = '<script src="URL" defer></script>'
 
 NON_ATTRS_NAMES = ("uses", "init", "attrs", "render")
 
@@ -55,7 +60,8 @@ class Component:
     @property
     def attrs(self) -> Dict[str, Any]:
         return {
-            name: getattr(self, name) for name in self.__dir__()
+            name: getattr(self, name)
+            for name in self.__dir__()
             if not name.startswith("_") and name not in NON_ATTRS_NAMES
         }
 
@@ -76,7 +82,8 @@ class Component:
 
     def _collect_attrs(self, kw: Dict[str, Any]) -> None:
         attrs = [
-            name for name in list(self.__dir__()) + list(self.__annotations__.keys())
+            name
+            for name in list(self.__dir__()) + list(self.__annotations__.keys())
             if (
                 not name.startswith("_")
                 and name not in NON_ATTRS_NAMES
@@ -121,13 +128,13 @@ class Component:
     def init(self) -> None:
         pass
 
-    def render(self, static_url: str = DEFAULT_URL_PREFIX) -> str:
+    def render(self) -> str:
         components = collect_components(self.uses, {self.__class__})
-        css, js = collect_assets(components, static_url)
-        Component._globals["css_components"] = css
-        Component._globals["js_components"] = js
-        self._jinja_env.globals["css_components"] = css
-        self._jinja_env.globals["js_components"] = js
+        styles, scripts = collect_assets(components)
+        Component._globals["styles"] = styles
+        Component._globals["scripts"] = scripts
+        self._jinja_env.globals["styles"] = styles
+        self._jinja_env.globals["scripts"] = scripts
         return self._render()
 
     def _render(self) -> str:
@@ -139,8 +146,7 @@ class Component:
 
 
 def collect_components(
-    components: Set[Type[Component]],
-    collected: Set[Type[Component]]
+    components: Set[Type[Component]], collected: Set[Type[Component]]
 ) -> Set[Type[Component]]:
     collected = collected.union(components)
     for comp in components:
@@ -149,30 +155,18 @@ def collect_components(
     return collected
 
 
-def collect_assets(
-    components: Set[Type[Component]],
-    static_url: str
-) -> Tuple[str, str]:
-    css = []
-    js = []
+def collect_assets(components: Set[Type[Component]]) -> Tuple[List[str], List[str]]:
+    styles = []
+    scripts = []
     for comp in components:
         css_path = comp._get_css_path()
         if css_path:
-            css.append(css_path)
+            styles.append(css_path)
         js_path = comp._get_js_path()
         if js_path:
-            js.append(js_path)
+            scripts.append(js_path)
 
-    static_url = static_url.rstrip("/")
-    _LINK = LINK.replace("URL", f"{static_url}/URL")
-    _SCRIPT = SCRIPT.replace("URL", f"{static_url}/URL")
-
-    css_html = [_LINK.replace("URL", url) for url in css]
-    js_html = [_SCRIPT.replace("URL", url) for url in js]
-    return (
-        Markup("\n".join(css_html)),
-        Markup("\n".join(js_html)),
-    )
+    return styles, scripts
 
 
 class required:

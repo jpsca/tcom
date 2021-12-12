@@ -4,9 +4,8 @@ from typing import Any, Optional, Sequence, Type, Union
 from whitenoise import WhiteNoise  # type: ignore
 from whitenoise.responders import StaticFile  # type: ignore
 
-from .component import DEFAULT_URL_PREFIX
 
-
+DEFAULT_URL_PREFIX = "/components/"
 ALLOWED_EXTENSIONS = (".css", ".js", )
 
 

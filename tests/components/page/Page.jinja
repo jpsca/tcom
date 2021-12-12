@@ -2,8 +2,12 @@
 <html>
 <head>
 <title>{{ title }}</title>
-{{ css_components }}
-{{ js_components }}
+{% for url in styles -%}
+  <link href="/components/{{ url }}" rel="stylesheet">
+{% endfor -%}
+{% for url in scripts -%}
+  <script src="/components/{{ url }}" defer></script>
+{% endfor -%}
 </head>
 <body>
 <Card>
