@@ -7,18 +7,35 @@ from .components.greeting import Greeting
 from .components.page import Page
 
 
+def test_empty_component():
+    c = Card()
+    print(c.props)
+    assert c.props == {
+        "content": "",
+        "attrs": {},
+        "classes": "Card",
+        "active_classes": "",
+        "disabled_classes": "",
+        "active": False,
+        "disabled": False,
+    }
+
+
 def test_new_component():
     c = Greeting(message="Hello world!", lorem="ipsum")
-    print(c.attrs)
-    assert c.attrs == {
+    print(c.props)
+    assert c.props == {
         "content": "",
         "message": "Hello world!",
+        "attrs": {"lorem": "ipsum"},
+        "classes": "Greeting",
+        "active_classes": "",
+        "disabled_classes": "",
         "with_default": 4,
-        "extra": {
-            "lorem": "ipsum",
-        },
         "custom_property": "foobar",
         "custom_method": c.custom_method,
+        "active": False,
+        "disabled": False,
     }
 
 

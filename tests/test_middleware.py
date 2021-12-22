@@ -46,7 +46,7 @@ def test_js_is_returned():
 def test_other_extensions_ignored():
     app = ComponentAssetsMiddleware(simple_app, "tests/components")
     resp = app(
-        make_environ(PATH_INFO="/components/page/Page.jinja"),
+        make_environ(PATH_INFO="/components/page/Page.html.jinja"),
         mock_start_response,
     )
     assert resp == [b"Hello World"]
@@ -55,7 +55,7 @@ def test_other_extensions_ignored():
 def test_add_custom_extensions():
     app = ComponentAssetsMiddleware(simple_app, "tests/components", allowed=[".jinja"])
     resp = app(
-        make_environ(PATH_INFO="/components/page/Page.jinja"),
+        make_environ(PATH_INFO="/components/page/Page.html.jinja"),
         mock_start_response,
     )
     text = resp.filelike.read().strip()
@@ -87,7 +87,7 @@ def test_autorefresh_load():
 def test_autorefresh_block():
     app = ComponentAssetsMiddleware(simple_app, "tests/components", autorefresh=True)
     resp = app(
-        make_environ(PATH_INFO="/components/page/Page.jinja"),
+        make_environ(PATH_INFO="/components/page/Page.html.jinja"),
         mock_start_response,
     )
     assert resp == [b"Hello World"]

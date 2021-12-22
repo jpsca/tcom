@@ -14,7 +14,7 @@ class ComponentAssetsMiddleware(WhiteNoise):
     def __init__(
         self,
         application,
-        root: Union[str, Type[Path], None] = None,
+        root: Union[str, Type[Path]],
         prefix: str = DEFAULT_URL_PREFIX,
         *,
         allowed: Sequence[str] = ALLOWED_EXTENSIONS,

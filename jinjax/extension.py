@@ -15,7 +15,7 @@ VAR_END = "VAR_END"
 rx_open_tag = re.compile(r"<\s*[A-Z][0-9A-Za-z]*[^\>]*>")
 rx_close_tag = re.compile(r"</\s*[A-Z][0-9A-Za-z]*\s*>")
 re_attr = rf"""
-(?P<name>[a-zA-Z][0-9a-zA-Z]*)
+(?P<name>[a-zA-Z][0-9a-zA-Z_]*)
 (?:
     \s*=\s*
     (?P<value>
@@ -46,7 +46,7 @@ class JinjaX(Extension):
     ) -> str:
         source = rx_open_tag.sub(self._process_tag, source)
         source = rx_close_tag.sub(END_CALL, source)
-        self.environment._preprocessed_source = source
+        self.environment._preprocessed_source = source  # type: ignore
         return source
 
     def _process_tag(self, match: re.Match) -> str:

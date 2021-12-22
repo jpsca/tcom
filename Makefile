@@ -10,6 +10,10 @@ lint:
 coverage:
 	pytest --cov-config=.coveragerc --cov-report html --cov jinjax jinjax tests
 
+.PHONY: types
+types:
+	mypy jinjax
+
 .PHONY: install
 install:
 	pip install -e .[test,dev]

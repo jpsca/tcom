@@ -26,7 +26,7 @@ def test_new(cwd: Path):
     cli.new("FooBar")
     assert (cwd / "foo_bar").is_dir()
     assert (cwd / "foo_bar" / "__init__.py").is_file()
-    assert (cwd / "foo_bar" / "FooBar.jinja").is_file()
+    assert (cwd / "foo_bar" / "FooBar.html.jinja").is_file()
     code = (cwd / "foo_bar" / "__init__.py").read_text()
     assert "class FooBar(Component)" in code
 
