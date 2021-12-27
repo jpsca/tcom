@@ -13,7 +13,7 @@ from typing import (
     Union,
 )
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 from jinja2.ext import Extension
 
 from .extension import JinjaX
@@ -24,12 +24,11 @@ TComponent = Type["Component"]
 
 
 def collect_components(
-    components: Set[TComponent], collected: Set[TComponent]
+    comp: TComponent, collected: Set[TComponent]
 ) -> Set[TComponent]:
-    collected = collected.union(components)
-    for comp in components:
-        if comp.uses:
-            collected = collect_components(comp.uses, collected)
+    collected.add(comp)
+    for comp in comp.uses:
+        collected = collect_components(comp, collected)
     return collected
 
 
@@ -42,6 +41,15 @@ def collect_assets(components: Set[TComponent]) -> Tuple[List[str], List[str]]:
         if comp.js:
             js.extend(comp.js)
     return css, js
+
+
+def collect_paths(cls: type, collected: Set[Path]) -> Set[Path]:
+    if issubclass(cls, Component):
+        root = Path(inspect.getfile(cls)).parent
+        collected.add(root)
+    for base in cls.__bases__:
+        collected = collect_paths(base, collected)
+    return collected
 
 
 class required:
@@ -141,10 +149,10 @@ class Component:
         pass
 
     def _build_jinja_env(self) -> None:
-        here = Path(inspect.getfile(self.__class__)).parent
-
+        paths = collect_paths(self.__class__, set())
+        loaders = [FileSystemLoader(path) for path in paths]
         self._jinja_env = Environment(
-            loader=FileSystemLoader(here),
+            loader=ChoiceLoader(loaders),
             extensions=list(Component._extensions) + [JinjaX],
         )
         self._jinja_env.globals.update(Component._globals)
@@ -155,7 +163,7 @@ class Component:
         pass
 
     def render(self) -> str:
-        components = collect_components(self.uses, {self.__class__})
+        components = collect_components(self.__class__, set())
         css, js = collect_assets(components)
         Component._globals["css"] = css
         Component._globals["js"] = js
