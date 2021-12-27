@@ -14,10 +14,6 @@ def test_empty_component():
         "content": "",
         "attrs": {},
         "classes": "Card",
-        "active_classes": "",
-        "disabled_classes": "",
-        "active": False,
-        "disabled": False,
     }
 
 
@@ -29,13 +25,9 @@ def test_new_component():
         "message": "Hello world!",
         "attrs": {"lorem": "ipsum"},
         "classes": "Greeting",
-        "active_classes": "",
-        "disabled_classes": "",
         "with_default": 4,
         "custom_property": "foobar",
         "custom_method": c.custom_method,
-        "active": False,
-        "disabled": False,
     }
 
 

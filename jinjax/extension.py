@@ -56,11 +56,13 @@ class JinjaX(Extension):
 
     def _extract_tag(self, ht: str) -> Tuple[str, List[Tuple[str, str]]]:
         ht = ht.strip("<> \r\n/")
-        tag, *raw = re.split("\s+", ht, maxsplit=1)
+        tag, *raw = re.split(r"\s+", ht, maxsplit=1)
         tag = tag.strip()
         attrs_list = []
         if raw:
-            attrs_list = self.rx_attr.findall(raw[0])
+            _raw = raw[0].replace("\n", " ").strip()
+            if _raw:
+                attrs_list = self.rx_attr.findall(_raw)
         return tag, attrs_list
 
     def _build_call(

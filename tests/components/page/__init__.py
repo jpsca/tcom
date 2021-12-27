@@ -5,6 +5,8 @@ from ..greeting import Greeting
 
 class Page(Component):
     uses = {Card, Greeting}
+    js = {"page/Page.js"}
+    css = {"page/Page.css"}
 
     title: str = "Hi"
     message = required

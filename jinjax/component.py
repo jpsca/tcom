@@ -14,14 +14,10 @@ from typing import (
 )
 
 from jinja2 import Environment, FileSystemLoader
-from jinja2.exceptions import TemplateSyntaxError
 from jinja2.ext import Extension
 
 from .extension import JinjaX
 from .utils import dedup_classes, get_html_attrs
-
-
-NON_ATTRS_NAMES = ("uses", "init", "props", "render")
 
 
 TComponent = Type["Component"]
@@ -38,17 +34,14 @@ def collect_components(
 
 
 def collect_assets(components: Set[TComponent]) -> Tuple[List[str], List[str]]:
-    styles = []
-    scripts = []
+    css: List[str] = []
+    js: List[str] = []
     for comp in components:
-        css_path = comp._get_css()
-        if css_path:
-            styles.append(css_path)
-        js_path = comp._get_js()
-        if js_path:
-            scripts.append(js_path)
-
-    return styles, scripts
+        if comp.css:
+            css.extend(comp.css)
+        if comp.js:
+            js.extend(comp.js)
+    return css, js
 
 
 class required:
@@ -59,46 +52,27 @@ class MissingRequiredAttribute(Exception):
     pass
 
 
+NON_ATTRS_NAMES = ("uses", "js", "css", "init", "props", "render")
+
+
 class Component:
     __name__ = "Component"
     uses: Set[TComponent] = set()
+    js: Tuple[str, ...] = tuple()
+    css: Tuple[str, ...] = tuple()
 
     _extensions: Sequence[Union[str, Type[Extension]]] = []
     _globals: Dict[str, Any] = {}
     _filters: Dict[str, Any] = {}
     _tests: Dict[str, Any] = {}
 
-    classes = ""
-    active_classes = ""
-    disabled_classes = ""
-    active = False
-    disabled = False
+    classes: str = ""
 
     @classmethod
     def _new(cls, caller: Optional[Callable] = None, **kw) -> str:
         kw["content"] = caller() if caller else ""
         obj = cls(**kw)
         return obj._render()
-
-    @classmethod
-    def _get_root_path(cls) -> Path:
-        return Path(inspect.getfile(cls)).parent
-
-    @classmethod
-    def _get_css(cls) -> Optional[str]:
-        here = cls._get_root_path()
-        css_path = here / f"{cls.__name__}.css"
-        if css_path.exists():
-            return f"{here.name}/{cls.__name__}.css"
-        return None
-
-    @classmethod
-    def _get_js(cls) -> Optional[str]:
-        here = cls._get_root_path()
-        js_path = here / f"{cls.__name__}.js"
-        if js_path.exists():
-            return f"{here.name}/{cls.__name__}.js"
-        return None
 
     @property
     def props(self) -> Dict[str, Any]:
@@ -115,18 +89,19 @@ class Component:
         # fix the mistake to create an empty set like `{}`
         self.uses = set(self.uses) if self.uses else set()
 
-        self.content = kwargs.pop("content", "")
-        self._template_name = f"{name}.html.jinja"
+        # Make sure these are tuples
+        self.js = tuple(self.js) if self.js else tuple()
+        self.css = tuple(self.css) if self.css else tuple()
 
+        self.content = kwargs.pop("content", "")
         self._collect_props(kwargs)
         self._check_required_props()
         self._check_props_types()
         self._build_jinja_env()
 
+        self._template_name = f"{name}.html.jinja"
         self.classes = dedup_classes(f"{self.classes} {name}")
-        self.active_classes = dedup_classes(self.active_classes)
-        self.disabled_classes = dedup_classes(self.disabled_classes)
-
+        print(">>> CLASSES 1: ", self.classes)
         self.init()
 
     def _collect_props(self, kw: Dict[str, Any]) -> None:
@@ -166,8 +141,10 @@ class Component:
         pass
 
     def _build_jinja_env(self) -> None:
+        here = Path(inspect.getfile(self.__class__)).parent
+
         self._jinja_env = Environment(
-            loader=FileSystemLoader(self._get_root_path()),
+            loader=FileSystemLoader(here),
             extensions=list(Component._extensions) + [JinjaX],
         )
         self._jinja_env.globals.update(Component._globals)
@@ -179,43 +156,24 @@ class Component:
 
     def render(self) -> str:
         components = collect_components(self.uses, {self.__class__})
-        styles, scripts = collect_assets(components)
-        Component._globals["styles"] = styles
-        Component._globals["scripts"] = scripts
-        self._jinja_env.globals["styles"] = styles
-        self._jinja_env.globals["scripts"] = scripts
+        css, js = collect_assets(components)
+        Component._globals["css"] = css
+        Component._globals["js"] = js
+        self._jinja_env.globals["css"] = css
+        self._jinja_env.globals["js"] = js
         return self._render()
 
     def _render(self) -> str:
         props = self.props
-        props["html_attrs"] = self._render_html_attrs()
+        self.attrs["class"] = dedup_classes(self.classes)
+        props["html_attrs"] = get_html_attrs(self.attrs)
         props.update({comp.__name__: comp for comp in self.uses})
 
         try:
             tmpl = self._jinja_env.get_template(self._template_name)
-        except TemplateSyntaxError:
+        except Exception:
             print("*** Pre-processed source: ***")
-            print(self._jinja_env._preprocessed_source)   # type: ignore
+            print(self._jinja_env.getattr("_preprocessed_source", ""))
             print("*" * 10)
             raise
         return tmpl.render(**props)
-
-    def _render_html_attrs(self) -> str:
-        classes = dedup_classes(self.classes)
-        active_classes = dedup_classes(self.active_classes)
-        disabled_classes = dedup_classes(self.disabled_classes)
-
-        class_groups = [classes]
-        if self.active and active_classes:
-            class_groups.append(active_classes)
-        if self.active and disabled_classes:
-            class_groups.append(disabled_classes)
-
-        self.attrs.update({
-            "class": " ".join(class_groups),
-            "data_active": self.active_classes if self.active_classes else False,
-            "data_disabled": self.disabled_classes if self.disabled_classes else False,
-            "active": self.active,
-            "disabled": self.disabled,
-        })
-        return get_html_attrs(self.attrs)

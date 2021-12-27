@@ -46,6 +46,9 @@ INIT_TMPL = """from jinjax import Component
 
 
 class CN(Component):
+    # uses = {...}
+    # css = {...}
+    # js = {...}
     pass
 """
 

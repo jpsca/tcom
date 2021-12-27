@@ -2,11 +2,11 @@
 <html>
 <head>
 <title>{{ title }}</title>
-{% for url in styles -%}
-  <link href="/components/{{ url }}" rel="stylesheet">
+{% for url in css -%}
+<link href="/components/{{ url }}" rel="stylesheet">
 {% endfor -%}
-{% for url in scripts -%}
-  <script src="/components/{{ url }}" defer></script>
+{% for url in js -%}
+<script src="/components/{{ url }}" defer></script>
 {% endfor -%}
 </head>
 <body>

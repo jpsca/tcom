@@ -49,3 +49,15 @@ def test_multiple_args(pre):
     result = pre.preprocess(source)
     print(result)
     assert result == "{{ MyComponent._new(a=a, b=b, c=c) }}"
+
+
+def test_line_jump_in_attr_value(pre):
+    source = """
+        <Tab
+          classes="a
+          b"
+        >Tab 1</Tab>
+    """.strip()
+    result = pre.preprocess(source)
+    print(result)
+    assert result == '{% call Tab._new(classes="a           b") -%}Tab 1{%- endcall %}'

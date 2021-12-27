@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Any, Optional, Sequence, Type, Union
+from types import ModuleType
+from typing import Any, Dict, Optional, Sequence, Type, Union
 
 from whitenoise import WhiteNoise  # type: ignore
 from whitenoise.responders import StaticFile  # type: ignore
@@ -17,11 +18,19 @@ class ComponentAssetsMiddleware(WhiteNoise):
         root: Union[str, Type[Path]],
         prefix: str = DEFAULT_URL_PREFIX,
         *,
+        importmap: Optional[Dict[str, ModuleType]] = None,
         allowed: Sequence[str] = ALLOWED_EXTENSIONS,
         **kwargs
     ) -> None:
         self.allowed = tuple(allowed)
+        prefix = prefix.strip().rstrip("/") + "/"
         super().__init__(application, root=str(root), prefix=prefix, **kwargs)
+        if not importmap:
+            return
+
+        for iprefix, mod in importmap.items():
+            iprefix = iprefix.strip().strip("/") + "/"
+            self.add_files(mod.__path__[0], prefix=f"{prefix}{iprefix}")
 
     def find_file(self, url: str) -> Optional[StaticFile]:
         if not url.endswith(self.allowed):
