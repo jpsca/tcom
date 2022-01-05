@@ -86,14 +86,16 @@ def parse_args(sargs: List[str]) -> Tuple[List[str], Dict[str, Any]]:
 
 def show_help() -> None:  # pragma: no cover
     """Show the global help."""
-    doc = textwrap.dedent(__doc__ or "")
-    print(textwrap.indent(doc, "  "))
+    doc = __doc__ or ""
+    doc = textwrap.dedent(doc.lstrip())
+    print(doc)
 
 
 def show_cmd_help(func: Callable) -> None:  # pragma: no cover
     """Show the help of a command."""
-    doc = textwrap.dedent(func.__doc__ or "")
-    print(textwrap.indent(doc, "  "))
+    doc = func.__doc__ or ""
+    doc = textwrap.dedent(f"\n    {doc.lstrip()}")
+    print(doc)
 
 
 INIT_TMPL = """from jinjax import Component
@@ -108,10 +110,11 @@ class CNAME(Component):
 
 
 def new(name: str, path: str = ".") -> None:
-    """Usage: jinjax new <ComponentName> [--path .]
+    """
+    Usage: jinjax new <ComponentName> [--path .]
 
     Create an empty component in the current folder.
-    You can optionally define the root path od the components
+    You can optionally define the root path of the components
     with the `--path PATH` option.
     """
     class_name = to_camel_case(name)
