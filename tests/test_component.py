@@ -13,7 +13,7 @@ def test_empty_component():
     assert c.props == {
         "content": "",
         "attrs": {},
-        "classes": "Card",
+        "classes": "",
     }
 
 
@@ -24,7 +24,7 @@ def test_new_component():
         "content": "",
         "message": "Hello world!",
         "attrs": {"lorem": "ipsum"},
-        "classes": "Greeting",
+        "classes": "",
         "with_default": 4,
         "custom_property": "foobar",
         "custom_method": c.custom_method,

@@ -17,7 +17,7 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 from jinja2.ext import Extension
 
 from .extension import JinjaX
-from .utils import dedup_classes, get_html_attrs
+from .utils import dedup, dedup_classes, get_html_attrs
 
 
 TComponent = Type["Component"]
@@ -40,7 +40,7 @@ def collect_assets(components: Set[TComponent]) -> Tuple[List[str], List[str]]:
             css.extend(comp.css)
         if comp.js:
             js.extend(comp.js)
-    return css, js
+    return dedup(css), dedup(js)
 
 
 def collect_paths(cls: type, collected: Set[Path]) -> Set[Path]:
@@ -69,6 +69,7 @@ class Component:
     js: Tuple[str, ...] = tuple()
     css: Tuple[str, ...] = tuple()
 
+    _template: str = ""
     _extensions: Sequence[Union[str, Type[Extension]]] = []
     _globals: Dict[str, Any] = {}
     _filters: Dict[str, Any] = {}
@@ -107,9 +108,9 @@ class Component:
         self._check_props_types()
         self._build_jinja_env()
 
-        self._template_name = f"{name}.html.jinja"
-        self.classes = dedup_classes(f"{self.classes} {name}")
-        print(">>> CLASSES 1: ", self.classes)
+        self.classes = dedup_classes(self.classes)
+        if not self._template:
+            self._template = f"{name}.html.jinja"
         self.init()
 
     def _collect_props(self, kw: Dict[str, Any]) -> None:
@@ -178,7 +179,7 @@ class Component:
         props.update({comp.__name__: comp for comp in self.uses})
 
         try:
-            tmpl = self._jinja_env.get_template(self._template_name)
+            tmpl = self._jinja_env.get_template(self._template)
         except Exception:
             print("*** Pre-processed source: ***")
             print(self._jinja_env.getattr("_preprocessed_source", ""))
