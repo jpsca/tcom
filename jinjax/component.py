@@ -103,6 +103,11 @@ class Component:
         self.css = tuple(self.css) if self.css else tuple()
 
         self.content = kwargs.pop("content", "")
+        kwargs["classes"] = " ".join([
+            kwargs.pop("class", ""),
+            kwargs.get("classes", ""),
+        ])
+
         self._collect_props(kwargs)
         self._check_required_props()
         self._check_props_types()
@@ -177,7 +182,6 @@ class Component:
         self.attrs["class"] = dedup_classes(self.classes)
         props["html_attrs"] = get_html_attrs(self.attrs)
         props.update({comp.__name__: comp for comp in self.uses})
-
         try:
             tmpl = self._jinja_env.get_template(self._template)
         except Exception:
