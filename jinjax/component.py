@@ -13,7 +13,7 @@ from typing import (
     Union,
 )
 
-from jinja2 import ChoiceLoader, Environment, FileSystemLoader
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 from jinja2.ext import Extension
 
 from .extension import JinjaX
@@ -60,7 +60,7 @@ class MissingRequiredAttribute(Exception):
     pass
 
 
-NON_ATTRS_NAMES = ("uses", "js", "css", "init", "props", "render")
+NON_ATTRS_NAMES = ("uses", "js", "css", "init", "props", "render", "get_source")
 
 
 class Component:
@@ -69,18 +69,24 @@ class Component:
     js: Tuple[str, ...] = tuple()
     css: Tuple[str, ...] = tuple()
 
+    classes: str = ""
+
     _template: str = ""
     _extensions: Sequence[Union[str, Type[Extension]]] = []
     _globals: Dict[str, Any] = {}
     _filters: Dict[str, Any] = {}
     _tests: Dict[str, Any] = {}
 
-    classes: str = ""
-
     @classmethod
     def _new(cls, caller: Optional[Callable] = None, **kw) -> str:
         kw["content"] = caller() if caller else ""
         obj = cls(**kw)
+        return obj._render()
+
+    @classmethod
+    def render(cls, **kw) -> str:
+        obj = cls(**kw)
+        obj._assets()
         return obj._render()
 
     @property
@@ -102,6 +108,10 @@ class Component:
         self.js = tuple(self.js) if self.js else tuple()
         self.css = tuple(self.css) if self.css else tuple()
 
+        kw = kwargs.pop("attrs", None) or {}
+        kw.update(kwargs)
+        kwargs = kw
+
         self.content = kwargs.pop("content", "")
         kwargs["classes"] = " ".join([
             kwargs.pop("class", ""),
@@ -117,6 +127,12 @@ class Component:
         if not self._template:
             self._template = f"{name}.html.jinja"
         self.init()
+
+    def init(self) -> None:
+        pass
+
+    def get_source(self) -> str:
+        return self._jinja_env.loader.get_source(self._jinja_env, self._template)[0]
 
     def _collect_props(self, kw: Dict[str, Any]) -> None:
         props = [
@@ -165,23 +181,23 @@ class Component:
         self._jinja_env.filters.update(Component._filters)
         self._jinja_env.tests.update(Component._tests)
 
-    def init(self) -> None:
-        pass
-
-    def render(self) -> str:
+    def _assets(self) -> str:
         components = collect_components(self.__class__, set())
         css, js = collect_assets(components)
         Component._globals["css"] = css
         Component._globals["js"] = js
         self._jinja_env.globals["css"] = css
         self._jinja_env.globals["js"] = js
-        return self._render()
 
     def _render(self) -> str:
+        classes = dedup_classes(self.classes)
+        if classes:
+            self.attrs["class"] = classes
+
         props = self.props
-        self.attrs["class"] = dedup_classes(self.classes)
         props["html_attrs"] = get_html_attrs(self.attrs)
         props.update({comp.__name__: comp for comp in self.uses})
+
         try:
             tmpl = self._jinja_env.get_template(self._template)
         except Exception:

@@ -32,15 +32,13 @@ def test_new_component():
 
 
 def test_render_simple():
-    c = Greeting(message="Hello world!")
-    html = c.render().strip()
+    html = Greeting.render(message="Hello world!").strip()
     assert html == '<div class="greeting">Hello world!</div>'
 
 
 def test_render_content():
     content = '<button type="button">Close</button>'
-    c = Card(content=content)
-    html = c.render().strip()
+    html = Card.render(content=content).strip()
     print(html)
     assert html == f"""
 <section class="card">
@@ -50,8 +48,7 @@ def test_render_content():
 
 
 def test_component_uses_other():
-    c = Page(message="Hello")
-    html = c.render().strip()
+    html = Page.render(message="Hello").strip()
     print(html)
     assert """
 <section class="card">
@@ -62,8 +59,7 @@ def test_component_uses_other():
 
 
 def test_assets_included():
-    c = Page(message="Hello")
-    html = c.render().strip()
+    html = Page.render(message="Hello").strip()
     print(html)
     assert '<link href="/components/greeting/Greeting.css" rel="stylesheet">' in html
     assert '<link href="/components/card/Card.css" rel="stylesheet">' in html
@@ -73,23 +69,20 @@ def test_assets_included():
 
 def test_global_values():
     Component._globals["secret"] = " world!"
-    c = Page(message="Hello")
-    html = c.render().strip()
+    html = Page.render(message="Hello").strip()
     print(html)
     assert '<div class="greeting">Hello world!</div>' in html
 
 
 def test_init_called():
-    c = Button(type="primary", content="Text")
-    assert c.render().strip() == (
+    assert Button.render(type="primary", content="Text").strip() == (
         '<button class="disabled:bg-purple-300 focus:bg-purple-600 '
         "hover:bg-purple-600 bg-purple-500 text-white "
         "cursor-pointer rounded transition duration-200 text-center "
         'p-4 whitespace-nowrap font-bold\">Text</button>'
     ).strip()
 
-    c = Button(type="danger", content="Text")
-    assert c.render().strip() == (
+    assert Button.render(type="danger", content="Text").strip() == (
         '<button class="hover:bg-red-600 focus:bg-red-600 disabled:bg-red-300 '
         "bg-red-500 text-white cursor-pointer rounded transition duration-200 "
         'text-center p-4 whitespace-nowrap font-bold">Text</button>'
