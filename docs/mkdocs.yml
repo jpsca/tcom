@@ -1,0 +1,78 @@
+site_name: JinjaX
+site_description: Server-Side Components with Jinja
+site_url: https://jinjax.scaletti.dev
+repo_url: https://github.com/jpsca/jinjax
+repo_name: jpsca/jinjax
+copyright: Copyright &copy; 2022 Juan-Pablo Scaletti
+
+nav:
+  - Home: index.md
+
+theme:
+  name: material
+  logo: assets/img/logo.svg
+  favicon: assets/img/favicon.svg
+  font:
+    text: Convergence
+    code: Roboto Mono
+  custom_dir: overrides
+  language: en
+  features:
+    - navigation.expand
+    # - navigation.indexes
+    - navigation.instant
+    # - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - search.highligh
+  icon:
+    repo: material/github
+  palette:
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    primary: red
+    accent: pink
+    toggle:
+      icon: octicons/sun-16
+      name: Switch to dark mode
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    primary: red
+    accent: pink
+    toggle:
+      icon: octicons/moon-16
+      name: Switch to light mode
+
+extra_css:
+  - assets/css/highlight.css
+  # - assets/css/termynal.css
+  - assets/css/common.css
+extra_javascript:
+  # - assets/js/termynal.js
+edit_uri: ""
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - smarty
+  - tables
+  - toc:
+      permalink: "#"
+      toc_depth: 4
+  - mkautodoc
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist
+  - pymdownx.tilde
