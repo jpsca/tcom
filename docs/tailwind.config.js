@@ -1,5 +1,5 @@
 module.exports = {
-  content: ["docs/*.html"],
+  content: ["overrides/*.html", "overrides/_*.html"],
   theme: {
     extend: {},
   },

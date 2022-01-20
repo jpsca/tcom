@@ -13,7 +13,7 @@ from typing import (
     Union,
 )
 
-from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 from jinja2.ext import Extension
 
 from .extension import JinjaX

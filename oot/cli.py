@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
-JinjaX CLI
+Object templates CLI
 
-Usage: jinjax new <ComponentName>
+Usage: oot new <ComponentName>
 
-This will create an empty component in the current folder.
+This will create a new component folder in the current path.
 """
 import sys
 import textwrap
@@ -98,7 +98,7 @@ def show_cmd_help(func: Callable) -> None:  # pragma: no cover
     print(doc)
 
 
-INIT_TMPL = """from jinjax import Component
+INIT_TMPL = """from oot import Component
 
 
 class CNAME(Component):
@@ -111,7 +111,7 @@ class CNAME(Component):
 
 def new(name: str, path: str = ".") -> None:
     """
-    Usage: jinjax new <ComponentName> [--path .]
+    Usage: oot new <ComponentName> [--path .]
 
     Create an empty component in the current folder.
     You can optionally define the root path of the components

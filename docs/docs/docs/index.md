@@ -1,4 +1,4 @@
-# JinjaX
+# Object templates
 
 
 
@@ -7,12 +7,12 @@
 Install the package using `pip`.
 
 ```bash
-pip install jinjax
+pip install oot
 ```
 
 
 ## Resources
 
-- [Source code (MIT Licensed)](https://github.com/jpsca/jinjax)
-- [PyPI](https://pypi.org/project/jinjax/)
-- [Change log](https://github.com/jpsca/jinjax/releases)
+- [Source code (MIT Licensed)](https://github.com/jpsca/oot)
+- [PyPI](https://pypi.org/project/oot/)
+- [Change log](https://github.com/jpsca/oot/releases)

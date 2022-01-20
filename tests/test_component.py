@@ -1,6 +1,6 @@
 import pytest
 
-from jinjax import Component, MissingRequiredAttribute
+from oot import Component, MissingRequiredAttribute
 from .components.button import Button
 from .components.card import Card
 from .components.greeting import Greeting

@@ -2,8 +2,8 @@
 deploy:
 	mkdocs build
 	rm site/assets/javascripts/lunr/min/lunr.*.min.js
-	rsync --recursive --delete --progress site code:/var/www/jinjax/
+	rsync --recursive --delete --progress site code:/var/www/oot/
 
 .PHONY: tailwind
 tailwind:
-	tailwindcss -i ./docs/assets/css/_index.css -o ./docs/assets/css/index.css --watch
+	tailwindcss -i ./docs/_src/home.css -o ./docs/static/css/home.css --watch

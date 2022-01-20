@@ -1,3 +1,3 @@
-# jinjax
+# Object templates
 
-Server-Side Components with Jinja
+Replace your HTML templates with Python server-Side components

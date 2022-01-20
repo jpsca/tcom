@@ -1,4 +1,4 @@
-from jinjax import Component
+from oot import Component
 from ..close_btn import CloseBtn
 
 

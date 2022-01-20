@@ -1,4 +1,4 @@
-from jinjax import Component
+from oot import Component
 
 
 class Button(Component):

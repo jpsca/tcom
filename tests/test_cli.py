@@ -5,7 +5,7 @@ from tempfile import mkdtemp
 
 import pytest
 
-from jinjax import cli
+from oot import cli
 
 
 @pytest.fixture()

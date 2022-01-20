@@ -1,17 +1,20 @@
-site_name: JinjaX
-site_description: Server-Side Components with Jinja
-site_url: https://jinjax.scaletti.dev
-repo_url: https://github.com/jpsca/jinjax
-repo_name: jpsca/jinjax
+site_name: Object templates
+site_description: The power of components without the complexity.
+site_url: https://oot.scaletti.dev
+site_author: Juan-Pablo Scaletti
+repo_url: https://github.com/jpsca/oot
+repo_name: jpsca/oot
 copyright: Copyright &copy; 2022 Juan-Pablo Scaletti
 
 nav:
   - Home: index.md
+  - Documentation:
+    - docs/index.md
 
 theme:
   name: material
-  logo: assets/img/logo.svg
-  favicon: assets/img/favicon.svg
+  logo: static/img/logo.svg
+  favicon: static/img/favicon.svg
   font:
     text: Convergence
     code: Roboto Mono
@@ -45,11 +48,11 @@ theme:
       name: Switch to light mode
 
 extra_css:
-  - assets/css/highlight.css
-  # - assets/css/termynal.css
-  - assets/css/common.css
+  - static/css/highlight.css
+  # - static/css/termynal.css
+  - static/css/common.css
 extra_javascript:
-  # - assets/js/termynal.js
+  # - static/js/termynal.js
 edit_uri: ""
 plugins:
   - search

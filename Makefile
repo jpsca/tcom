@@ -1,21 +1,21 @@
 .PHONY: test
 test:
-	pytest -x jinjax tests
+	pytest -x oot tests
 
 .PHONY: lint
 lint:
-	flake8 --config=setup.cfg jinjax tests
+	flake8 --config=setup.cfg oot tests
 
 .PHONY: coverage
 coverage:
-	pytest --cov-config=.coveragerc --cov-report html --cov jinjax jinjax tests
+	pytest --cov-config=.coveragerc --cov-report html --cov oot oot tests
 
 .PHONY: types
 types:
-	mypy jinjax
+	mypy oot
 
 .PHONY: install
 install:
 	pip install -e .[test,dev]
-	# pip install -r docs/requirements.txt
+	pip install -r docs/requirements.txt
 	# pre-commit install

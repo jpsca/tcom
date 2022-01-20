@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Tuple
 
-from jinjax import ComponentAssetsMiddleware
+from oot import ComponentAssetsMiddleware
 
 
 def simple_app(

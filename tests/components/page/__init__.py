@@ -1,4 +1,4 @@
-from jinjax import Component, required
+from oot import Component, required
 from ..card import Card
 from ..greeting import Greeting
 

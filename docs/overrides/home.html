@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Object templates</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Juan-Pablo Scaletti">
+  <meta name="description" content="The power of components without the complexity.">
+  <meta property="og:title" content="Object templates">
+  <meta property="og:description" content="The power of components without the complexity.">
+  <meta property="og:image" content="{{ 'static/img/social.png' | url }}">
+  <meta property="og:url" content="https://oot.scaletti.dev">
+  <meta property="og:site_name" content="Object templates">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="{{ 'static/css/home.css' | url }}" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="{{ 'static/img/favicon.svg' | url }}">
+</head>
+<body class="antialiased text-slate-500 bg-zinc-100">
+  {% include "_header.html" %}
+
+  <section class="pt-16 pb-32">
+    <div class="container mx-auto px-6 relative">
+      <img src="{{ 'static/img/shinto.png' | url }}" class="absolute right-10 top-40 w-52">
+      <h1 class="text-7xl font-black pb-8 relative text-zinc-500">
+        Object <b class="font-cursive">templates</b>
+      </h1>
+      <div class="pr-60 relative">
+        <h2 class="text-6xl font-bold leading-none text-gray-800 mb-7">
+          The power of components without the complexity.
+        </h2>
+        <p class="text-xl text-gray-700 font-normal">
+          Replace your HTML templates with Python server-Side components.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex flex-row items-center justify-between container mx-auto px-6 relative">
+      <div class="w-1/3">
+        <h2>Reusable & Modular</h2>
+      </div>
+      <div class="w-1/3">
+        <h2>Well-defined</h2>
+      </div>
+      <div class="w-1/3">
+        <h2>Testable</h2>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-orange-100">
+    <div class="container mx-auto px-6 relative py-16"></div>
+  </section>
+
+  {% include "_footer.html" %}
+</body>
+</html>

@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional, Sequence, Type, Union
 from whitenoise import WhiteNoise  # type: ignore
 from whitenoise.responders import StaticFile  # type: ignore
 
-import jinjax
+import oot
 
 
 DEFAULT_URL_PREFIX = "/components/"
@@ -29,7 +29,7 @@ class ComponentAssetsMiddleware(WhiteNoise):
         super().__init__(application, root=str(root), prefix=prefix, **kwargs)
 
         importmap = importmap or {}
-        importmap["jinjax/"] = jinjax
+        importmap["oot/"] = oot
         for iprefix, mod in importmap.items():
             iprefix = iprefix.strip().strip("/") + "/"
             self.add_files(mod.__path__[0], prefix=f"{prefix}{iprefix}")
