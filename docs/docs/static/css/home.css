@@ -518,6 +518,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   top: 10rem;
 }
 
+.top-20 {
+  top: 5rem;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -578,10 +582,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .items-center {
   align-items: center;
-}
-
-.items-stretch {
-  align-items: stretch;
 }
 
 .justify-between {
@@ -645,6 +645,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-right: 2rem;
 }
 
+.py-10 {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
 .pt-16 {
   padding-top: 4rem;
 }
@@ -659,6 +664,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pr-60 {
   padding-right: 15rem;
+}
+
+.pt-10 {
+  padding-top: 2.5rem;
+}
+
+.pb-10 {
+  padding-bottom: 2.5rem;
 }
 
 .text-sm {

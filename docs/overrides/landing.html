@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Object templates</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Juan-Pablo Scaletti">
+  <meta name="description" content="The power of components without the complexity.">
+  <meta property="og:title" content="Object templates">
+  <meta property="og:description" content="The power of components without the complexity.">
+  <meta property="og:image" content="{{ 'static/img/social.png' | url }}">
+  <meta property="og:url" content="https://oot.scaletti.dev">
+  <meta property="og:site_name" content="Object templates">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="{{ 'static/css/home.css' | url }}" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="{{ 'static/img/favicon.svg' | url }}">
+</head>
+<body class="antialiased text-slate-500 bg-zinc-100">
+  {% include "_header.html" %}
+  {{ page.content }}
+  {% include "_footer.html" %}
+</body>
+</html>
