@@ -1,37 +1,33 @@
 import os
-import shutil
 from pathlib import Path
-from tempfile import mkdtemp
 
 import pytest
 
 from oot import cli
 
 
-@pytest.fixture()
-def cwd():
-    """Set the current working directory to a real temporary folder path
-    which is unique to each test function invocation.
-    The original working directory is restored at the end.
-    """
-    dst = mkdtemp()
+def test_new_on_cwd(tmp_path: Path):
     cwd = os.getcwd()
-    os.chdir(dst)
-    yield Path(dst)
-    os.chdir(cwd)
-    shutil.rmtree(dst)
+    os.chdir(tmp_path)
 
-
-def test_new(cwd: Path):
     cli.new("FooBar")
-    assert (cwd / "foo_bar").is_dir()
-    assert (cwd / "foo_bar" / "__init__.py").is_file()
-    assert (cwd / "foo_bar" / "FooBar.html.jinja").is_file()
-    code = (cwd / "foo_bar" / "__init__.py").read_text()
+    assert (tmp_path / "foo_bar.py").is_file()
+    assert (tmp_path / "foo_bar.html.jinja").is_file()
+    code = (tmp_path / "foo_bar.py").read_text()
+    assert "class FooBar(Component)" in code
+
+    os.chdir(cwd)
+
+
+def test_new_on_path(tmp_path: Path):
+    cli.new("FooBar", path=str(tmp_path))
+    assert (tmp_path / "foo_bar.py").is_file()
+    assert (tmp_path / "foo_bar.html.jinja").is_file()
+    code = (tmp_path / "foo_bar.py").read_text()
     assert "class FooBar(Component)" in code
 
 
-def test_no_overwrite(cwd: Path):
-    cli.new("FooBar")
+def test_no_overwrite(tmp_path: Path):
+    cli.new("FooBar", path=str(tmp_path))
     with pytest.raises(FileExistsError):
-        cli.new("FooBar")
+        cli.new("FooBar", path=str(tmp_path))

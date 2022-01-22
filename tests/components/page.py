@@ -1,12 +1,12 @@
 from oot import Component, required
-from ..card import Card
-from ..greeting import Greeting
+from .card import Card
+from .greeting import Greeting
 
 
 class Page(Component):
     uses = {Card, Greeting}
-    js = {"page/Page.js"}
-    css = {"page/Page.css"}
+    js = ("page.js", )
+    css = ("page.css", )
 
     title: str = "Hi"
     message = required

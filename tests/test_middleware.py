@@ -25,7 +25,7 @@ def make_environ(**kw):
 def test_css_is_returned():
     app = ComponentAssetsMiddleware(simple_app, "tests/components")
     fileobj = app(
-        make_environ(PATH_INFO="/components/page/Page.css"),
+        make_environ(PATH_INFO="/components/page.css"),
         mock_start_response,
     )
     assert fileobj
@@ -36,7 +36,7 @@ def test_css_is_returned():
 def test_js_is_returned():
     app = ComponentAssetsMiddleware(simple_app, "tests/components")
     resp = app(
-        make_environ(PATH_INFO="/components/page/Page.js"),
+        make_environ(PATH_INFO="/components/page.js"),
         mock_start_response,
     )
     text = resp.filelike.read().strip()
@@ -46,7 +46,7 @@ def test_js_is_returned():
 def test_other_extensions_ignored():
     app = ComponentAssetsMiddleware(simple_app, "tests/components")
     resp = app(
-        make_environ(PATH_INFO="/components/page/Page.html.jinja"),
+        make_environ(PATH_INFO="/components/page.html.jinja"),
         mock_start_response,
     )
     assert resp == [b"Hello World"]
@@ -55,7 +55,7 @@ def test_other_extensions_ignored():
 def test_add_custom_extensions():
     app = ComponentAssetsMiddleware(simple_app, "tests/components", allowed=[".jinja"])
     resp = app(
-        make_environ(PATH_INFO="/components/page/Page.html.jinja"),
+        make_environ(PATH_INFO="/components/page.html.jinja"),
         mock_start_response,
     )
     text = resp.filelike.read().strip()
@@ -67,7 +67,7 @@ def test_custom_prefix():
         simple_app, "tests/components", prefix="/static/co/"
     )
     fileobj = app(
-        make_environ(PATH_INFO="/static/co/page/Page.css"),
+        make_environ(PATH_INFO="/static/co/page.css"),
         mock_start_response
     )
     text = fileobj.filelike.read().strip()
@@ -77,7 +77,7 @@ def test_custom_prefix():
 def test_autorefresh_load():
     app = ComponentAssetsMiddleware(simple_app, "tests/components", autorefresh=True)
     fileobj = app(
-        make_environ(PATH_INFO="/components/page/Page.css"),
+        make_environ(PATH_INFO="/components/page.css"),
         mock_start_response
     )
     text = fileobj.filelike.read().strip()
@@ -87,7 +87,7 @@ def test_autorefresh_load():
 def test_autorefresh_block():
     app = ComponentAssetsMiddleware(simple_app, "tests/components", autorefresh=True)
     resp = app(
-        make_environ(PATH_INFO="/components/page/Page.html.jinja"),
+        make_environ(PATH_INFO="/components/page.html.jinja"),
         mock_start_response,
     )
     assert resp == [b"Hello World"]

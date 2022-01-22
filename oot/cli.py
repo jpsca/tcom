@@ -103,8 +103,8 @@ INIT_TMPL = """from oot import Component
 
 class CNAME(Component):
     # uses = {...}
-    # css = [...]
-    # js = [...]
+    # css = (...,)
+    # js = (...,)
     pass
 """
 
@@ -119,17 +119,17 @@ def new(name: str, path: str = ".") -> None:
     """
     class_name = to_camel_case(name)
     snake_name = to_snake_case(class_name)
-    root = Path(f"{path}/{snake_name}")
+    root = Path(f"{path}")
 
-    root.mkdir(parents=False, exist_ok=False)
+    root.mkdir(parents=False, exist_ok=True)
 
-    init_file = (root / "__init__.py")
-    print("✨", init_file)
-    init_file.touch(exist_ok=False)
+    py_file = (root / f"{snake_name}.py")
+    print("✨", py_file)
+    py_file.touch(exist_ok=False)
     code = INIT_TMPL.replace("CNAME", class_name)
-    init_file.write_text(code)
+    py_file.write_text(code)
 
-    tmpl_file = (root / f"{class_name}.html.jinja")
+    tmpl_file = (root / f"{snake_name}.html.jinja")
     print("✨", tmpl_file)
     tmpl_file.touch(exist_ok=False)
 

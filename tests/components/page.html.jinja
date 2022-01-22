@@ -3,7 +3,7 @@
 <head>
 <title>{{ title }}</title>
 {% for url in css -%}
-<link href="/components/{{ url }}" rel="stylesheet">
+<link href="/components/{{ url }}">
 {% endfor -%}
 {% for url in js -%}
 <script src="/components/{{ url }}" defer></script>

@@ -17,7 +17,7 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 from jinja2.ext import Extension
 
 from .extension import JinjaX
-from .utils import dedup, dedup_classes, get_html_attrs
+from .utils import dedup, dedup_classes, get_html_attrs, to_snake_case
 
 
 TComponent = Type["Component"]
@@ -53,6 +53,8 @@ def collect_paths(cls: type, collected: Set[Path]) -> Set[Path]:
 
 
 class required:
+    """Instead of typing an argument, you can assign this
+    value to indicate this is a required argument"""
     pass
 
 
@@ -60,7 +62,7 @@ class MissingRequiredAttribute(Exception):
     pass
 
 
-NON_ATTRS_NAMES = ("uses", "js", "css", "init", "props", "render", "get_source")
+NON_PROPS_NAMES = ("uses", "js", "css", "init", "props", "render", "get_source")
 
 
 class Component:
@@ -94,7 +96,7 @@ class Component:
         return {
             name: getattr(self, name)
             for name in self.__dir__()
-            if not name.startswith("_") and name not in NON_ATTRS_NAMES
+            if not name.startswith("_") and name not in NON_PROPS_NAMES
         }
 
     def __init__(self, **kwargs) -> None:
@@ -125,13 +127,15 @@ class Component:
 
         self.classes = dedup_classes(self.classes)
         if not self._template:
-            self._template = f"{name}.html.jinja"
+            snake_name = to_snake_case(name)
+            self._template = f"{snake_name}.html.jinja"
         self.init()
 
     def init(self) -> None:
         pass
 
     def get_source(self) -> str:
+        assert self._jinja_env.loader
         return self._jinja_env.loader.get_source(self._jinja_env, self._template)[0]
 
     def _collect_props(self, kw: Dict[str, Any]) -> None:
@@ -140,7 +144,7 @@ class Component:
             for name in list(self.__dir__()) + list(self.__annotations__.keys())
             if (
                 not name.startswith("_")
-                and name not in NON_ATTRS_NAMES
+                and name not in NON_PROPS_NAMES
                 and not inspect.ismethod(getattr(self, name, None))
             )
         ]
@@ -160,7 +164,7 @@ class Component:
                 raise MissingRequiredAttribute(name)
 
         for name in self.__annotations__.keys():
-            if name.startswith("_") or name in NON_ATTRS_NAMES:
+            if name.startswith("_") or name in NON_PROPS_NAMES:
                 continue
             if name not in props:
                 raise MissingRequiredAttribute(name)
@@ -181,7 +185,7 @@ class Component:
         self._jinja_env.filters.update(Component._filters)
         self._jinja_env.tests.update(Component._tests)
 
-    def _assets(self) -> str:
+    def _assets(self) -> None:
         components = collect_components(self.__class__, set())
         css, js = collect_assets(components)
         Component._globals["css"] = css

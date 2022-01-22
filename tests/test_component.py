@@ -61,10 +61,10 @@ def test_component_uses_other():
 def test_assets_included():
     html = Page.render(message="Hello").strip()
     print(html)
-    assert '<link href="/components/greeting/Greeting.css" rel="stylesheet">' in html
-    assert '<link href="/components/card/Card.css" rel="stylesheet">' in html
-    assert '<script src="/components/card/Card.js" defer></script>' in html
-    assert '<script src="/components/card/Greeting.js" defer></script>' not in html
+    assert '<link href="/components/greeting.css">' in html
+    assert '<link href="/components/card.css">' in html
+    assert '<script src="/components/card.js" defer></script>' in html
+    assert '<script src="/components/greeting.js" defer></script>' not in html
 
 
 def test_global_values():
