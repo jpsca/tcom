@@ -13,7 +13,7 @@ from typing import (
     Union,
 )
 
-from jinja2 import ChoiceLoader, Environment, FileSystemLoader
+import jinja2
 from jinja2.ext import Extension
 
 from .extension import JinjaX
@@ -161,13 +161,13 @@ class Component:
 
         for name, value in props.items():
             if value is required:
-                raise MissingRequiredAttribute(name)
+                raise MissingRequiredAttribute(f"{self.__class__.__name__}: {name}")
 
         for name in self.__annotations__.keys():
             if name.startswith("_") or name in NON_PROPS_NAMES:
                 continue
             if name not in props:
-                raise MissingRequiredAttribute(name)
+                raise MissingRequiredAttribute(f"{self.__class__.__name__}: {name}")
 
     def _check_props_types(self) -> None:
         # TODO: type check kw if types are available
@@ -176,10 +176,11 @@ class Component:
 
     def _build_jinja_env(self) -> None:
         paths = collect_paths(self.__class__, set())
-        loaders = [FileSystemLoader(path) for path in paths]
-        self._jinja_env = Environment(
-            loader=ChoiceLoader(loaders),
+        loaders = [jinja2.FileSystemLoader(path) for path in paths]
+        self._jinja_env = jinja2.Environment(
+            loader=jinja2.ChoiceLoader(loaders),
             extensions=list(Component._extensions) + [JinjaX],
+            undefined=jinja2.StrictUndefined,
         )
         self._jinja_env.globals.update(Component._globals)
         self._jinja_env.filters.update(Component._filters)
