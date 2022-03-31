@@ -26,9 +26,10 @@ TComponent = Type["Component"]
 def collect_components(
     comp: TComponent, collected: Set[TComponent]
 ) -> Set[TComponent]:
+    print(comp, collected)
     collected.add(comp)
-    for comp in comp.uses:
-        collected = collect_components(comp, collected)
+    for subcomp in comp.uses:
+        collected = collect_components(subcomp, collected)
     return collected
 
 
@@ -103,7 +104,8 @@ class Component:
         name = self.__class__.__name__
 
         # Make sure this is a set, but also
-        # fix the mistake to create an empty set like `{}`
+        # fix the mistake of trying to create an empty
+        # set using `{}`
         self.uses = set(self.uses) if self.uses else set()
 
         # Make sure these are tuples

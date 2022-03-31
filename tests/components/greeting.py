@@ -2,7 +2,7 @@ from oot import Component
 
 
 class Greeting(Component):
-    css = ("greeting.css", )
+    css = {"greeting.css", }
 
     message: str
     with_default: int = 4

@@ -5,6 +5,7 @@ from .components.button import Button
 from .components.card import Card
 from .components.greeting import Greeting
 from .components.page import Page
+from .components.with_global import WithGlobal
 
 
 def test_empty_component():
@@ -23,8 +24,8 @@ def test_new_component():
     assert c.props == {
         "content": "",
         "message": "Hello world!",
-        "attrs": {"lorem": "ipsum"},
         "classes": "",
+        "attrs": {"lorem": "ipsum"},
         "with_default": 4,
         "custom_property": "foobar",
         "custom_method": c.custom_method,
@@ -68,10 +69,11 @@ def test_assets_included():
 
 
 def test_global_values():
-    Component._globals["secret"] = " world!"
-    html = Page.render(message="Hello").strip()
+    message = "Hello world!"
+    Component._globals["globalvar"] = message
+    html = WithGlobal.render().strip()
     print(html)
-    assert '<div class="greeting">Hello world!</div>' in html
+    assert message in html
 
 
 def test_init_called():
