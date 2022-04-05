@@ -1,13 +1,15 @@
+{#
+js = ['page.js']
+css = ['page.css']
+
+message = '___'
+title = 'Hi'
+-#}
 <!DOCTYPE html>
 <html>
 <head>
 <title>{{ title }}</title>
-{% for url in css -%}
-<link href="/components/{{ url }}">
-{% endfor -%}
-{% for url in js -%}
-<script src="/components/{{ url }}" defer></script>
-{% endfor -%}
+{{ components_assets }}
 </head>
 <body>
 <Card>

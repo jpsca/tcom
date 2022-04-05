@@ -5,12 +5,17 @@ from jinja2 import Environment
 from jinja2.ext import Extension
 
 
-START_CALL = "{% call <TAG>._new(<ATTRS>) -%}"
+RENDER_CMD = "__render"
+START_CALL = '{% call <CMD>("<TAG>", <ATTRS>) -%}'
+START_CALL = START_CALL.replace("<CMD>", RENDER_CMD)
 END_CALL = "{%- endcall %}"
-INLINE_CALL = "{{ <TAG>._new(<ATTRS>) }}"
+INLINE_CALL = '{{ <CMD>("<TAG>", <ATTRS>) }}'
+INLINE_CALL = INLINE_CALL.replace("<CMD>", RENDER_CMD)
 
 VAR_START = "VAR_START"
 VAR_END = "VAR_END"
+DEBUG_ATTR_NAME = "__source"
+
 
 rx_open_tag = re.compile(r"<\s*[A-Z][0-9A-Za-z]*[^\>]*>")
 rx_close_tag = re.compile(r"</\s*[A-Z][0-9A-Za-z]*\s*>")
@@ -31,10 +36,8 @@ class JinjaX(Extension):
 
         self.var_start = environment.variable_start_string
         self.var_end = environment.variable_end_string
-        _re_attr = (
-            re_attr
-            .replace(VAR_START, re.escape(self.var_start))
-            .replace(VAR_END, re.escape(self.var_end))
+        _re_attr = re_attr.replace(VAR_START, re.escape(self.var_start)).replace(
+            VAR_END, re.escape(self.var_end)
         )
         self.rx_attr = re.compile(_re_attr, re.VERBOSE)
 
@@ -46,7 +49,7 @@ class JinjaX(Extension):
     ) -> str:
         source = rx_open_tag.sub(self._process_tag, source)
         source = rx_close_tag.sub(END_CALL, source)
-        self.environment._preprocessed_source = source  # type: ignore
+        setattr(self.environment, DEBUG_ATTR_NAME, source)  # type: ignore
         return source
 
     def _process_tag(self, match: re.Match) -> str:
@@ -77,7 +80,7 @@ class JinjaX(Extension):
             if not value:
                 attrs.append(f"{name}=True")
             elif value.startswith(self.var_start):
-                value = value[len(self.var_start):-len(self.var_end)]
+                value = value[len(self.var_start) : -len(self.var_end)]
                 attrs.append(f"{name}={value.strip()}")
             else:
                 attrs.append(f"{name}={value.strip()}")

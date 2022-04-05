@@ -1,3 +1,2 @@
-from .component import Component, MissingRequiredAttribute, required  # noqa
-from .extension import JinjaX  # noqa
-from .assets_middleware import ComponentAssetsMiddleware  # noqa
+from .catalog import Catalog  # noqa
+from .exceptions import *  # noqa

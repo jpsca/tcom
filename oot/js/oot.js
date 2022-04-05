@@ -1,3 +1,4 @@
+/** Delegated events **/
 var { on, off, fire } = (function() {
   const SelectorSet = (function() {
     function SelectorSet() {

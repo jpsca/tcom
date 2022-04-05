@@ -1,215 +1,62 @@
-import inspect
-from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import Any
 
-import jinja2
-from jinja2.ext import Extension
+import tomlkit
 
-from .extension import JinjaX
-from .utils import dedup, dedup_classes, get_html_attrs, to_snake_case
+from .exceptions import MissingRequiredAttr
 
 
-TComponent = Type["Component"]
-
-
-def collect_components(
-    comp: TComponent, collected: Set[TComponent]
-) -> Set[TComponent]:
-    print(comp, collected)
-    collected.add(comp)
-    for subcomp in comp.uses:
-        collected = collect_components(subcomp, collected)
-    return collected
-
-
-def collect_assets(components: Set[TComponent]) -> Tuple[List[str], List[str]]:
-    css: List[str] = []
-    js: List[str] = []
-    for comp in components:
-        if comp.css:
-            css.extend(comp.css)
-        if comp.js:
-            js.extend(comp.js)
-    return dedup(css), dedup(js)
-
-
-def collect_paths(cls: type, collected: Set[Path]) -> Set[Path]:
-    if issubclass(cls, Component):
-        root = Path(inspect.getfile(cls)).parent
-        collected.add(root)
-    for base in cls.__bases__:
-        collected = collect_paths(base, collected)
-    return collected
-
-
-class required:
-    """Instead of typing an argument, you can assign this
-    value to indicate this is a required argument"""
-    pass
-
-
-class MissingRequiredAttribute(Exception):
-    pass
-
-
-NON_PROPS_NAMES = ("uses", "js", "css", "init", "props", "render", "get_source")
+FRONT_MATTER_START = "{#"
+FRONT_MATTER_END = "#}"
+CSS_KEY = "css"
+JS_KEY = "js"
+REQUIRED_VALUE = "___"
+EXTRA_ATTRS_KEY = "_extra_attrs"
 
 
 class Component:
-    __name__ = "Component"
-    uses: Set[TComponent] = set()
-    js: Tuple[str, ...] = tuple()
-    css: Tuple[str, ...] = tuple()
+    __slots__ = ("relpath", "args", "required", "css", "js")
 
-    classes: str = ""
+    def __init__(self, *, relpath: str, content: str = "", prefix: str = "") -> None:
+        self.relpath = relpath
+        fmdict = self.load_front_matter(content)
 
-    _template: str = ""
-    _extensions: Sequence[Union[str, Type[Extension]]] = []
-    _globals: Dict[str, Any] = {}
-    _filters: Dict[str, Any] = {}
-    _tests: Dict[str, Any] = {}
+        prefix = prefix.strip("/")
+        if prefix:
+            prefix += "/"
+        self.css = set([f"{prefix}{css.strip('/')}" for css in fmdict.pop(CSS_KEY, [])])
+        self.js = set([f"{prefix}{js.strip('/')}" for js in fmdict.pop(JS_KEY, [])])
 
-    @classmethod
-    def _new(cls, caller: Optional[Callable] = None, **kw) -> str:
-        kw["content"] = caller() if caller else ""
-        obj = cls(**kw)
-        return obj._render()
-
-    @classmethod
-    def render(cls, **kw) -> str:
-        obj = cls(**kw)
-        obj._assets()
-        return obj._render()
-
-    @property
-    def props(self) -> Dict[str, Any]:
-        return {
-            name: getattr(self, name)
-            for name in self.__dir__()
-            if not name.startswith("_") and name not in NON_PROPS_NAMES
-        }
-
-    def __init__(self, **kwargs) -> None:
-        name = self.__class__.__name__
-
-        # Make sure this is a set, but also
-        # fix the mistake of trying to create an empty
-        # set using `{}`
-        self.uses = set(self.uses) if self.uses else set()
-
-        # Make sure these are tuples
-        self.js = tuple(self.js) if self.js else tuple()
-        self.css = tuple(self.css) if self.css else tuple()
-
-        kw = kwargs.pop("attrs", None) or {}
-        kw.update(kwargs)
-        kwargs = kw
-
-        self.content = kwargs.pop("content", "")
-        kwargs["classes"] = " ".join([
-            kwargs.pop("class", ""),
-            kwargs.get("classes", ""),
-        ])
-
-        self._collect_props(kwargs)
-        self._check_required_props()
-        self._check_props_types()
-        self._build_jinja_env()
-
-        self.classes = dedup_classes(self.classes)
-        if not self._template:
-            snake_name = to_snake_case(name)
-            self._template = f"{snake_name}.html.jinja"
-        self.init()
-
-    def init(self) -> None:
-        pass
-
-    def get_source(self) -> str:
-        assert self._jinja_env.loader
-        return self._jinja_env.loader.get_source(self._jinja_env, self._template)[0]
-
-    def _collect_props(self, kw: Dict[str, Any]) -> None:
-        props = [
-            name
-            for name in list(self.__dir__()) + list(self.__annotations__.keys())
-            if (
-                not name.startswith("_")
-                and name not in NON_PROPS_NAMES
-                and not inspect.ismethod(getattr(self, name, None))
-            )
-        ]
-        attrs = {}
-        for name, value in kw.items():
-            if name in props:
-                setattr(self, name, value)
+        args = {}
+        required = set()
+        for name, default in fmdict.items():
+            if default == REQUIRED_VALUE:
+                required.add(name)
             else:
-                attrs[name] = value
-        self.attrs = attrs
+                args[name] = default
 
-    def _check_required_props(self) -> None:
-        props = self.props
+        self.args = args
+        self.required = required
 
-        for name, value in props.items():
-            if value is required:
-                raise MissingRequiredAttribute(f"{self.__class__.__name__}: {name}")
+    def load_front_matter(self, content: str) -> dict[str, Any]:
+        if not content.startswith(FRONT_MATTER_START):
+            return {}
+        front_matter = content.split(FRONT_MATTER_END, 1)[0]
+        front_matter = front_matter[2:].strip("-")
+        return tomlkit.parse(front_matter)
 
-        for name in self.__annotations__.keys():
-            if name.startswith("_") or name in NON_PROPS_NAMES:
-                continue
-            if name not in props:
-                raise MissingRequiredAttribute(f"{self.__class__.__name__}: {name}")
+    def filter_args(self, kwargs: dict[str, Any]) -> dict[str, Any]:
+        props = {}
 
-    def _check_props_types(self) -> None:
-        # TODO: type check kw if types are available
-        # in self.__annotations__
-        pass
+        for name in self.required:
+            if name not in kwargs:
+                raise MissingRequiredAttr(name)
+            props[name] = kwargs.pop(name)
 
-    def _build_jinja_env(self) -> None:
-        paths = collect_paths(self.__class__, set())
-        loaders = [jinja2.FileSystemLoader(path) for path in paths]
-        self._jinja_env = jinja2.Environment(
-            loader=jinja2.ChoiceLoader(loaders),
-            extensions=list(Component._extensions) + [JinjaX],
-            undefined=jinja2.StrictUndefined,
-        )
-        self._jinja_env.globals.update(Component._globals)
-        self._jinja_env.filters.update(Component._filters)
-        self._jinja_env.tests.update(Component._tests)
+        for name, default_value in self.args.items():
+            props[name] = kwargs.pop(name, default_value)
 
-    def _assets(self) -> None:
-        components = collect_components(self.__class__, set())
-        css, js = collect_assets(components)
-        Component._globals["css"] = css
-        Component._globals["js"] = js
-        self._jinja_env.globals["css"] = css
-        self._jinja_env.globals["js"] = js
+        props[EXTRA_ATTRS_KEY] = kwargs.copy()
+        return props
 
-    def _render(self) -> str:
-        classes = dedup_classes(self.classes)
-        if classes:
-            self.attrs["class"] = classes
-
-        props = self.props
-        props["html_attrs"] = get_html_attrs(self.attrs)
-        props.update({comp.__name__: comp for comp in self.uses})
-
-        try:
-            tmpl = self._jinja_env.get_template(self._template)
-        except Exception:
-            print("*** Pre-processed source: ***")
-            print(self._jinja_env.getattr("_preprocessed_source", ""))
-            print("*" * 10)
-            raise
-        return tmpl.render(**props)
+    def __repr__(self):
+        return f'<Component "{self.relpath}">'

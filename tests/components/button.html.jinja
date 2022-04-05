@@ -1,1 +1,13 @@
-<button class="{{ classes }}">{{ content }}</button>
+{#
+type = ''
+#}
+<button class="
+cursor-pointer rounded transition duration-200 text-center p-4 whitespace-nowrap font-bold
+{% if type == 'primary' -%}
+disabled:bg-purple-300 focus:bg-purple-600 hover:bg-purple-600 bg-purple-500 text-white
+{% elif type == 'outline' -%}
+hover:bg-gray-200 focus:bg-gray-200 disabled:bg-gray-100 bg-white border border-purple-600 text-purple-600
+{% elif type == 'danger' -%}
+hover:bg-red-600 focus:bg-red-600 disabled:bg-red-300 bg-red-500 text-white
+{%- endif -%}
+">{{ content }}</button>

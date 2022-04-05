@@ -1,7 +1,7 @@
 import pytest
 from jinja2 import Environment
 
-from oot import JinjaX
+from oot.jinjax import JinjaX
 
 
 @pytest.fixture
@@ -25,30 +25,33 @@ def test_nested(pre: JinjaX):
     result = pre.preprocess(source)
     print(result)
 
-    assert result == """
+    assert (
+        result
+        == """
 <div class="whatever">
-    {% call Card._new(label="Hello") -%}
-        {% call MyButton._new(color="red blue", shadowSize=size) -%}
-            {{ Icon._new(name="ok") }} Click Me
+    {% call __render("Card", label="Hello") -%}
+        {% call __render("MyButton", color="red blue", shadowSize=size) -%}
+            {{ __render("Icon", name="ok") }} Click Me
             {{ whatever }}
         {%- endcall %}
     {%- endcall %}
     <label>meh</label>
 </div>"""
+    )
 
 
 def test_expr_prop(pre: JinjaX):
     source = "<MyComponent foo={{1 + 2 + 3 + 4}} />"
     result = pre.preprocess(source)
     print(result)
-    assert result == "{{ MyComponent._new(foo=1 + 2 + 3 + 4) }}"
+    assert result == '{{ __render("MyComponent", foo=1 + 2 + 3 + 4) }}'
 
 
 def test_multiple_args(pre: JinjaX):
     source = "<MyComponent a={{ a }} b={{ b }} c={{c}} />"
     result = pre.preprocess(source)
     print(result)
-    assert result == "{{ MyComponent._new(a=a, b=b, c=c) }}"
+    assert result == '{{ __render("MyComponent", a=a, b=b, c=c) }}'
 
 
 def test_line_jump_in_attr_value(pre: JinjaX):
@@ -60,4 +63,7 @@ def test_line_jump_in_attr_value(pre: JinjaX):
     """.strip()
     result = pre.preprocess(source)
     print(result)
-    assert result == '{% call Tab._new(classes="a           b") -%}Tab 1{%- endcall %}'
+    assert (
+        result
+        == '{% call __render("Tab", classes="a           b") -%}Tab 1{%- endcall %}'
+    )

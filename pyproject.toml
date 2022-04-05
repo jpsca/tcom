@@ -4,3 +4,30 @@ requires = [
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+  | tests/toml-test
+)/
+'''
+
+[tool.isort]
+profile = "black"
+force_single_line = true
+atomic = true
+lines_after_imports = 2
+lines_between_types = 1
+
+known_first_party = ["tomlkit"]
+known_third_party = ["pytest"]

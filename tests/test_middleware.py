@@ -1,19 +1,11 @@
-from typing import Any, Callable, Dict, List, Tuple
-
-from oot import ComponentAssetsMiddleware
+import oot
 
 
-def simple_app(
-    environ: Dict[str, Any], start_response: Callable[[str, List[Tuple[str, str]]], None]
-):
+def application(environ, start_response):
     status = "200 OK"
     headers = [("Content-type", "text/plain")]
     start_response(status, headers)
-    return [b"Hello World"]
-
-
-def mock_start_response(status: str, headers: List[Tuple[str, str]]) -> None:
-    pass
+    return [b"NOPE"]
 
 
 def make_environ(**kw):
@@ -22,72 +14,84 @@ def make_environ(**kw):
     return kw
 
 
+def mock_start_response(status, headers):
+    pass
+
+
+def get_catalog(**kw):
+    catalog = oot.Catalog(**kw)
+    catalog.add_folder("tests/components")
+    return catalog
+
+
+def run_middleware(middleware, url):
+    return middleware(make_environ(PATH_INFO=url), mock_start_response)
+
+
+# Tests
+
+
 def test_css_is_returned():
-    app = ComponentAssetsMiddleware(simple_app, "tests/components")
-    fileobj = app(
-        make_environ(PATH_INFO="/components/page.css"),
-        mock_start_response,
-    )
-    assert fileobj
-    text = fileobj.filelike.read().strip()
+    catalog = get_catalog()
+    middleware = catalog.get_middleware(application)
+
+    resp = run_middleware(middleware, "/static/components/page.css")
+    assert resp and not isinstance(resp, list)
+    text = resp.filelike.read().strip()
     assert text == b"/* Page.css */"
 
 
 def test_js_is_returned():
-    app = ComponentAssetsMiddleware(simple_app, "tests/components")
-    resp = app(
-        make_environ(PATH_INFO="/components/page.js"),
-        mock_start_response,
-    )
+    catalog = get_catalog()
+    middleware = catalog.get_middleware(application)
+
+    resp = run_middleware(middleware, "/static/components/page.js")
+    assert resp and not isinstance(resp, list)
     text = resp.filelike.read().strip()
     assert text == b"/* Page.js */"
 
 
 def test_other_extensions_ignored():
-    app = ComponentAssetsMiddleware(simple_app, "tests/components")
-    resp = app(
-        make_environ(PATH_INFO="/components/page.html.jinja"),
-        mock_start_response,
-    )
-    assert resp == [b"Hello World"]
+    catalog = get_catalog()
+    middleware = catalog.get_middleware(application)
+
+    resp = run_middleware(middleware, "/static/components/Page.html.jinja")
+    assert resp == [b"NOPE"]
 
 
 def test_add_custom_extensions():
-    app = ComponentAssetsMiddleware(simple_app, "tests/components", allowed=[".jinja"])
-    resp = app(
-        make_environ(PATH_INFO="/components/page.html.jinja"),
-        mock_start_response,
-    )
+    catalog = get_catalog(allowed_ext=[".jinja"])
+    middleware = catalog.get_middleware(application)
+
+    resp = run_middleware(middleware, "/static/components/Page.html.jinja")
+    assert resp and not isinstance(resp, list)
     text = resp.filelike.read().strip()
     assert b"<!DOCTYPE html>" in text
 
 
-def test_custom_prefix():
-    app = ComponentAssetsMiddleware(
-        simple_app, "tests/components", prefix="/static/co/"
-    )
-    fileobj = app(
-        make_environ(PATH_INFO="/static/co/page.css"),
-        mock_start_response
-    )
-    text = fileobj.filelike.read().strip()
+def test_custom_root_url():
+    catalog = get_catalog(root_url="/static/co/")
+    middleware = catalog.get_middleware(application)
+
+    resp = run_middleware(middleware, "/static/co/page.css")
+    assert resp and not isinstance(resp, list)
+    text = resp.filelike.read().strip()
     assert text == b"/* Page.css */"
 
 
 def test_autorefresh_load():
-    app = ComponentAssetsMiddleware(simple_app, "tests/components", autorefresh=True)
-    fileobj = app(
-        make_environ(PATH_INFO="/components/page.css"),
-        mock_start_response
-    )
-    text = fileobj.filelike.read().strip()
+    catalog = get_catalog()
+    middleware = catalog.get_middleware(application, autorefresh=True)
+
+    resp = run_middleware(middleware, "/static/components/page.css")
+    assert resp and not isinstance(resp, list)
+    text = resp.filelike.read().strip()
     assert text == b"/* Page.css */"
 
 
 def test_autorefresh_block():
-    app = ComponentAssetsMiddleware(simple_app, "tests/components", autorefresh=True)
-    resp = app(
-        make_environ(PATH_INFO="/components/page.html.jinja"),
-        mock_start_response,
-    )
-    assert resp == [b"Hello World"]
+    catalog = get_catalog()
+    middleware = catalog.get_middleware(application, autorefresh=True)
+
+    resp = run_middleware(middleware, "/static/components/Page.html.jinja")
+    assert resp == [b"NOPE"]
