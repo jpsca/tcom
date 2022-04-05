@@ -188,7 +188,7 @@ class Catalog:
         tmpl_name = f"{prefix or '.'}/{component.relpath}"
         try:
             tmpl = self.jinja_env.get_template(tmpl_name)
-        except Exception:
+        except Exception:  # pragma: no cover
             print("*** Pre-processed source: ***")
             print(getattr(self.jinja_env, DEBUG_ATTR_NAME, ""))
             print("*" * 10)
