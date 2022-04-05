@@ -1,4 +1,4 @@
-from typing import Any, Optional, Sequence
+from typing import Any, Iterable, Optional
 
 from whitenoise import WhiteNoise  # type: ignore
 from whitenoise.responders import StaticFile  # type: ignore
@@ -8,7 +8,7 @@ class ComponentsMiddleware(WhiteNoise):
     """WSGI middleware for serving components assets"""
 
     def __init__(
-        self, application, *, allowed_ext: Optional[Sequence[str]] = None, **kwargs
+        self, application, *, allowed_ext: Optional[Iterable[str]] = None, **kwargs
     ) -> None:
         self.allowed_ext = tuple(allowed_ext) if allowed_ext else None
         super().__init__(application, **kwargs)

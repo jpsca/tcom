@@ -1,6 +1,6 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, List, Optional, Sequence, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
 from uuid import uuid4
 
 import jinja2
@@ -36,22 +36,30 @@ class Catalog:
         "collected_css",
         "collected_js",
     )
+    components: Dict[str, Component]
+    prefixes: Dict[str, List]
+    root_url: str
+    allowed_ext: Set[str]
+    assets_placeholder: str
+    collected_css: Set[str]
+    collected_js: Set[str]
 
     def __init__(
         self,
         *,
-        globals: Optional[dict[str, Any]] = None,
-        filters: Optional[dict[str, Any]] = None,
-        tests: Optional[dict[str, Any]] = None,
+        globals: Optional[Dict[str, Any]] = None,
+        filters: Optional[Dict[str, Any]] = None,
+        tests: Optional[Dict[str, Any]] = None,
         extensions: Optional[List[Any]] = None,
         root_url: str = DEFAULT_URL_ROOT,
-        allowed_ext: Optional[Sequence[str]] = ALLOWED_EXTENSIONS,
+        allowed_ext: Optional[Iterable[str]] = None,
     ) -> None:
         self.components = {}
         self.prefixes = defaultdict(list)
-
         self.root_url = f"/{root_url.strip().strip('/')}/".replace(r"//", r"/")
-        self.allowed_ext = set(allowed_ext)
+        self.allowed_ext = set(allowed_ext or ALLOWED_EXTENSIONS)
+        self.collected_css = set()
+        self.collected_js = set()
 
         globals = globals or {}
         filters = filters or {}
@@ -77,10 +85,10 @@ class Catalog:
         self.prefixes[prefix].append(str(folderpath))
 
         loader_prefix = prefix or "."
-        subloader = self.jinja_env.loader.mapping.get(loader_prefix)
+        subloader = self.jinja_env.loader.mapping.get(loader_prefix)  # type: ignore
         subloader = subloader or jinja2.ChoiceLoader([])
         subloader.loaders.append(jinja2.FileSystemLoader(str(folderpath)))
-        self.jinja_env.loader.mapping[loader_prefix] = subloader
+        self.jinja_env.loader.mapping[loader_prefix] = subloader  # type: ignore
 
         for path in folderpath.rglob(COMPONENT_PATTERN):
             name = path.name.split(".", 1)[0]
@@ -101,8 +109,6 @@ class Catalog:
         html = self._render(name, prefix=prefix, **kwargs)
         html = self._insert_assets(html)
 
-        self.collected_css = None
-        self.collected_js = None
         return html
 
     def get_middleware(self, application, **kwargs) -> ComponentsMiddleware:
@@ -120,9 +126,9 @@ class Catalog:
 
     def _build_jinja_env(
         self,
-        globals: dict[str, Any],
-        filters: dict[str, Any],
-        tests: dict[str, Any],
+        globals: Dict[str, Any],
+        filters: Dict[str, Any],
+        tests: Dict[str, Any],
         extensions: List[Any],
     ) -> None:
         self.jinja_env = jinja2.Environment(
@@ -157,7 +163,7 @@ class Catalog:
         *,
         prefix: str = DEFAULT_PREFIX,
         content: str = "",
-        caller: Optional[callable] = None,
+        caller: Optional[Callable] = None,
         **kwargs
     ) -> str:
         component = self._get_component(name)

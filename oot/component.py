@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 import tomlkit
 
@@ -37,14 +37,14 @@ class Component:
         self.args = args
         self.required = required
 
-    def load_front_matter(self, content: str) -> dict[str, Any]:
+    def load_front_matter(self, content: str) -> Dict[str, Any]:
         if not content.startswith(FRONT_MATTER_START):
             return {}
         front_matter = content.split(FRONT_MATTER_END, 1)[0]
         front_matter = front_matter[2:].strip("-")
         return tomlkit.parse(front_matter)
 
-    def filter_args(self, kwargs: dict[str, Any]) -> dict[str, Any]:
+    def filter_args(self, kwargs: Dict[str, Any]) -> Dict[str, Any]:
         props = {}
 
         for name in self.required:
