@@ -1,8 +1,8 @@
-from typing import Any, Dict
+from typing import Any
 
 import tomlkit
 
-from .exceptions import MissingRequiredAttr
+from .exceptions import InvalidFrontMatter, MissingRequiredAttr
 
 
 FRONT_MATTER_START = "{#"
@@ -14,9 +14,10 @@ EXTRA_ATTRS_KEY = "_extra_attrs"
 
 
 class Component:
-    __slots__ = ("relpath", "args", "required", "css", "js")
+    __slots__ = ("name", "relpath", "args", "required", "css", "js")
 
-    def __init__(self, *, relpath: str, content: str = "", prefix: str = "") -> None:
+    def __init__(self, *, name: str, relpath: str, content: str = "", prefix: str = "") -> None:
+        self.name = name
         self.relpath = relpath
         fmdict = self.load_front_matter(content)
 
@@ -37,19 +38,25 @@ class Component:
         self.args = args
         self.required = required
 
-    def load_front_matter(self, content: str) -> Dict[str, Any]:
+    def load_front_matter(self, content: str) -> "dict[str, Any]":
         if not content.startswith(FRONT_MATTER_START):
             return {}
         front_matter = content.split(FRONT_MATTER_END, 1)[0]
-        front_matter = front_matter[2:].strip("-")
-        return tomlkit.parse(front_matter)
+        front_matter = front_matter[2:] \
+            .strip("-") \
+            .replace(" False\n", " false\n") \
+            .replace(" True\n", " true\n")
+        try:
+            return tomlkit.parse(front_matter)
+        except tomlkit.exceptions.TOMLKitError as err:
+            raise InvalidFrontMatter(self.name, *err.args)
 
-    def filter_args(self, kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    def filter_args(self, kwargs: "dict[str, Any]") -> "dict[str, Any]":
         props = {}
 
         for name in self.required:
             if name not in kwargs:
-                raise MissingRequiredAttr(name)
+                raise MissingRequiredAttr(self.name, name)
             props[name] = kwargs.pop(name)
 
         for name, default_value in self.args.items():
@@ -58,5 +65,5 @@ class Component:
         props[EXTRA_ATTRS_KEY] = kwargs.copy()
         return props
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<Component "{self.relpath}">'

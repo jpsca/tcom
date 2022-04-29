@@ -1,8 +1,11 @@
 import re
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING
 
-from jinja2 import Environment
 from jinja2.ext import Extension
+
+if TYPE_CHECKING:
+    from typing import Optional
+    from jinja2 import Environment
 
 
 RENDER_CMD = "__render"
@@ -31,7 +34,7 @@ re_attr = rf"""
 
 
 class JinjaX(Extension):
-    def __init__(self, environment: Environment) -> None:
+    def __init__(self, environment: "Environment") -> None:
         super().__init__(environment)
 
         self.var_start = environment.variable_start_string
@@ -44,20 +47,20 @@ class JinjaX(Extension):
     def preprocess(
         self,
         source: str,
-        name: Optional[str] = None,
-        filename: Optional[str] = None,
+        name: "Optional[str]" = None,
+        filename: "Optional[str]" = None,
     ) -> str:
         source = rx_open_tag.sub(self._process_tag, source)
         source = rx_close_tag.sub(END_CALL, source)
         setattr(self.environment, DEBUG_ATTR_NAME, source)  # type: ignore
         return source
 
-    def _process_tag(self, match: re.Match) -> str:
+    def _process_tag(self, match: "re.Match") -> str:
         ht = match.group()
         tag, attrs_list = self._extract_tag(ht)
         return self._build_call(tag, attrs_list, inline=ht.endswith("/>"))
 
-    def _extract_tag(self, ht: str) -> Tuple[str, List[Tuple[str, str]]]:
+    def _extract_tag(self, ht: str) -> "tuple[str, list[tuple[str, str]]]":
         ht = ht.strip("<> \r\n/")
         tag, *raw = re.split(r"\s+", ht, maxsplit=1)
         tag = tag.strip()
@@ -71,7 +74,7 @@ class JinjaX(Extension):
     def _build_call(
         self,
         tag: str,
-        attrs_list: List[Tuple[str, str]],
+        attrs_list: "list[tuple[str, str]]",
         inline: bool = False,
     ) -> str:
         attrs = []

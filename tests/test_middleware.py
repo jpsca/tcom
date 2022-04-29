@@ -1,4 +1,4 @@
-import oot
+import tcom
 
 
 def application(environ, start_response):
@@ -19,7 +19,7 @@ def mock_start_response(status, headers):
 
 
 def get_catalog(**kw):
-    catalog = oot.Catalog(**kw)
+    catalog = tcom.Catalog(**kw)
     catalog.add_folder("tests/components")
     return catalog
 

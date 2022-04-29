@@ -1,9 +1,9 @@
 site_name: Object templates
 site_description: The power of components without the complexity.
-site_url: https://oot.scaletti.dev
+site_url: https://tcom.scaletti.dev
 site_author: Juan-Pablo Scaletti
-repo_url: https://github.com/jpsca/oot
-repo_name: jpsca/oot
+repo_url: https://github.com/jpsca/tcom
+repo_name: jpsca/tcom
 copyright: Copyright &copy; 2022 Juan-Pablo Scaletti
 
 nav:

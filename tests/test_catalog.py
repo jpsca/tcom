@@ -1,11 +1,11 @@
 import pytest
 
-import oot
+import tcom
 
 
 @pytest.fixture()
 def catalog():
-    catalog = oot.Catalog()
+    catalog = tcom.Catalog()
     catalog.add_folder("tests/components")
     return catalog
 
@@ -55,5 +55,5 @@ def test_global_values(catalog):
 
 
 def test_required_attr_are_required(catalog):
-    with pytest.raises(oot.MissingRequiredAttr):
+    with pytest.raises(tcom.MissingRequiredAttr):
         catalog.render("Page")

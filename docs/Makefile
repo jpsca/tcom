@@ -2,7 +2,7 @@
 deploy:
 	mkdocs build
 	rm site/assets/javascripts/lunr/min/lunr.*.min.js
-	rsync --recursive --delete --progress site code:/var/www/oot/
+	rsync --recursive --delete --progress site code:/var/www/tcom/
 
 .PHONY: tailwind
 tailwind:

@@ -1,7 +1,7 @@
 import pytest
 from jinja2 import Environment
 
-from oot.jinjax import JinjaX
+from tcom.jinjax import JinjaX
 
 
 @pytest.fixture

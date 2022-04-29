@@ -1,6 +1,6 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import jinja2
@@ -11,13 +11,16 @@ from .jinjax import DEBUG_ATTR_NAME, JinjaX, RENDER_CMD
 from .middleware import ComponentsMiddleware
 from .utils import dedup_classes, get_html_attrs
 
+if TYPE_CHECKING:
+    from typing import Any, Callable, Iterable, Optional, Union
+
 
 DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js")
 COMPONENT_PATTERN = "*.jinja"
 DEFAULT_PREFIX = ""
 ASSETS_PLACEHOLDER_KEY = "components_assets"
-SELF_PREFIX = "oot"
+SELF_PREFIX = "tcs"
 SELF_PATH = Path(__file__).parent / "js"
 CLASS_KEY = "class"
 CLASS_ALT_KEY = "classes"
@@ -36,30 +39,23 @@ class Catalog:
         "collected_css",
         "collected_js",
     )
-    components: Dict[str, Component]
-    prefixes: Dict[str, List]
-    root_url: str
-    allowed_ext: Set[str]
-    assets_placeholder: str
-    collected_css: Set[str]
-    collected_js: Set[str]
 
     def __init__(
         self,
         *,
-        globals: Optional[Dict[str, Any]] = None,
-        filters: Optional[Dict[str, Any]] = None,
-        tests: Optional[Dict[str, Any]] = None,
-        extensions: Optional[List[Any]] = None,
+        globals: "Optional[dict[str, Any]]" = None,
+        filters: "Optional[dict[str, Any]]" = None,
+        tests: "Optional[dict[str, Any]]" = None,
+        extensions: "Optional[list]" = None,
         root_url: str = DEFAULT_URL_ROOT,
-        allowed_ext: Optional[Iterable[str]] = None,
+        allowed_ext: "Optional[Iterable[str]]" = None,
     ) -> None:
-        self.components = {}
-        self.prefixes = defaultdict(list)
+        self.components: "dict[str, Component]" = {}
+        self.prefixes: "dict[str, list[str]]" = defaultdict(list)
         self.root_url = f"/{root_url.strip().strip('/')}/".replace(r"//", r"/")
-        self.allowed_ext = set(allowed_ext or ALLOWED_EXTENSIONS)
-        self.collected_css = set()
-        self.collected_js = set()
+        self.allowed_ext: "set[str]" = set(allowed_ext or ALLOWED_EXTENSIONS)
+        self.collected_css: "set[str]" = set()
+        self.collected_js: "set[str]" = set()
 
         globals = globals or {}
         filters = filters or {}
@@ -76,7 +72,7 @@ class Catalog:
 
     def add_folder(
         self,
-        folderpath: Union[str, Path],
+        folderpath: "Union[str, Path]",
         *,
         prefix: str = DEFAULT_PREFIX
     ) -> None:
@@ -97,6 +93,7 @@ class Catalog:
             content = path.read_text()
             relpath = str(path.relative_to(folderpath))
             self.components[name] = Component(
+                name=name,
                 relpath=relpath,
                 content=content,
                 prefix=prefix,
@@ -126,10 +123,10 @@ class Catalog:
 
     def _build_jinja_env(
         self,
-        globals: Dict[str, Any],
-        filters: Dict[str, Any],
-        tests: Dict[str, Any],
-        extensions: List[Any],
+        globals: "dict[str, Any]",
+        filters: "dict[str, Any]",
+        tests: "dict[str, Any]",
+        extensions: "list",
     ) -> None:
         self.jinja_env = jinja2.Environment(
             loader=jinja2.PrefixLoader({}),
@@ -163,7 +160,7 @@ class Catalog:
         *,
         prefix: str = DEFAULT_PREFIX,
         content: str = "",
-        caller: Optional[Callable] = None,
+        caller: "Optional[Callable]" = None,
         **kwargs
     ) -> str:
         component = self._get_component(name)

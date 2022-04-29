@@ -1,18 +1,18 @@
 .PHONY: test
 test:
-	pytest -x oot tests
+	pytest -x tcom tests
 
 .PHONY: lint
 lint:
-	flake8 --config=setup.cfg oot tests
+	flake8 --config=setup.cfg tcom tests
 
 .PHONY: coverage
 coverage:
-	pytest --cov-config=.coveragerc --cov-report html --cov oot oot tests
+	pytest --cov-config=.coveragerc --cov-report html --cov tcom tcom tests
 
 .PHONY: types
 types:
-	mypy oot
+	mypy tcom
 
 .PHONY: install
 install:

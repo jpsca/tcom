@@ -1,3 +1,9 @@
-# Object templates
+# Template Components
 
-Replace your HTML templates with Python server-Side components
+A library for creating reusable, testable & encapsulated component templates, to replace HTML spaguetti.
+
+## Installation
+
+```bash
+pip install tcom
+```
