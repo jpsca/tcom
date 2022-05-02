@@ -11,10 +11,10 @@ class ComponentsMiddleware(WhiteNoise):
     """WSGI middleware for serving components assets"""
 
     def __init__(
-        self, application, *, allowed_ext: "Optional[Iterable[str]]" = None, **kwargs
+        self, application, *, allowed_ext: "Optional[Iterable[str]]" = None, **kw
     ) -> None:
         self.allowed_ext = tuple(allowed_ext) if allowed_ext else None
-        super().__init__(application, **kwargs)
+        super().__init__(application, **kw)
 
     def find_file(self, url: str) -> "Optional[StaticFile]":
         if not self.allowed_ext or url.endswith(self.allowed_ext):

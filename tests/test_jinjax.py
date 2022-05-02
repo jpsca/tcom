@@ -5,12 +5,12 @@ from tcom.jinjax import JinjaX
 
 
 @pytest.fixture
-def pre() -> JinjaX:
+def pre():
     env = Environment()
     return JinjaX(env)
 
 
-def test_nested(pre: JinjaX):
+def test_nested(pre):
     source = """
 <div class="whatever">
     <Card label="Hello">
@@ -40,21 +40,21 @@ def test_nested(pre: JinjaX):
     )
 
 
-def test_expr_prop(pre: JinjaX):
+def test_expr_prop(pre):
     source = "<MyComponent foo={{1 + 2 + 3 + 4}} />"
     result = pre.preprocess(source)
     print(result)
     assert result == '{{ __render("MyComponent", foo=1 + 2 + 3 + 4) }}'
 
 
-def test_multiple_args(pre: JinjaX):
+def test_multiple_args(pre):
     source = "<MyComponent a={{ a }} b={{ b }} c={{c}} />"
     result = pre.preprocess(source)
     print(result)
     assert result == '{{ __render("MyComponent", a=a, b=b, c=c) }}'
 
 
-def test_line_jump_in_attr_value(pre: JinjaX):
+def test_line_jump_in_attr_value(pre):
     source = """
         <Tab
           classes="a
