@@ -6,6 +6,7 @@ from uuid import uuid4
 import jinja2
 from markupsafe import Markup
 
+import tcom
 from .component import Component
 from .exceptions import ComponentNotFound
 from .jinjax import DEBUG_ATTR_NAME, JinjaX, RENDER_CMD
@@ -21,9 +22,6 @@ ALLOWED_EXTENSIONS = (".css", ".js")
 COMPONENT_PATTERN = "*.jinja"
 DEFAULT_PREFIX = "."
 ASSETS_PLACEHOLDER_KEY = "components_assets"
-SELF_PREFIX = "tcom"
-SELF_PATH = Path(__file__).parent / "js"
-SELF_JS_URL = f"{SELF_PREFIX}/tcom.js"
 HTML_ATTRS_KEY = "attrs"
 CONTENT_KEY = "content"
 
@@ -75,7 +73,7 @@ class Catalog:
         extensions = extensions or []
 
         self._build_jinja_env(globals, filters, tests, extensions)
-        self.add_folder(SELF_PATH, prefix=SELF_PREFIX)
+        self.add_module(tcom)
 
     def add_folder(
         self,
@@ -105,6 +103,16 @@ class Catalog:
                 content=content,
                 prefix=prefix,
             )
+
+    def add_module(
+        self,
+        module: "Any",
+        *,
+        prefix: "Optional[str]" = None,
+    ) -> None:
+        if prefix is None:
+            prefix = module.prefix or DEFAULT_PREFIX
+        self.add_folder(module.components_path, prefix=prefix)
 
     def render(
         self,
