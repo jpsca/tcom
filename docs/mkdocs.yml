@@ -1,15 +1,13 @@
-site_name: Object templates
+site_name: Template Components
 site_description: The power of components without the complexity.
-site_url: https://tcom.scaletti.dev
+site_url: https://tcom.scaletti.dev/docs/
 site_author: Juan-Pablo Scaletti
-repo_url: https://github.com/jpsca/tcom
+repo_url: https://github.com/jpsca/tcom/
 repo_name: jpsca/tcom
 copyright: Copyright &copy; 2022 Juan-Pablo Scaletti
 
 nav:
-  - Home: index.md
-  - Documentation:
-    - docs/index.md
+  - index.md
 
 theme:
   name: material
@@ -18,7 +16,6 @@ theme:
   font:
     text: Convergence
     code: Roboto Mono
-  custom_dir: overrides
   language: en
   features:
     - navigation.expand

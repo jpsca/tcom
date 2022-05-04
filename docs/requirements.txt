@@ -2,4 +2,3 @@ mkautodoc
 mkdocs ~=1.2
 mkdocs-material ~=7.2
 pygments-github-lexers
-pytailwindcss
