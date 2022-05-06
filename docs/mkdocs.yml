@@ -4,7 +4,7 @@ site_url: https://tcom.scaletti.dev/docs/
 site_author: Juan-Pablo Scaletti
 repo_url: https://github.com/jpsca/tcom/
 repo_name: jpsca/tcom
-copyright: Copyright &copy; 2022 Juan-Pablo Scaletti
+copyright: Copyright © 2022 Juan-Pablo Scaletti
 
 nav:
   - index.md

@@ -6,7 +6,6 @@ from uuid import uuid4
 import jinja2
 from markupsafe import Markup
 
-import tcom
 from .component import Component
 from .exceptions import ComponentNotFound
 from .jinjax import DEBUG_ATTR_NAME, JinjaX, RENDER_CMD
@@ -73,7 +72,6 @@ class Catalog:
         extensions = extensions or []
 
         self._build_jinja_env(globals, filters, tests, extensions)
-        self.add_module(tcom)
 
     def add_folder(
         self,
