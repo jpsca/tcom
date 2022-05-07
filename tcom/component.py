@@ -1,6 +1,8 @@
+import re
 from typing import TYPE_CHECKING
 
 import tomlkit
+import uuid
 
 from .exceptions import InvalidFrontMatter, MissingRequiredAttr
 
@@ -13,7 +15,8 @@ FRONT_MATTER_START = "{#"
 FRONT_MATTER_END = "#}"
 CSS_KEY = "css"
 JS_KEY = "js"
-REQUIRED_VALUE = "..."
+
+RX_REQUIRED = re.compile(r"=\s*\.\.\.")
 
 
 class Component:
@@ -40,7 +43,9 @@ class Component:
         self.name = name
         self.path = path
         self.relpath = relpath
-        fmdict = self.load_front_matter(content)
+
+        req_placeholder = f"required-{uuid.uuid4().hex}"
+        fmdict = self.load_front_matter(content, req_placeholder)
 
         prefix = prefix.strip(".").strip("/")
         if prefix:
@@ -64,7 +69,7 @@ class Component:
         args = {}
         required = set()
         for name, default in fmdict.items():
-            if default == REQUIRED_VALUE:
+            if default == req_placeholder:
                 required.add(name)
             else:
                 args[name] = default
@@ -72,7 +77,11 @@ class Component:
         self.args = args
         self.required = required
 
-    def load_front_matter(self, content: str) -> "dict[str, Any]":
+    def load_front_matter(
+        self,
+        content: str,
+        req_placeholder: str,
+    ) -> "dict[str, Any]":
         if not content.startswith(FRONT_MATTER_START):
             return {}
         front_matter = content.split(FRONT_MATTER_END, 1)[0]
@@ -81,6 +90,10 @@ class Component:
             .strip("-")
             .replace(" False\n", " false\n")
             .replace(" True\n", " true\n")
+        )
+        front_matter = RX_REQUIRED.sub(
+            f"= '{req_placeholder}'",
+            front_matter
         )
         try:
             return tomlkit.parse(front_matter)

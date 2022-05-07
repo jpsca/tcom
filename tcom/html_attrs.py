@@ -32,32 +32,15 @@ class HTMLAttrs:
         self.__attributes = attributes
         self.__properties = properties
 
-    def get(self, name: str, default: "Any" = None) -> "Any":
-        name = name.replace("_", "-")
-        if name in self.__attributes:
-            return self.__attributes[name]
-        if name in self.__properties:
-            return True
-        return default
-
-    def add_class(self, *names: str) -> None:
-        for name in names:
-            self.__classes.add(name)
-
-    add_classes = add_class
-
-    def remove_class(self, *names: str) -> None:
-        for name in names:
-            self.__classes.remove(name)
-
-    remove_classes = remove_class
-
     def add(self, name: str, value: "Any" = True) -> None:
         """
-        Add an attribute or set a property.
+        Adds an attribute or sets a property.
         Pass a name and a value to set an attribute.
         Omit the value or use `True` as value to set a property instead
         """
+        if name == "class":
+            return self.add_class(value)
+
         name = name.replace("_", "-")
         if value is True:
             self.__properties.add(name)
@@ -65,13 +48,36 @@ class HTMLAttrs:
             self.__attributes[name] = value
 
     def remove(self, name: str) -> None:
+        """
+        Removes an attribute or property."""
         name = name.replace("_", "-")
         if name in self.__attributes:
             del self.__attributes[name]
         if name in self.__properties:
             self.__properties.remove(name)
 
+    def add_class(self, *names: str) -> None:
+        """
+        """
+        for name in names:
+            self.__classes.add(name)
+
+    add_classes = add_class
+
+    def remove_class(self, *names: str) -> None:
+        """
+        """
+        for name in names:
+            self.__classes.remove(name)
+
+    remove_classes = remove_class
+
     def setdefault(self, name: str, value: "Any" = True) -> None:
+        """
+        Adds an attribute or sets a property, but only if it's not
+        already present. Pass a name and a value to set an attribute.
+        Omit the value or use `True` as value to set a
+        property instead."""
         name = name.replace("_", "-")
         if value is True:
             self.__properties.add(name)
@@ -79,14 +85,29 @@ class HTMLAttrs:
             self.__attributes[name] = value
 
     def update(self, dd: "Optional[dict]" = None, **kw) -> None:
+        """
+        Updates several attributes/properties with the values
+        of `dd` and `kw` dicts.
+        """
         dd = dd or {}
         dd.update(kw)
         for name, value in dd.items():
             self.add(name, value)
 
+    def get(self, name: str, default: "Any" = None) -> "Any":
+        """
+        Returns the value of the attribute or property,
+        or the default value if it doesn't exists."""
+        name = name.replace("_", "-")
+        if name in self.__attributes:
+            return self.__attributes[name]
+        if name in self.__properties:
+            return True
+        return default
+
     def render(self) -> str:
         """
-        Render the attributes and properties as a string
+        Renders the attributes and properties as a string.
         To provide consistent output, the attributes and properties
         are sorted by name and rendered like this:
         `<sorted attributes> + <sorted properties>`.

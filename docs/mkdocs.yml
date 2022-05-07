@@ -8,13 +8,18 @@ copyright: Copyright © 2022 Juan-Pablo Scaletti
 
 nav:
   - index.md
+  - Guide:
+    - guide/index.md
+    - guide/attributes.md
+    - guide/extra.md
+    - guide/jinja.md
+    - guide/css_and_js.md
 
 theme:
   name: material
   logo: static/img/logo.svg
   favicon: static/img/favicon.svg
   font:
-    text: Convergence
     code: Roboto Mono
   language: en
   features:
