@@ -19,9 +19,14 @@ VAR_START = "VAR_START"
 VAR_END = "VAR_END"
 DEBUG_ATTR_NAME = "__source"
 
+re_tag_name = r"[A-Z][0-9A-Za-z-]*"
+re_raw_attrs = r"[^\>]*"
+re_open_tag = fr"<\s*{re_tag_name}{re_raw_attrs}>"
+rx_open_tag = re.compile(re_open_tag, re.VERBOSE)
 
-rx_open_tag = re.compile(r"<\s*[A-Z][0-9A-Za-z-]*[^\>]*>")
-rx_close_tag = re.compile(r"</\s*[A-Z][0-9A-Za-z-]*\s*>")
+re_close_tag = fr"</\s*{re_tag_name}\s*>"
+rx_close_tag = re.compile(re_close_tag, re.VERBOSE)
+
 re_attr = rf"""
 (?P<name>[a-zA-Z_][0-9a-zA-Z_]*)
 (?:

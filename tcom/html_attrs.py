@@ -37,7 +37,7 @@ class HTMLAttrs:
         return " ".join(sorted(list(self.__classes)))
 
     @property
-    def dict(self):
+    def as_dict(self):
         attributes = self.__attributes.copy()
         classes = self.classes
         if classes:
@@ -108,6 +108,8 @@ class HTMLAttrs:
         """
         dd = dd or {}
         dd.update(kw)
+        name: "Any"
+        value: "Any"
         for name, value in dd.items():
             self.add(name, value)
 

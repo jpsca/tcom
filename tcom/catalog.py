@@ -215,7 +215,7 @@ class Catalog:
 
         attrs = kw.pop("__attrs", None)
         if attrs and isinstance(attrs, HTMLAttrs):
-            attrs = attrs.dict
+            attrs = attrs.as_dict
         if attrs and isinstance(attrs, dict):
             attrs.update(kw)
             kw = attrs
