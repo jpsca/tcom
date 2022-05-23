@@ -20,15 +20,13 @@ VAR_END = "VAR_END"
 DEBUG_ATTR_NAME = "__source"
 
 
-rx_open_tag = re.compile(r"<\s*[A-Z][0-9A-Za-z]*[^\>]*>")
-rx_close_tag = re.compile(r"</\s*[A-Z][0-9A-Za-z]*\s*>")
+rx_open_tag = re.compile(r"<\s*[A-Z][0-9A-Za-z-]*[^\>]*>")
+rx_close_tag = re.compile(r"</\s*[A-Z][0-9A-Za-z-]*\s*>")
 re_attr = rf"""
-(?P<name>[a-zA-Z][0-9a-zA-Z_]*)
+(?P<name>[a-zA-Z_][0-9a-zA-Z_]*)
 (?:
     \s*=\s*
-    (?P<value>
-        (?:".*?"|'.*?'|{VAR_START}.*?{VAR_END})
-    )
+    (?P<value>(?:".*?"|'.*?'|{VAR_START}.*?{VAR_END}))
 )?
 """
 
@@ -39,8 +37,10 @@ class JinjaX(Extension):
 
         self.var_start = environment.variable_start_string
         self.var_end = environment.variable_end_string
-        _re_attr = re_attr.replace(VAR_START, re.escape(self.var_start)).replace(
-            VAR_END, re.escape(self.var_end)
+        _re_attr = (
+            re_attr
+            .replace(VAR_START, re.escape(self.var_start))
+            .replace(VAR_END, re.escape(self.var_end))
         )
         self.rx_attr = re.compile(_re_attr, re.VERBOSE)
 

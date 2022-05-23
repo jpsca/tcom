@@ -1,0 +1,34 @@
+<Page
+  title="Dialog example"
+  class="bg-gradient-to-r from-sky-400 to-indigo-500"
+>
+  <Dialog id="dialog-example-1">
+    <h1 class="text-lg font-medium leading-6 text-gray-900">
+      Payment successful
+    <h1>
+    <p class="mt-2">
+      Your payment has been successfully submitted. We've sent
+      you an email with all of the details of your order.
+    </p>
+    <form method="dialog" class="mt-4">
+      <button
+        class="inline-flex justify-center rounded-md border
+        border-transparent bg-blue-100 px-4 py-2 text-sm
+        font-medium text-blue-900 hover:bg-blue-200
+        focus:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        autofocus
+      >Got it, thanks!</button>
+    </form>
+  </Dialog>
+
+  <button
+    type="button"
+    onclick="window['dialog-example-1'].showModal()"
+    class="rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm
+    font-medium text-white hover:bg-opacity-30 focus:outline-none
+    focus-visible:ring-2 focus-visible:ring-white
+    focus-visible:ring-opacity-75"
+  >Open dialog</button>
+  <script>window['dialog-example-1'].showModal();</script>
+</Page>

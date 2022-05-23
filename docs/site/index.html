@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Template Components</title>
+<link rel="shortcut icon" href="static/img/favicon.svg">
+<link rel="stylesheet" type="text/css" href="static/css/common.css">
+<link rel="stylesheet" type="text/css" href="static/css/home.css">
+</head>
+<body>
+<nav>
+  <div class="container">
+    <a href="/docs">Documentation</a>
+    <a href="https://github.com/jpsca/tcom/">
+      <img src="static/img/github.svg" />
+      Code
+    </a>
+  </div>
+</nav>
+
+<header class="header container">
+  <h1>Template Components</h1>
+  <div class="slogan">
+    The power of components in your server-side-rendered
+    Python&nbsp;web&nbsp;app.
+  </div>
+</header>
+
+<section id="intro" class="container">
+  <h2>Reusable, encapsulated, and&nbsp;testable.</h2>
+  Write server-side components as single Jinja template&nbsp;files.<br>
+  Use them as HTML tags without doing any&nbsp;importing.
+  <div class="card">
+    <img class="card-screen" src="static/img/card.png" height="300">
+    <img class="card-code"  src="static/img/card-code.png" height="300">
+  </div>
+</section>
+
+<section id="nopasta" class="container">
+  <h2>Say goodbye to spaghetti&nbsp;templates.</h2>
+  <p>
+    We strive to write elegant and well-designed python code. <strong>Template code, however, often fails even basic code standards</strong>: long methods, deep conditional nesting, and mystery
+    variables&nbsp;everywhere.
+  </p>
+  <p>
+    <strong>But when it's all as components, you'll see</strong> where everything is, understand what are the possible states of every piece of UI, and know exactly what data need to&nbsp;have.
+  </p>
+  <p>
+    You can replace all your templates with&nbsp;components.<br>
+    Partials or macros? Natural&nbsp;candidates.<br>
+    Using <code>{% extend %}</code> for a base layout? Create a <strong><code>Page</code></strong> component&nbsp;instead!
+  </p>
+</section>
+
+<section id="component-anatomy" class="container">
+  <h2>Quick to write, amazing to&nbsp;use.</h2>
+  <p>This is how a component looks&nbsp;like:</p>
+  <div class="screen-demo">
+    <picture class="code">
+      <source srcset="static/img/component-anatomy.png"
+              media="(max-width: 940px)">
+      <img src="static/img/component-anatomy-code.png">
+    </picture>
+    <div class="captions"></div>
+  </div>
+</section>
+
+<section id="engage" class="container">
+  <h3>Ready to get going? Engage:</h3>
+  <div class="cta">
+    <a class="button button--primary" href="/docs/">See the Documentation</a>
+    <p class="x-small">Millions of people clicked on some button in the last week alone!</p>
+  </div>
+</section>
+
+<footer id="footer" class="container">
+  <p class="copy">
+    Copyright ©2022 Juan-Pablo Scaletti. All rights reserved.<br>
+    Live long and prosper!</em>
+  </p>
+</footer>
+</body>
+</html>

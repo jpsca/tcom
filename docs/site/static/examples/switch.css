@@ -1,0 +1,14 @@
+.switch {
+  display: inline-flex;
+  background-color: rgb(15, 118, 110)
+  border: none;
+  border-radius: 100%;
+  cursor: pointer;
+  width: 74px;
+  height: 38px;
+  outline: none;
+  position: relative;
+  transition-property: color, background-color;
+  transition-duration: .2s;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+}

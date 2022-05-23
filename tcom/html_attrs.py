@@ -32,6 +32,22 @@ class HTMLAttrs:
         self.__attributes = attributes
         self.__properties = properties
 
+    @property
+    def classes(self):
+        return " ".join(sorted(list(self.__classes)))
+
+    @property
+    def dict(self):
+        attributes = self.__attributes.copy()
+        classes = self.classes
+        if classes:
+            attributes[CLASS_KEY] = classes
+
+        out = dict(sorted(attributes.items()))
+        for name in sorted(list(self.__properties)):
+            out[name] = True
+        return out
+
     def add(self, name: str, value: "Any" = True) -> None:
         """
         Adds an attribute or sets a property.
@@ -60,7 +76,8 @@ class HTMLAttrs:
         """
         """
         for name in names:
-            self.__classes.add(name)
+            for name_ in split(name):
+                self.__classes.add(name_)
 
     add_classes = add_class
 
@@ -114,7 +131,7 @@ class HTMLAttrs:
         """
         attributes = self.__attributes.copy()
 
-        classes = " ".join(sorted(list(self.__classes)))
+        classes = self.classes
         if classes:
             attributes[CLASS_KEY] = classes
 

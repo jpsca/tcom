@@ -1,11 +1,5 @@
 # Getting started
 
-## Conventions
-
-- A component is a `.jinja` file inside a folder, commonly `yourapp/components`. You can also use subfolders inside to organize your components.
-- The component name is the name of the file without extensions, and **must** begin with an uppercase letter.
-- All components are auto-imported so the name of a component must be unique.
-
 ## Installation
 
 Install the package using `pip`.
@@ -38,7 +32,13 @@ def myview():
 
 ```
 
-The components are `.jinja` files whose first letter must be in uppercase. They can begin with a Jinja comment where it declare what attributes it takes. This metadata is in [TOML](https://toml.io/) format.
+## Components
+
+The components are `.jinja`. The name of the file before the first dot is the component name and it **must** begin with an uppercase letter.
+
+All components are auto-imported across all sources so the name of a component must be unique.
+
+A component can begin with a Jinja comment where it declare what attributes it takes. This metadata is in [TOML](https://toml.io/) format.
 
 ```html+jinja
 {#
@@ -47,4 +47,40 @@ message = ...
 #}
 <h1>{{ title }}</h1>
 <div>{{ message }}. This is my component</div>
+```
+
+## Jinja
+
+Template Components use Jinja internally to render the templates. You can add your own global variables and functions, filters, tests, and Jinja extensions when creating the catalog:
+
+```python
+from tcom import Catalog
+
+catalog = Catalog(
+    globals={ ... },
+    filters={ ... },
+    tests={ ... },
+    extensions=[],
+)
+```
+
+or afterwards, directly on the created Jinja Environment at `catalog.jinja_env`.
+
+If you use **Flask**, for example, you should pass the values of its own Jinja environment:
+
+```python
+app = Flask(__name__)
+
+catalog = tcom.Catalog(
+    globals=app.jinja_env.globals,
+    filters=app.jinja_env.filters,
+    tests=app.jinja_env.tests,
+    extensions=app.jinja_env.extensions,
+)
+```
+
+The ["do" extension](https://jinja.palletsprojects.com/en/3.0.x/extensions/#expression-statement) is enabled by default, so you can write things like:
+
+```html+jinja
+{% do attrs.add_class("btn") %}
 ```

@@ -1,6 +1,9 @@
-# TemplateComponents
+# Template Components
 
-A library for creating reusable, testable & encapsulated template components, to replace the current HTML spaguetti of partials and uncertain arguments.
+Write server-side components as single Jinja template files,
+and use them as HTML tags without doing any importing.
+
+Reusable, testable & encapsulated.
 
 ## Installation
 

@@ -1,0 +1,6 @@
+{# css = ['switch.css'] #}
+{% do attrs.add("type", "checkbox") -%}
+
+<label class="switch" role="switch">
+  <input {{ attrs.render() }} />
+</label>

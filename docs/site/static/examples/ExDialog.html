@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" class="w-full h-full m-0 p-0">
+<head>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Dialog example</title>
+  <link rel="shortcut icon" href="/static/img/favicon.svg">
+  <link href="tailwind.css" rel="stylesheet">
+	<link rel="stylesheet" href="dialog.css">
+</head>
+<body class="bg-gradient-to-r from-green-400 h-full m-0 p-0 to-cyan-500 w-full">
+  <main class="example flex flex-col items-center justify-center w-full h-full">
+    <dialog
+  id=dialog-example-1
+  class="w-full max-w-md overflow-hidden rounded-2xl
+  bg-white p-6 text-left align-middle shadow-xl
+  block transition-opacity opacity-0 open:opacity-100"
+>
+  <h1 class="text-lg font-medium leading-6 text-gray-900">
+      Payment successful
+    <h1>
+    <p class="mt-2">
+      Your payment has been successfully submitted. We've sent
+      you an email with all of the details of your order.
+    </p>
+    <form method="dialog" class="mt-4">
+      <button
+        class="inline-flex justify-center rounded-md border
+        border-transparent bg-blue-100 px-4 py-2 text-sm
+        font-medium text-blue-900 hover:bg-blue-200
+        focus:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        autofocus
+      >Got it, thanks!</button>
+    </form>
+</dialog>
+
+  <button
+    type="button"
+    onclick="window['dialog-example-1'].showModal()"
+    class="rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm
+    font-medium text-white hover:bg-opacity-30 focus:outline-none
+    focus-visible:ring-2 focus-visible:ring-white
+    focus-visible:ring-opacity-75"
+  >Open dialog</button>
+  <script>window['dialog-example-1'].showModal();</script>
+  </main>
+</body>
+</html>

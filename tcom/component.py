@@ -16,37 +16,11 @@ FRONT_MATTER_END = "#}"
 CSS_KEY = "css"
 JS_KEY = "js"
 
-RX_REQUIRED = re.compile(r"=\s*\.\.\.")
+RX_REQUIRED = re.compile(r"=\s*(?:\.\.\.|…)(\s+\n?)")
 
 
 class Component:
     __slots__ = (
-        "args",
-        "css",
-        "js",
-        "name",
-        "path",
-        "prefix",
-        "relpath",
-        "required",
-    )
-
-    def __init__(
-        self,
-        *,
-        name: str,
-        path: "Path",
-        relpath: str,
-        content: str = "",
-        prefix: str = "",
-    ) -> None:
-        self.name = name
-        self.path = path
-        self.relpath = relpath
-
-        req_placeholder = f"required-{uuid.uuid4().hex}"
-        fmdict = self.load_front_matter(content, req_placeholder)
-
         prefix = prefix.strip(".").strip("/")
         if prefix:
             prefix += "/"
@@ -92,13 +66,13 @@ class Component:
             .replace(" True\n", " true\n")
         )
         front_matter = RX_REQUIRED.sub(
-            f"= '{req_placeholder}'",
+            f"= '{req_placeholder}'\\1",
             front_matter
         )
         try:
             return tomlkit.parse(front_matter)
         except tomlkit.exceptions.TOMLKitError as err:
-            raise InvalidFrontMatter(self.name, *err.args)
+            raise InvalidFrontMatter(self.path, *err.args)
 
     def filter_args(
         self, kw: "dict[str, Any]"
@@ -112,7 +86,6 @@ class Component:
 
         for name, default_value in self.args.items():
             props[name] = kw.pop(name, default_value)
-
         extra = kw.copy()
         return props, extra
 

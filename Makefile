@@ -19,3 +19,15 @@ install:
 	pip install -e .[test,dev]
 	pip install -r docs/requirements.txt
 	# pre-commit install
+
+.PHONY: tailwind
+tailwind:
+	cd docs && npx tailwindcss -w -i ./examples/src.css -o ./docs/static/examples/tailwind.css
+
+.PHONY: docs
+docs:
+	cd docs && mkdocs serve
+
+.PHONY: examples
+examples:
+	cd docs && python examples.py

@@ -1,2 +1,3 @@
-# CSS and JS
+# Managing the CSS and JS
 
+TBW

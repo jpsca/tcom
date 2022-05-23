@@ -213,6 +213,13 @@ class Catalog:
             if js not in self.collected_js:
                 self.collected_js.append(js)
 
+        attrs = kw.pop("__attrs", None)
+        if attrs and isinstance(attrs, HTMLAttrs):
+            attrs = attrs.dict
+        if attrs and isinstance(attrs, dict):
+            attrs.update(kw)
+            kw = attrs
+
         prefix = kw.pop("__prefix", component.prefix) or DEFAULT_PREFIX
         content = kw.pop("__content", "")
         props, extra = component.filter_args(kw)

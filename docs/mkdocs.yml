@@ -1,26 +1,27 @@
 site_name: Template Components
-site_description: The power of components without the complexity.
-site_url: https://tcom.scaletti.dev/docs/
+site_description: The power of components without the complexity of a SPA.
+site_url: https://tcom.scaletti.dev/
 site_author: Juan-Pablo Scaletti
 repo_url: https://github.com/jpsca/tcom/
 repo_name: jpsca/tcom
 copyright: Copyright © 2022 Juan-Pablo Scaletti
 
 nav:
-  - index.md
+  - Home: index.html
   - Guide:
     - guide/index.md
     - guide/attributes.md
     - guide/extra.md
-    - guide/jinja.md
     - guide/css_and_js.md
+    - guide/third_party.md
 
 theme:
   name: material
   logo: static/img/logo.svg
   favicon: static/img/favicon.svg
   font:
-    code: Roboto Mono
+    text: Helvetica Neue
+    code: Monaco
   language: en
   features:
     - navigation.expand
@@ -36,15 +37,15 @@ theme:
   palette:
   - media: "(prefers-color-scheme: light)"
     scheme: default
-    primary: red
-    accent: pink
+    primary: white
+    accent: green
     toggle:
       icon: octicons/sun-16
       name: Switch to dark mode
   - media: "(prefers-color-scheme: dark)"
     scheme: slate
-    primary: red
-    accent: pink
+    primary: black
+    accent: green
     toggle:
       icon: octicons/moon-16
       name: Switch to light mode

@@ -1,14 +1,6 @@
-.md-header {
-	position: initial;
-	background: var(--md-primary-fg-color);
-	background: linear-gradient(
-		125deg,
-		var(--md-primary-fg-color) 0%,
-		var(--md-accent-fg-color) 99%
-	);
-}
 .md-typeset code {
 	font-size: 0.95em;
+	font-weight: bold;
 }
 .md-nav__title .md-nav__button.md-logo img,
 .md-nav__title .md-nav__button.md-logo svg,
@@ -31,4 +23,7 @@
 .autodoc-members {
 	padding-left: 20px;
 	margin-bottom: 15px;
+}
+.md-typeset .admonition, .md-typeset details {
+  font-size: .8rem
 }
