@@ -4,8 +4,7 @@ If you pass attributes not declared in a component, those are not discarded, but
 
 For example, this component:
 
-`components/Card.html.jinja`
-```html+jinja
+```html+jinja title="components/Card.html.jinja"
 {# title = ... #}
 <div {{ attrs.render() }}>
   <h1>{{ title }}</h1>
@@ -65,8 +64,7 @@ Removes an attribute or property.
 {%- endif %}
 ```
 
-### `.add_class(name)`
-### `.add_classes(name1, name2, ...)`
+### `.add_class(name)` / `.add_classes(name1, name2, ...)`
 
 Adds one or more classes to the list of classes
 (both are actually the same method).
@@ -77,8 +75,7 @@ Adds one or more classes to the list of classes
 {% do attrs.add_classes("active animated bright") %}
 ```
 
-### `.remove_class(name)`
-### `.remove_classes(name1, name2, ...)`
+### `.remove_class(name)` / `.remove_classes(name1, name2, ...)`
 
 Removes one or more classes from the list of classes
 (both are actually the same method).

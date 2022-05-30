@@ -178,14 +178,14 @@ section {
   border-color: var(--tcom-color);
 }
 .x-small {
-  font-size: 75%;
+  font-size: small;
 }
 
 #intro .card {
   display: flex;
   padding-top: 30px;
-  overflow-y: hidden;
-  overflow-x: auto;
+  align-items: center;
+  justify-content: center;
 }
 #intro .card img+img {
   margin-left: 20px;
@@ -193,6 +193,15 @@ section {
 #intro .card-code {
   border: 1px solid #ddd;
   border-radius: 6px;
+}
+@media (max-width: 894px) {
+  #intro .card {
+    flex-direction: column;
+  }
+  #intro .card img+img {
+    margin-left: 0;
+    margin-top: 20px;
+  }
 }
 
 #component-anatomy {

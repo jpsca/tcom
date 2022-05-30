@@ -13,7 +13,6 @@ nav:
     - guide/attributes.md
     - guide/extra.md
     - guide/css_and_js.md
-    - guide/third_party.md
 
 theme:
   name: material
@@ -26,7 +25,7 @@ theme:
   features:
     - navigation.expand
     # - navigation.indexes
-    - navigation.instant
+    # - navigation.instant
     # - navigation.sections
     - navigation.top
     - navigation.tracking
