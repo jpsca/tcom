@@ -1,14 +1,15 @@
 # Template Components
 
-Write server-side components as single Jinja template files,
-and use them as HTML tags without doing any importing.
+The power of components in your server-side-rendered Python web app.
 
-Reusable, testable & encapsulated.
+Write server-side components as single Jinja template files.
+Use them as HTML tags without doing any importing.
 
-## Installation
+<img class="card-code"  src="./docs/docs/static/img/card-code.png" height="300">
 
-```bash
-pip install tcom
-```
+For more information, visit [Template Component documentation](https://tcom.scaletti.dev/).
 
-TBD
+## About
+
+This project is developed by *Juan-Pablo Scaletti*. I love building products and sharing knowledge.
+

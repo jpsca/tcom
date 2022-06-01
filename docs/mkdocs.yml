@@ -18,9 +18,6 @@ theme:
   name: material
   logo: static/img/logo.svg
   favicon: static/img/favicon.svg
-  font:
-    text: Helvetica Neue
-    code: Monaco
   language: en
   features:
     - navigation.expand
