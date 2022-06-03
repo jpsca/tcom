@@ -16,6 +16,7 @@ nav:
 
 theme:
   name: material
+  custom_dir: overrides
   logo: static/img/logo.svg
   favicon: static/img/favicon.svg
   language: en
