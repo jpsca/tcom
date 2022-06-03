@@ -86,7 +86,7 @@ The variable will be rendered as:
 
 The tags above will not work at all if your application can't return the content of those files, and right now it can't.
 
-For that reason, TemplateComponents include a WSGI middleware that will process those URLs if you add it to your application.
+For that reason, Template Components include a WSGI middleware that will process those URLs if you add it to your application.
 
 ```py
 from flask import Flask

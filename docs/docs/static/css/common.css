@@ -158,21 +158,35 @@
 
 #home-component-anatomy {
 	width: auto !important;
-	padding-top: 60px !important;
+  margin-top: 60px !important;
+  margin-bottom: 60px !important;
+	padding-top: 20px !important;
 	margin-left: -16px !important;
 	margin-right: -16px !important;
   max-width: none !important;
-  background:
-    url(../img/ripped-paper-bottom.svg)
-    center bottom -0.1rem/105%
-    no-repeat,
-    #fbf7f0 url(../img/ripped-paper-top.svg)
-    center top -0.1rem/105%
-    no-repeat;
-		color: var(--tcom-color);
+  position: relative;
+  background-color: #fbf7f0;
+}
+#home-component-anatomy .ripped-top,
+#home-component-anatomy .ripped-bottom {
+  fill: #fbf7f0;
+  width: 100%;
+  position: absolute;
+  left: 0;
+}
+#home-component-anatomy .ripped-top {
+  bottom: 100%;
+}
+#home-component-anatomy .ripped-bottom {
+  top: 100%;
 }
 [data-md-color-scheme="slate"] #home-component-anatomy {
-	background: #d5cbb9;
+  background-color: #bfab87;
+  color: var(--tcom-color);
+}
+[data-md-color-scheme="slate"] #home-component-anatomy .ripped-top,
+[data-md-color-scheme="slate"] #home-component-anatomy .ripped-bottom {
+	fill: #bfab87;
 }
 #home-component-anatomy .screen-demo {
   max-width: 1100px;
@@ -183,23 +197,8 @@
   justify-content: center;
   position: relative;
 }
-#home-component-anatomy .code img {
+#home-component-anatomy .code picture {
   width: 100%;
-}
-#home-component-anatomy .captions {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  display: block;
-  background-color: transparent;
-  background-image: url(../img/component-anatomy-captions.png);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  pointer-events: none;
 }
 @media (max-width: 930px) {
   #home-component-anatomy img {
@@ -210,15 +209,13 @@
     width: 98%;
     max-width: 470px;
   }
-  #home-component-anatomy .captions {
-    display: none;
-  }
 }
 
 #home-engage {
   padding: 60px 0;
 }
-#home-engage .button {
+
+#home .cta .button {
   margin: 10px 0;
   transition: all 0.2s ease;
   transition-property: color, background-color, border-color;
@@ -235,22 +232,22 @@
   border: 1px solid var(--tcom-color);
   border-radius: 4px;
 }
-#home-engage .button:hover {
+#home .cta .button:hover {
   color: var(--tcom-hcolor);
   background-color: var(--tcom-color);
   cursor: pointer;
   text-decoration: none;
 }
-#home-engage .button--primary {
+#home .cta .button--primary {
   color: var(--tcom-color);
   background-color: var(--tcom-hcolor);
   border-color: var(--tcom-hcolor);
 }
-#home-engage .button--primary:hover {
+#home .cta .button--primary:hover {
   color: var(--tcom-hcolor);
   border-color: var(--tcom-color);
 }
-#home-engage .x-small {
+#home .cta .x-small {
   font-size: small;
 }
 
