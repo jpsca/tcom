@@ -287,10 +287,18 @@
 
 .md-typeset  h1 {
 	color: #101010;
+  margin: 0 0 1em;
 }
 [data-md-color-scheme="slate"] .md-typeset h1 {
 	color: #fff;
 }
 [data-md-color-scheme="slate"] {
-	--md-default-bg-color: #1d1d1d;
+  background-color: #000;
+  --md-default-bg-color: #1d1d1d;
+}
+[data-md-color-scheme="slate"] .md-container {
+  background-color: #1d1d1d;
+}
+.md-footer-meta {
+  background-color: #000;
 }
