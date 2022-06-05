@@ -1,6 +1,6 @@
 site_name: Template Components
 site_description: The power of components without the complexity of a SPA.
-site_url: https://tcom.scaletti.dev/
+site_url: https://tcom.scaletti.dev/es
 site_author: Juan-Pablo Scaletti
 repo_url: https://github.com/jpsca/tcom/
 repo_name: jpsca/tcom
@@ -8,18 +8,18 @@ copyright: Copyright © 2022 Juan-Pablo Scaletti
 
 nav:
   - Home: index.md
-  - Guide:
-    - guide/index.md
-    - guide/attributes.md
-    - guide/extra.md
-    - guide/css_and_js.md
+  # - Guide:
+  #   - guide/index.md
+  #   - guide/attributes.md
+  #   - guide/extra.md
+  #   - guide/css_and_js.md
 
 theme:
   name: material
   custom_dir: overrides
-  logo: static/img/logo.png
-  favicon: static/img/favicon.svg
-  language: en
+  logo: assets/images/logo.png
+  favicon: assets/images/favicon.svg
+  language: es
   features:
     - navigation.expand
     # - navigation.indexes
@@ -47,12 +47,21 @@ theme:
       icon: octicons/moon-16
       name: Switch to light mode
 
+extra:
+  alternate:
+  - name: English
+    link: /
+    lang: en
+  - name: Español
+    link: /es/
+    lang: es
+
 extra_css:
-  - static/css/highlight.css
-  # - static/css/termynal.css
-  - static/css/common.css
+  - assets/stylesheets/highlight.css
+  # - assets/stylesheets/termynal.css
+  - assets/stylesheets/common.css
 extra_javascript:
-  # - static/js/termynal.js
+  # - assets/javascripts/termynal.js
 edit_uri: ""
 plugins:
   - search
