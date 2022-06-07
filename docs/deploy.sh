@@ -23,7 +23,6 @@ rm site/assets/javascripts/lunr/min/lunr.th.min.js
 rm site/assets/javascripts/lunr/min/lunr.tr.min.js
 rm site/assets/javascripts/lunr/min/lunr.vi.min.js
 rm site/assets/javascripts/lunr/min/lunr.zh.min.js
-rsync --recursive --delete --progress site/ code:/var/www/tcom/site
 
 cd ../es
 mkdocs build
@@ -48,4 +47,10 @@ rm site/assets/javascripts/lunr/min/lunr.th.min.js
 rm site/assets/javascripts/lunr/min/lunr.tr.min.js
 rm site/assets/javascripts/lunr/min/lunr.vi.min.js
 rm site/assets/javascripts/lunr/min/lunr.zh.min.js
-rsync --recursive --delete --progress site/ code:/var/www/tcom/site/es/
+cd ..
+
+rm -rf en/site/es
+cp -R es/site/ en/site/es/
+find ./en/site -type f -name '*.DS_Store' -ls -delete
+rsync --recursive --delete --progress en/site/ code:/var/www/tcom/site
+

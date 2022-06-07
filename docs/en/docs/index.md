@@ -13,13 +13,6 @@ title: Template Components
     </div>
   </header>
 
-  <section>
-    <div class="cta">
-      <div class="x-small">Just what you were looking for?</div>
-      <a class="button button--primary" href="/guide/">See the documentation</a>
-    </div>
-  </section>
-
   <section id="home-intro">
     <h2>Reusable, encapsulated, and testable.</h2>
     <p>
@@ -27,39 +20,66 @@ title: Template Components
       Use them as HTML tags without doing any&nbsp;importing.
     </p>
     <div class="card">
-      <img class="card-screen" src="assets/images/card.png">
-      <img class="card-code"  src="assets/images/card-code.png">
+      <picture class="card-screen">
+        <source srcset="assets/images/card.webp" type="image/webp">
+        <source srcset="assets/images/card.png" type="image/png">
+        <img src="assets/images/card.png" alt="Card rendered" width="351" height="326">
+      </picture>
+      <picture class="card-code">
+        <source srcset="assets/images/card-code.webp" type="image/webp">
+        <source srcset="assets/images/card-code.png" type="image/png">
+        <img src="assets/images/card-code.png" alt="Card code" width="534" height="326">
+      </picture>
+    </div>
+  </section>
+
+  <section>
+    <div class="cta">
+      <div class="x-small">Just what you were looking for?</div>
+      <a class="button button--primary" href="/guide/">See the documentation</a>
     </div>
   </section>
 
   <section id="home-nopasta">
     <h2>Say goodbye to spaghetti templates.</h2>
-    <p>
-      We want our Python code to be easy to understand and test.
-      <strong>Template code, however, often fails even basic code
-      standards</strong>: long methods, deep conditional nesting,
-      and mystery variables&nbsp;everywhere.
-    </p>
-    <p>
-      <strong>But when it's built with components, you see</strong>
-      where everything is, understand what are the possible states
-      of every piece of UI, and know exactly what data need to&nbsp;have.
-    </p>
-    <p>
-      You can <strong>replace all your templates with&nbsp;components</strong>.<br>
-      You use a <code>{% extend %}</code> for a base layout?
-      Create a <strong><code>Page</code></strong> component&nbsp;instead!
-    </p>
+    <div class="text">
+      <p>
+        We want our Python code to be easy to understand and&nbsp;test.
+      </p>
+      <p>
+        <strong>Template code, however, often fails even basic code
+        standards</strong>: long methods, deep conditional nesting,
+        and mystery variables&nbsp;everywhere.
+      </p>
+      <p>
+        <strong>But when it's built with components, you see</strong>
+        where everything is, understand what are the possible states
+        of every piece of UI, and know exactly what data need to&nbsp;have.
+      </p>
+      <p>
+        You can <strong>replace all your templates with&nbsp;components</strong>.<br>
+        Using <code>{% extend %}</code> with a base layout?
+        Create a <strong><code>Page</code></strong> component&nbsp;instead!
+      </p>
+    </div>
   </section>
 
-  <section id="home-component-anatomy">
-    <h2>Quick to write, amazing to use.</h2>
+  <section id="home-anatomy">
+    <h2>Quick to write, amazing to&nbsp;use.</h2>
     <p>This is how a component looks&nbsp;like:</p>
     <div class="screen-demo">
       <picture class="code">
+        <source srcset="assets/images/anatomy-code.webp"
+                type="image/webp"
+                media="(max-width: 939px)">
+        <source srcset="assets/images/anatomy-en.webp"
+                type="image/webp"
+                media="(min-width: 940px)">
         <source srcset="assets/images/anatomy-code.png"
+                type="image/png"
                 media="(max-width: 939px)">
         <source srcset="assets/images/anatomy-en.png"
+                type="image/png"
                 media="(min-width: 940px)">
         <img src="assets/images/anatomy-en.png" />
       </picture>

@@ -19,12 +19,6 @@
   padding: 30px 30px 40px;
 }
 
-@media (max-width: 500px) {
-  #home p {
-    text-align: left;
-  }
-}
-
 #home-header {
   display: flex;
   align-items: flex-end;
@@ -74,8 +68,7 @@
 #home p {
   margin: .5em auto 1em;
   padding: 0;
-  line-height: 1.5;
-  letter-spacing: -0.02em;
+  line-height: 1.6;
 	max-width: 700px;
 }
 #home p code {
@@ -94,15 +87,13 @@
   justify-content: center;
   height: 326px;
 }
-#home-intro .card img {
+#home-intro img {
   display: block;
   height: 100%;
   max-height: 326px;
 }
-#home-intro .card img.card-code {
-  margin-left: 20px;
-}
 #home-intro .card-code {
+  margin-left: 20px;
   border: 1px solid #ddd;
   border-radius: 6px;
 }
@@ -110,18 +101,18 @@
   #home-intro .card {
     height: 376px;
   }
-  #home-intro .card img {
+  #home-intro picture {
     z-index: 0;
   }
-  #home-intro .card img:hover {
+  #home-intro picture:hover {
     z-index: 1;
   }
-  #home-intro .card img.card-screen {
+  #home-intro .card-screen {
     position: absolute;
     top: 0;
     left: 0;
   }
-  #home-intro .card img.card-code {
+  #home-intro .card-code {
     position: absolute;
     top: 50px;
     right: 0;
@@ -134,14 +125,14 @@
     justify-content: center;
     padding-bottom: 0;
   }
-  #home-intro .card img {
+  #home-intro img {
     max-width: 490px;
   }
-  #home-intro .card img.card-screen {
+  #home-intro .card-screen {
     position: static;
     margin: 0;
   }
-  #home-intro .card img.card-code {
+  #home-intro .card-code {
     position: static;
     margin: 0;
     margin-top: 20px;
@@ -149,14 +140,19 @@
     right: 0;
   }
 }
-
 @media (max-width: 500px) {
-  #home-intro .card img {
+  #home-intro img {
     max-width: 100%;
   }
 }
 
-#home-component-anatomy {
+#home-nopasta .text {
+  max-width: 740px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#home-anatomy {
 	width: auto !important;
   margin-top: 60px !important;
   margin-bottom: 60px !important;
@@ -167,28 +163,28 @@
   position: relative;
   background-color: #fbf7f0;
 }
-#home-component-anatomy .ripped-top,
-#home-component-anatomy .ripped-bottom {
+#home-anatomy .ripped-top,
+#home-anatomy .ripped-bottom {
   fill: #fbf7f0;
   width: 100%;
   position: absolute;
   left: 0;
 }
-#home-component-anatomy .ripped-top {
+#home-anatomy .ripped-top {
   bottom: 100%;
 }
-#home-component-anatomy .ripped-bottom {
+#home-anatomy .ripped-bottom {
   top: 100%;
 }
-[data-md-color-scheme="slate"] #home-component-anatomy {
+[data-md-color-scheme="slate"] #home-anatomy {
   background-color: #bfab87;
   color: var(--tcom-color);
 }
-[data-md-color-scheme="slate"] #home-component-anatomy .ripped-top,
-[data-md-color-scheme="slate"] #home-component-anatomy .ripped-bottom {
+[data-md-color-scheme="slate"] #home-anatomy .ripped-top,
+[data-md-color-scheme="slate"] #home-anatomy .ripped-bottom {
 	fill: #bfab87;
 }
-#home-component-anatomy .screen-demo {
+#home-anatomy .screen-demo {
   max-width: 1100px;
   padding-top: 2em;
   overflow: hidden;
@@ -198,11 +194,11 @@
   position: relative;
   margin: 0 auto;
 }
-#home-component-anatomy .code picture {
+#home-anatomy .code picture {
   width: 100%;
 }
 @media (max-width: 930px) {
-  #home-component-anatomy img {
+  #home-anatomy img {
     border: 1px solid #ddd;
     border-radius: 6px;
     margin-left: 1%;

@@ -12,6 +12,26 @@ title: Template Components
     </div>
   </header>
 
+  <section id="home-intro">
+    <h2>Reusables, encapsulados, testeables.</h2>
+    <p>
+      Escribe componentes del lado del servidor como simples plantillas&nbsp;Jinja.<br>
+      Úsalos como etiquetas HTML sin tener que importar&nbsp;nada.
+    </p>
+    <div class="card">
+      <picture class="card-screen">
+        <source srcset="assets/images/card.webp" type="image/webp">
+        <source srcset="assets/images/card.png" type="image/png">
+        <img src="assets/images/card.png" alt="Card rendered" width="351" height="326">
+      </picture>
+      <picture class="card-code">
+        <source srcset="assets/images/card-code.webp" type="image/webp">
+        <source srcset="assets/images/card-code.png" type="image/png">
+        <img src="assets/images/card-code.png" alt="Card code" width="534" height="326">
+      </picture>
+    </div>
+  </section>
+
   <section>
     <div class="cta">
       <div class="x-small">¿Justo lo que buscabas?</div>
@@ -19,42 +39,42 @@ title: Template Components
     </div>
   </section>
 
-  <section id="home-intro">
-    <h2>Reusables, encapsulados, testeables.</h2>
-    <p>
-      Escribe componentes del lado del servidor como simples plantillas Jinja.<br>
-      Usalos como etiquetas HTML sin tener que importar nada.
-    </p>
-    <div class="card">
-      <img class="card-screen" src="assets/images/card.png">
-      <img class="card-code"  src="assets/images/card-code.png">
+  <section id="home-nopasta">
+    <h2>Dile adiós a las plantillas espaguetis.</h2>
+    <div class="text">
+      <p>
+        Queremos que nuestro código Python sea fácil de entender y de&nbsp;probar.
+      </p>
+      <p>
+        <strong>El código de las plantillas, sin embargo, a menudo falla incluso estándares de código básicos</strong>: métodos larguísimos, condicionales de muchos niveles de profundidad, y variables misteriosas por todos&nbsp;lados.
+      </p>
+      <p>
+        <strong>Pero cuando usas componentes, puedes ver</strong> donde está todo, entender cuales son los posibles estados de cada pieza de UI, y saber exáctamente que datos necesitan&nbsp;tener.
+      </p>
+      <p>
+        Puedes <strong>reemplazar todas tus plantillas con componentes</strong>.<br>
+        ¿Usando <code>{% extend %}</code> con una plantilla base?
+        ¡Crea un componente <code>Pagina</code> en&nbsp;cambio!
+      </p>
     </div>
   </section>
 
-  <section id="home-nopasta">
-    <h2>Dile adiós a las plantillas espaguetis.</h2>
-    <p>
-      Queremos que nuestro código Python sea fácil de entender y de probar.
-      <strong>El código de las plantillas, sin embargo, a menudo falla incluso estándares de código básicos</strong>: métodos larguísimos, condicionales de muchos niveles de profundidad, y variables misteriosas por todos lados.
-    </p>
-    <p>
-      <strong>Pero cuando usas componentes, puedes ver</strong> donde está todo, entender cuales son los posibles estados de cada pieza de UI, y saber exáctamente que datos necesitan tener.
-    </p>
-    <p>
-      Puedes <strong>reemplazar todas tus plantillas con componentes</strong>.<br>
-      ¿Usas <code>{% extend %}</code> para tener una plantilla base?
-      ¡Crea un componente <strong><code>Pagina</code></strong> en vez!
-    </p>
-  </section>
-
-  <section id="home-component-anatomy">
-    <h2>Rápido de escribir, increible de usar.</h2>
-    <p>Así es como se vé un componente:</p>
+  <section id="home-anatomy">
+    <h2>Rápido de escribir, asombroso de&nbsp;usar.</h2>
+    <p>Así es como se vé un&nbsp;componente:</p>
     <div class="screen-demo">
       <picture class="code">
+        <source srcset="assets/images/anatomy-code.webp"
+                type="image/webp"
+                media="(max-width: 939px)">
+        <source srcset="assets/images/anatomy-es.webp"
+                type="image/webp"
+                media="(min-width: 940px)">
         <source srcset="assets/images/anatomy-code.png"
+                type="image/png"
                 media="(max-width: 939px)">
         <source srcset="assets/images/anatomy-es.png"
+                type="image/png"
                 media="(min-width: 940px)">
         <img src="assets/images/anatomy-es.png" />
       </picture>
