@@ -15,8 +15,11 @@ multipart = false
 </form>
 ```
 
-In this example, the component takes three attributes: "action", "method", and "multipart". The last two have a default value,
-so they are optional, but the first one has `...` as value*. That means that it must be passed when rendering this component.
+In this example, the component takes three attributes: "action", "method", and "multipart". The last two have a default value, so they are optional, but the first one has `...` as value. That means that it must be passed when rendering this component.
+
+!!! note
+
+    Required attributes must have a value of three dots **without quotes**.
 
 So all of these are valid forms to use this component:
 
@@ -34,7 +37,7 @@ The values of the declared attributes can be used in the template as values with
 In the example above, both "action" and "method" are strings, but "multipart" is a boolean, so we cannot pass it like `multipart="false"`
 because that will make it a string that evaluates as `True`, which is the opposite of what we want.
 
-Instead, we must use Jinja's print variable syntax (`{{ value }}`). Inside, you can use datetimes, objects, Python expressions, etc.
+Instead, we must use Jinja's print variable syntax (`{{ value }}`). Inside, you can use datetimes, objects, lists, Python expressions, etc.
 
 ```html+jinja
 {# A datetime value #}
@@ -87,12 +90,12 @@ A great use case is to make layout components:
 </PageLayout>
 ```
 
-Everything between the open and close tags of the components will be rendered and passed to the `PageLayout` component as a special `content` variable.
+Everything between the open and close tags of the components will be rendered and passed to the `PageLayout` component as a special, implicit, `content` variable.
 
-To test a component in isolation, you can also manually send a content attribute:
+To test a component in isolation, you can also manually send a content attribute using the special `__content` attribute:
 
 ```python
-catalog.render("PageLayout", title="Hello world", content="TEST")
+catalog.render("PageLayout", title="Hello world", __content="TEST")
 ```
 
 ## Extra attributes

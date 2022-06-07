@@ -45,7 +45,7 @@ You can add or remove attributes before rendering them using the other methods o
 
 ### `.add(name, value=True)`
 
-Adds an attribute or sets a property. Pass a name and a value to set an attribute. Omit the value or use `True` as value to set a property instead.
+Adds an attribute (e.g. `type="text"`) or sets a property (e.g. `disabled`). Pass a name and a value to set an attribute. Omit the value or use `True` as value to set a property instead.
 
 ```html+jinja
 {% do attrs.add("disabled") %}

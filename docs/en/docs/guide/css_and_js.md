@@ -119,8 +119,7 @@ The middleware uses the battle-tested [Whitenoise library](http://whitenoise.eva
 
 The styles of your components will not be auto-scoped. This means the styles of a component can affect other components, and, likewise, it will be affected by global styles or the styles of other components.
 
-To protect yourself against that, always add a custom class to the root element of your components and use it to scope the rest of the component styles. Always use a class instead of an id, or the component will not be usable more than once per page.
-
+To protect yourself against that, *always* add a custom class to the root element(s) of your component and use it to scope the rest of the component styles.
 Example:
 
 ```html+jinja title="components/Card.html.jinja"
@@ -136,10 +135,17 @@ Example:
 ```css title="components/card.css"
 /* 🚫 DO NOT do this */
 h1 { font-size: 2em; }
+h2 { font-size: 1.5em; }
+a { color: blue; }
 
 /* 👍 DO THIS instead */
 .Card h1 { font-size: 2em; }
+.Card h2 { font-size: 1.5em; }
+.Card a { color: blue; }
 ```
+
+Always use a class instead of an `id`, or the component will not be usable more than once per page.
+
 
 ### JS events
 
@@ -155,7 +161,7 @@ document.querySelectorAll('.Card button.share')
 /* ... etc ... */
 ```
 
-An alternative can be using the `MutationObserver` JS API to detect changes to the document and re-attach the event to all the components present:
+An alternative can be using the `MutationObserver` JS API to detect changes to the document and attach the events to all the new inserted components:
 
 ```js title="components/card.js"
 new MutationObserver( (mutationList) => {

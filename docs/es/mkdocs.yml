@@ -7,12 +7,12 @@ repo_name: jpsca/tcom
 copyright: Copyright © 2022 Juan-Pablo Scaletti
 
 nav:
-  - Home: index.md
-  # - Guide:
-  #   - guide/index.md
-  #   - guide/attributes.md
-  #   - guide/extra.md
-  #   - guide/css_and_js.md
+  - Inicio: index.md
+  - Guía:
+    - guide/index.md
+    - guide/attributes.md
+    - guide/extra.md
+    - guide/css_and_js.md
 
 theme:
   name: material
