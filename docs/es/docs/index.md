@@ -42,7 +42,7 @@ title: Template Components
     </p>
     <p>
       Puedes <strong>reemplazar todas tus plantillas con componentes</strong>.<br>
-      ¿Usas <code>{{"{% extend %}"}}</code> para tener una plantilla base?
+      ¿Usas <code>{% extend %}</code> para tener una plantilla base?
       ¡Crea un componente <strong><code>Pagina</code></strong> en vez!
     </p>
   </section>
@@ -52,11 +52,11 @@ title: Template Components
     <p>Así es como se vé un componente:</p>
     <div class="screen-demo">
       <picture class="code">
-        <source srcset="assets/images/component-anatomy-mini.png"
-                media="(max-width: 940px)">
-        <source srcset="assets/images/component-anatomy-captions-es.png"
-                media="(min-width: 941px)">
-        <img src="assets/images/component-anatomy-captions-es.png" />
+        <source srcset="assets/images/anatomy-code.png"
+                media="(max-width: 939px)">
+        <source srcset="assets/images/anatomy-es.png"
+                media="(min-width: 940px)">
+        <img src="assets/images/anatomy-es.png" />
       </picture>
     </div>
     <svg class="ripped-top" preserveAspectRatio="xMinYMin" version="1.1" viewBox="0 0 1129.8 45.13" xmlns="http://www.w3.org/2000/svg">

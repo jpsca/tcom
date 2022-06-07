@@ -47,7 +47,7 @@ title: Template Components
     </p>
     <p>
       You can <strong>replace all your templates with&nbsp;components</strong>.<br>
-      You use a <code>{{"{% extend %}"}}</code> for a base layout?
+      You use a <code>{% extend %}</code> for a base layout?
       Create a <strong><code>Page</code></strong> component&nbsp;instead!
     </p>
   </section>
@@ -57,11 +57,11 @@ title: Template Components
     <p>This is how a component looks&nbsp;like:</p>
     <div class="screen-demo">
       <picture class="code">
-        <source srcset="assets/images/component-anatomy-mini.png"
-                media="(max-width: 940px)">
-        <source srcset="assets/images/component-anatomy-captions.png"
-                media="(min-width: 941px)">
-        <img src="assets/images/component-anatomy-captions.png" />
+        <source srcset="assets/images/anatomy-code.png"
+                media="(max-width: 939px)">
+        <source srcset="assets/images/anatomy-en.png"
+                media="(min-width: 940px)">
+        <img src="assets/images/anatomy-en.png" />
       </picture>
     </div>
     <svg class="ripped-top" preserveAspectRatio="xMinYMin" version="1.1" viewBox="0 0 1129.8 45.13" xmlns="http://www.w3.org/2000/svg">
