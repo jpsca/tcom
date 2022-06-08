@@ -7,6 +7,15 @@
   line-height: 1.4;
 }
 
+#home img, #home .button {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 #home-header,
 #home section {
   width: 100%;

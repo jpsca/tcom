@@ -1,4 +1,7 @@
 #!/bin/bash
+rm -rf en/site
+rm -rf es/site
+
 cd en
 mkdocs build
 rm site/assets/javascripts/lunr/min/lunr.ar.min.js
@@ -49,8 +52,6 @@ rm site/assets/javascripts/lunr/min/lunr.vi.min.js
 rm site/assets/javascripts/lunr/min/lunr.zh.min.js
 cd ..
 
-rm -rf en/site/es
 cp -R es/site/ en/site/es/
 find ./en/site -type f -name '*.DS_Store' -ls -delete
 rsync --recursive --delete --progress en/site/ code:/var/www/tcom/site
-

@@ -17,6 +17,7 @@ nav:
 theme:
   name: material
   custom_dir: overrides
+  font: false
   logo: assets/images/logo.png
   favicon: assets/images/favicon.svg
   language: es
