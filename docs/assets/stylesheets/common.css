@@ -178,10 +178,10 @@
   left: 0;
 }
 #home-anatomy .ripped-top {
-  bottom: 100%;
+  bottom: 99.9%;
 }
 #home-anatomy .ripped-bottom {
-  top: 100%;
+  top: 99.9%;
 }
 [data-md-color-scheme="slate"] #home-anatomy {
   background-color: #bfab87;
@@ -207,6 +207,7 @@
 @media (max-width: 939px) {
   #home-anatomy img {
     max-width: 470px;
+    width: 100%;
   }
 }
 
