@@ -3,7 +3,7 @@
   --tcom-color: #1d2d35;
 }
 #home {
-  font-size: calc(16px + 0.5vw);
+  font-size: calc(16px + 0.4vw);
   line-height: 1.4;
 }
 
@@ -19,7 +19,7 @@
 #home-header,
 #home section {
   width: 100%;
-  max-width: 900px;
+  max-width: 960px;
   text-align: center;
   margin: 0 auto;
 }
@@ -78,7 +78,6 @@
   margin: .5em auto 1em;
   padding: 0;
   line-height: 1.6;
-	max-width: 700px;
 }
 #home p code {
   font-style: italic;
@@ -100,11 +99,11 @@
   display: block;
   height: 100%;
   max-height: 326px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
 }
 #home-intro .card-code {
   margin-left: 20px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
 }
 @media (max-width: 920px) {
   #home-intro .card {
@@ -156,7 +155,6 @@
 }
 
 #home-nopasta .text {
-  max-width: 740px;
   margin: 0 auto;
   text-align: left;
 }
@@ -206,13 +204,8 @@
 #home-anatomy .code picture {
   width: 100%;
 }
-@media (max-width: 930px) {
+@media (max-width: 939px) {
   #home-anatomy img {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    margin-left: 1%;
-    margin-right: 1%;
-    width: 98%;
     max-width: 470px;
   }
 }
