@@ -23,12 +23,12 @@ title: Template Components
       <picture class="card-screen">
         <source srcset="assets/images/card.webp" type="image/webp">
         <source srcset="assets/images/card.png" type="image/png">
-        <img src="assets/images/card.png" alt="Card rendered" width="351" height="326">
+        <img src="assets/images/card.png" alt="Card rendered" width="440" height="432">
       </picture>
       <picture class="card-code">
         <source srcset="assets/images/card-code.webp" type="image/webp">
         <source srcset="assets/images/card-code.png" type="image/png">
-        <img src="assets/images/card-code.png" alt="Card code" width="534" height="326">
+        <img src="assets/images/card-code.png" alt="Card code" width="365" height="422">
       </picture>
     </div>
   </section>

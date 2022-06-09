@@ -93,40 +93,22 @@
   margin-top: 30px;
   align-items: center;
   justify-content: center;
-  height: 326px;
+  height: 422px;
 }
 #home-intro img {
   display: block;
   height: 100%;
-  max-height: 326px;
   border: 1px solid #ddd;
   border-radius: 6px;
+  max-width: 365px;
+}
+#home-intro .card-screen img {
+  max-width: 300px;
 }
 #home-intro .card-code {
   margin-left: 20px;
 }
-@media (max-width: 920px) {
-  #home-intro .card {
-    height: 376px;
-  }
-  #home-intro picture {
-    z-index: 0;
-  }
-  #home-intro picture:hover {
-    z-index: 1;
-  }
-  #home-intro .card-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  #home-intro .card-code {
-    position: absolute;
-    top: 50px;
-    right: 0;
-  }
-}
-@media (max-width: 640px) {
+@media (max-width: 704px) {
   #home-intro .card {
     flex-direction: column;
     height: auto;
