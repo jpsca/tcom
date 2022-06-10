@@ -1,5 +1,5 @@
 site_name: Template Components
-site_description: The power of components without the complexity of a SPA.
+site_description: The power of components in your server-side-rendered Python web app
 site_url: https://tcom.scaletti.dev/
 site_author: Juan-Pablo Scaletti
 repo_url: https://github.com/jpsca/tcom/

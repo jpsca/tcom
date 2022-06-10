@@ -1,6 +1,6 @@
 ---
 template: home.html
-title: Template Components
+is_homepage: true
 ---
 <div id="home">
   <header id="home-header">
