@@ -27,11 +27,14 @@ rx_open_tag = re.compile(re_open_tag, re.VERBOSE)
 re_close_tag = fr"</\s*{re_tag_name}\s*>"
 rx_close_tag = re.compile(re_close_tag, re.VERBOSE)
 
+re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_]*)"
+re_equal = r"\s*=\s*"
+
 re_attr = rf"""
-(?P<name>[a-zA-Z_][0-9a-zA-Z_]*)
+{re_attr_name}
 (?:
-    \s*=\s*
-    (?P<value>(?:".*?"|'.*?'|{VAR_START}.*?{VAR_END}))
+    {re_equal}
+    (?P<value>".*?"|'.*?'|{VAR_START}.*?{VAR_END})
 )?
 """
 
