@@ -7,7 +7,7 @@
   Template Components
 </h1>
 
-The power of components in your server-side-rendered Python web app.**
+The power of components in your server-side-rendered Python web app.
 
 **Documentation:** https://tcom.scaletti.dev/
 
