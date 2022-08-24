@@ -1,14 +1,10 @@
 import re
-from typing import TYPE_CHECKING
+from typing import Any
 
 import tomlkit
 import uuid
 
 from .exceptions import InvalidFrontMatter, MissingRequiredAttr
-
-if TYPE_CHECKING:
-    from pathlib import Path
-    from typing import Any
 
 
 FRONT_MATTER_START = "{#"
@@ -20,49 +16,25 @@ RX_REQUIRED = re.compile(r"=\s*(?:\.\.\.|…)(\s+\n?)")
 
 
 class Component:
-    __slots__ = (
-        "args",
-        "css",
-        "js",
-        "name",
-        "path",
-        "prefix",
-        "relpath",
-        "required",
-    )
+    __slots__ = ("args", "css", "js", "name", "required")
 
-    def __init__(
-        self,
-        *,
-        name: str,
-        path: "Path",
-        relpath: str,
-        content: str = "",
-        prefix: str = "",
-    ) -> None:
+    def __init__(self, *, name: str, content: str = "") -> None:
         self.name = name
-        self.path = path
-        self.relpath = relpath
 
         req_placeholder = f"required-{uuid.uuid4().hex}"
         fmdict = self.load_front_matter(content, req_placeholder)
 
-        prefix = prefix.strip(".").strip("/")
-        if prefix:
-            prefix += "/"
-        self.prefix = prefix
-
         css = []
         for url in fmdict.pop(CSS_KEY, []):
             if not url.startswith("/"):
-                url = f"{prefix}{url.strip('/')}"
+                url = url.strip("/")
             css.append(url.strip("/"))
         self.css = css
 
         js = []
         for url in fmdict.pop(JS_KEY, []):
             if not url.startswith("/"):
-                url = f"{prefix}{url.strip('/')}"
+                url = url.strip("/")
             js.append(url.strip("/"))
         self.js = js
 
@@ -77,11 +49,7 @@ class Component:
         self.args = args
         self.required = required
 
-    def load_front_matter(
-        self,
-        content: str,
-        req_placeholder: str,
-    ) -> "dict[str, Any]":
+    def load_front_matter(self, content: str, req_placeholder: str) -> "dict[str, Any]":
         if not content.startswith(FRONT_MATTER_START):
             return {}
         front_matter = content.split(FRONT_MATTER_END, 1)[0]
@@ -91,14 +59,11 @@ class Component:
             .replace(" False\n", " false\n")
             .replace(" True\n", " true\n")
         )
-        front_matter = RX_REQUIRED.sub(
-            f"= '{req_placeholder}'\\1",
-            front_matter
-        )
+        front_matter = RX_REQUIRED.sub(f"= '{req_placeholder}'\\1", front_matter)
         try:
             return tomlkit.parse(front_matter)
         except tomlkit.exceptions.TOMLKitError as err:
-            raise InvalidFrontMatter(self.path, *err.args)
+            raise InvalidFrontMatter(self.name, *err.args)
 
     def filter_args(
         self, kw: "dict[str, Any]"
@@ -115,8 +80,5 @@ class Component:
         extra = kw.copy()
         return props, extra
 
-    def get_source(self) -> str:
-        return self.path.read_text()
-
     def __repr__(self) -> str:
-        return f'<Component "{self.relpath}">'
+        return f'<Component "{self.name}">'

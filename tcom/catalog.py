@@ -7,7 +7,6 @@ import jinja2
 from markupsafe import Markup
 
 from .component import Component
-from .exceptions import ComponentNotFound
 from .jinjax import DEBUG_ATTR_NAME, JinjaX, RENDER_CMD
 from .middleware import ComponentsMiddleware
 from .html_attrs import HTMLAttrs
@@ -88,20 +87,6 @@ class Catalog:
         subloader.loaders.append(jinja2.FileSystemLoader(str(folderpath)))
         self.jinja_env.loader.mapping[prefix] = subloader  # type: ignore
 
-        for path in folderpath.rglob(COMPONENT_PATTERN):
-            name = path.name.split(".", 1)[0]
-            if not name[0].isupper():
-                continue
-            content = path.read_text()
-            relpath = str(path.relative_to(folderpath))
-            self.components[name] = Component(
-                name=name,
-                path=path.resolve(),
-                relpath=relpath,
-                content=content,
-                prefix=prefix,
-            )
-
     def add_module(
         self,
         module: "Any",
@@ -117,17 +102,14 @@ class Catalog:
         __name: str,
         *,
         content: str = "",
-        prefix: str = DEFAULT_PREFIX,
         **kw
     ) -> str:
         self.collected_css = []
         self.collected_js = []
 
         kw["__content"] = content
-        kw["__prefix"] = prefix
         html = self._render(__name, **kw)
         html = self._insert_assets(html)
-
         return html
 
     def inline_render(self, name_or_attrs, **kw):
@@ -156,21 +138,6 @@ class Catalog:
 
     # Private
 
-    def _get_component(self, name: str) -> "Component":
-        component = self.components.get(name)
-        if component is None:
-            raise ComponentNotFound(name)
-        return component
-
-    def _render_attrs(self, attrs):
-        html_attrs = []
-        for name, value in attrs.items():
-            if value != "":
-                html_attrs.append(f"{name}={value}")
-            else:
-                html_attrs.append(name)
-        return Markup(" ".join(html_attrs))
-
     def _build_jinja_env(
         self,
         globals: "dict[str, Any]",
@@ -187,6 +154,57 @@ class Catalog:
         self.jinja_env.filters.update(filters)
         self.jinja_env.tests.update(tests)
 
+    # content = path.read_text()
+    # relpath = str(path.relative_to(folderpath))
+    # self.components[name] = Component(
+    #     name=name,
+    #     path=path.resolve(),
+    #     relpath=relpath,
+    #     content=content,
+    #     prefix=prefix,
+    # )
+
+    def _render(
+        self,
+        __name: str,
+        *,
+        caller: "Optional[Callable]" = None,
+        __content: str = "",
+        __attrs: "Optional[Any]" = None,
+        **kw
+    ) -> str:
+        source, _filename, _uptodate = self.jinja_env.loader.get_source(self.jinja_env, __name)
+
+        component = Component(name=__name, content=source)
+        for css in component.css:
+            if css not in self.collected_css:
+                self.collected_css.append(css)
+        for js in component.js:
+            if js not in self.collected_js:
+                self.collected_js.append(js)
+
+        attrs = __attrs
+        if attrs and isinstance(attrs, HTMLAttrs):
+            attrs = attrs.as_dict
+
+        if attrs and isinstance(attrs, dict):
+            attrs.update(kw)
+            kw = attrs
+
+        props, extra = component.filter_args(kw)
+        props[HTML_ATTRS_KEY] = HTMLAttrs(extra)
+        props[CONTENT_KEY] = __content or (caller() if caller else "")
+
+        try:
+            tmpl = self.jinja_env.get_template(__name)
+        except Exception:  # pragma: no cover
+            print("*** Pre-processed source: ***")
+            print(getattr(self.jinja_env, DEBUG_ATTR_NAME, ""))
+            print("*" * 10)
+            raise
+
+        return tmpl.render(**props).strip()
+
     def _insert_assets(self, html: str) -> str:
         html_css = [
             f'<link rel="stylesheet" href="{self.root_url}{css}">'
@@ -198,40 +216,11 @@ class Catalog:
         ]
         return html.replace(self.assets_placeholder, "\n".join(html_css + html_js))
 
-    def _render(
-        self,
-        __name: str,
-        *,
-        caller: "Optional[Callable]" = None,
-        **kw
-    ) -> str:
-        component = self._get_component(__name)
-        for css in component.css:
-            if css not in self.collected_css:
-                self.collected_css.append(css)
-        for js in component.js:
-            if js not in self.collected_js:
-                self.collected_js.append(js)
-
-        attrs = kw.pop("__attrs", None)
-        if attrs and isinstance(attrs, HTMLAttrs):
-            attrs = attrs.as_dict
-        if attrs and isinstance(attrs, dict):
-            attrs.update(kw)
-            kw = attrs
-
-        prefix = kw.pop("__prefix", component.prefix) or DEFAULT_PREFIX
-        content = kw.pop("__content", "")
-        props, extra = component.filter_args(kw)
-        props[HTML_ATTRS_KEY] = HTMLAttrs(extra)
-        props[CONTENT_KEY] = content or (caller() if caller else "")
-
-        tmpl_name = f"{prefix}/{component.relpath}"
-        try:
-            tmpl = self.jinja_env.get_template(tmpl_name)
-        except Exception:  # pragma: no cover
-            print("*** Pre-processed source: ***")
-            print(getattr(self.jinja_env, DEBUG_ATTR_NAME, ""))
-            print("*" * 10)
-            raise
-        return tmpl.render(**props).strip()
+    def _render_attrs(self, attrs):
+        html_attrs = []
+        for name, value in attrs.items():
+            if value != "":
+                html_attrs.append(f"{name}={value}")
+            else:
+                html_attrs.append(name)
+        return Markup(" ".join(html_attrs))
