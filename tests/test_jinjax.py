@@ -77,4 +77,3 @@ def test_subfolder(pre):
         result
         == '{% call __render("Pages.Show", title="wat") -%}wat{%- endcall %}'
     )
-

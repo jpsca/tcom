@@ -46,9 +46,11 @@ def test_assets_included(catalog):
     assert '<script src="/static/components/greeting.js" defer></script>' not in html
 
 
-def test_global_values(catalog):
+def test_global_values():
     message = "Hello world!"
-    catalog.jinja_env.globals["globalvar"] = message
+    catalog = tcom.Catalog()
+    catalog.globals["globalvar"] = message
+    catalog.add_folder("tests/components")
     html = catalog.render("WithGlobal")
     print(html)
     assert message in html
