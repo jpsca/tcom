@@ -14,11 +14,24 @@ is_homepage: true
   </header>
 
   <section id="home-intro">
-    <h2>Reusable, encapsulated, and testable.</h2>
-    <p>
-      Write server-side components as single Jinja template&nbsp;files.<br>
-      Use them as HTML tags without doing any&nbsp;importing.
-    </p>
+    <h2>Better than <code>include</code> and <code>macros</code>.</h2>
+    <ul>
+      <li>
+        <b>Elegants:</b>
+        <span>easier to read and use because they look like regular&nbsp;HTML.</span>
+      </li>
+      <li>
+        <b>Practical:</b>
+        <span>just regular Jinja files and no need to import&nbsp;them.</span>
+      </li>
+      <li>
+        <b>Composable:</b>
+        <span>can wrap content (HTML, other components, etc.) in a natural&nbsp;way.</span>
+      </li>
+      <li>
+        <b>Encapsulated:</b>
+        <span>can link to their own <i>css</i> or <i>js</i> files and be copy/pasted to other projects with no&nbsp;modifications.</span>
+    </ul>
     <div class="card">
       <picture class="card-screen">
         <source srcset="assets/images/card.webp" type="image/webp">

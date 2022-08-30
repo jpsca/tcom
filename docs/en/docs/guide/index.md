@@ -38,8 +38,6 @@ The components are `.jinja` files. The name of the file before the first dot is 
 
 For example, if the filename es `PersonForm.html.jinja`, the name of the component is `PersonForm` and can be used like `<PersonForm>...</PersonForm>`.
 
-All components are auto-imported across all sources so **the name of a component must be globally unique**.
-
 A component can begin with a Jinja comment where it declare what attributes it takes. This metadata is in [TOML](https://toml.io/) format.
 
 ```html+jinja

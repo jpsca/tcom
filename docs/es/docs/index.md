@@ -13,11 +13,24 @@ is_homepage: true
   </header>
 
   <section id="home-intro">
-    <h2>Reusables, encapsulados, testeables.</h2>
-    <p>
-      Escribe componentes del lado del servidor como simples plantillas&nbsp;Jinja.<br>
-      Úsalos como etiquetas HTML sin tener que importar&nbsp;nada.
-    </p>
+    <h2>Mejor que <code>include</code> y <code>macros</code>.</h2>
+    <ul>
+      <li>
+        <b>Elegantes:</b>
+        <span>más fáciles de leer y usar porque se ven como HTML&nbsp;normal.</span>
+      </li>
+      <li>
+        <b>Practicos:</b>
+        <span>archivos Jinja regulares sin tener que &nbsp;importarlos.</span>
+      </li>
+      <li>
+        <b>Componibles:</b>
+        <span>pueden envolver contenido (HTML, otros componentes, etc.) de forma&nbsp;natural.</span>
+      </li>
+      <li>
+        <b>Encapsulados:</b>
+        <span>pueden apuntar a sus propios archivos <i>css</i> o <i>js</i> y copiarse/pegarse a otros proyectos sin &nbsp;modificaciones.</span>
+    </ul>
     <div class="card">
       <picture class="card-screen">
         <source srcset="assets/images/card.webp" type="image/webp">
