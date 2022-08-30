@@ -17,7 +17,7 @@ is_homepage: true
     <h2>Better than <code>include</code> and <code>macros</code>.</h2>
     <ul>
       <li>
-        <b>Elegants:</b>
+        <b>Simple:</b>
         <span>easier to read and use because they look like regular&nbsp;HTML.</span>
       </li>
       <li>
