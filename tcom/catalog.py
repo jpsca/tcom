@@ -26,10 +26,6 @@ HTML_ATTRS_KEY = "attrs"
 CONTENT_KEY = "content"
 
 
-def filter_unique(text):
-    return f"{text}-{uuid4().hex}"
-
-
 class Catalog:
     __slots__ = (
         "components",
@@ -76,7 +72,6 @@ class Catalog:
         self.globals = globals
 
         filters = filters or {}
-        filters["unique"] = filter_unique
         self.filters = filters
 
         self.tests = tests or {}
