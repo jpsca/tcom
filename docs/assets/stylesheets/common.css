@@ -19,7 +19,7 @@
 #home-header,
 #home section {
   width: 100%;
-  max-width: 960px;
+  max-width: 800px;
   text-align: center;
   margin: 0 auto;
 }
@@ -79,12 +79,22 @@
   padding: 0;
   line-height: 1.6;
 }
-#home p code {
+#home code {
   font-style: italic;
-	letter-spacing: -0.1em;
+  font-family: monospace;
 	white-space: nowrap;
+  padding: 0 4px;
+  font-size: 0.92em;
 }
 
+#home-intro ul {
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto
+}
+#home-intro b {
+  padding-right: 6px;
+}
 #home-intro .card {
   margin-left: -20px;
   margin-right: -20px;

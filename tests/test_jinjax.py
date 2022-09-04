@@ -67,3 +67,13 @@ def test_line_jump_in_attr_value(pre):
         result
         == '{% call __render("Tab", classes="a           b") -%}Tab 1{%- endcall %}'
     )
+
+
+def test_subfolder(pre):
+    source = '<Pages.Show title="wat">wat</Pages.Show>'
+    result = pre.preprocess(source)
+    print(result)
+    assert (
+        result
+        == '{% call __render("Pages.Show", title="wat") -%}wat{%- endcall %}'
+    )

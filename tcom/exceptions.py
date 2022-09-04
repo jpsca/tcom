@@ -1,5 +1,7 @@
 class ComponentNotFound(Exception):
-    pass
+    def __init__(self, name: str) -> None:
+        msg = f"File with pattern `{name}` not found"
+        super().__init__(msg)
 
 
 class MissingRequiredAttr(Exception):
