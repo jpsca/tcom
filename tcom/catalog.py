@@ -70,14 +70,9 @@ class Catalog:
         globals["get_source"] = self.get_source
         globals[ASSETS_PLACEHOLDER_KEY] = self.assets_placeholder
         self.globals = globals
-
-        filters = filters or {}
-        self.filters = filters
-
+        self.filters = filters or {}
         self.tests = tests or {}
-
-        extensions = extensions or []
-        self.extensions = extensions + ["jinja2.ext.do", JinjaX]
+        self.extensions = (extensions or []) + ["jinja2.ext.do", JinjaX]
 
     def add_folder(
         self,

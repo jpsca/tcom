@@ -64,7 +64,14 @@ catalog = Catalog(
 )
 ```
 
-o después, diréctamente en el entorno de Jinja creado en `catalog.jinja_env`.
+o después:
+
+```python
+catalog.globals.update({ ... })
+catalog.filters.update({ ... })
+catalog.tests.update({ ... })
+catalog.extensions.extend([ ... ])
+```
 
 Si usas **Flask**, por ejemplo, deberías pasarle los valores de su propio entorno Jinja:
 
@@ -72,10 +79,10 @@ Si usas **Flask**, por ejemplo, deberías pasarle los valores de su propio entor
 app = Flask(__name__)
 
 catalog = tcom.Catalog(
-    globals=app.jinja_env.globals,
-    filters=app.jinja_env.filters,
-    tests=app.jinja_env.tests,
-    extensions=app.jinja_env.extensions,
+    globals=app.globals,
+    filters=app.filters,
+    tests=app.tests,
+    extensions=app.extensions,
 )
 ```
 
