@@ -64,13 +64,13 @@ catalog = Catalog(
 )
 ```
 
-o después:
+o después, actualizando el `jinja.Environment` ya creado:
 
 ```python
-catalog.globals.update({ ... })
-catalog.filters.update({ ... })
-catalog.tests.update({ ... })
-catalog.extensions.extend([ ... ])
+catalog.jinja_env.globals.update({ ... })
+catalog.jinja_env.filters.update({ ... })
+catalog.jinja_env.tests.update({ ... })
+catalog.jinja_env.extensions.extend([ ... ])
 ```
 
 Si usas **Flask**, por ejemplo, deberías pasarle los valores de su propio entorno Jinja:

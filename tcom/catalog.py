@@ -33,10 +33,7 @@ class Catalog:
         "root_url",
         "allowed_ext",
         "pattern",
-        "globals",
-        "filters",
-        "tests",
-        "extensions",
+        "jinja_env",
         "assets_placeholder",
         "collected_css",
         "collected_js",
@@ -54,7 +51,7 @@ class Catalog:
         root_url: str = DEFAULT_URL_ROOT,
     ) -> None:
         self.components: "dict[str, Component]" = {}
-        self.prefixes: "dict[str, jinja2.Environment]" = {}
+        self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
         self.allowed_ext: "set[str]" = set(allowed_ext or ALLOWED_EXTENSIONS)
         self.collected_css: "list[str]" = []
         self.collected_js: "list[str]" = []
@@ -64,15 +61,20 @@ class Catalog:
         root_url = root_url.strip().rstrip(SLASH)
         self.root_url = f"{root_url}{SLASH}"
 
+        extensions = (extensions or []) + ["jinja2.ext.do", JinjaX]
+        jinja_env = jinja2.Environment(
+            extensions=extensions,
+            undefined=jinja2.StrictUndefined,
+        )
         globals = globals or {}
         globals[RENDER_CMD] = self._render
         globals["render"] = self.inline_render
         globals["get_source"] = self.get_source
         globals[ASSETS_PLACEHOLDER_KEY] = self.assets_placeholder
-        self.globals = globals
-        self.filters = filters or {}
-        self.tests = tests or {}
-        self.extensions = (extensions or []) + ["jinja2.ext.do", JinjaX]
+        jinja_env.globals.update(globals)
+        jinja_env.filters.update(filters or {})
+        jinja_env.tests.update(tests or {})
+        self.jinja_env = jinja_env
 
     def add_folder(
         self,
@@ -80,12 +82,11 @@ class Catalog:
         *,
         prefix: str = ""
     ) -> None:
-        prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}")
-        path_prefix = prefix.replace(DELIMITER, SLASH)
+        prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(SLASH, DELIMITER)
 
-        if path_prefix in self.prefixes:
-            root_path = self._get_root_path(path_prefix)
-            if path_prefix == DEFAULT_PREFIX:
+        if prefix in self.prefixes:
+            root_path = self._get_root_path(prefix)
+            if prefix == DEFAULT_PREFIX:
                 msg = (
                     f"`{root_path}` already is the main folder. "
                     "Use a prefix to add more folders."
@@ -97,7 +98,7 @@ class Catalog:
                 )
             raise ValueError(msg)
 
-        self.prefixes[path_prefix] = self._get_jinja_env(folderpath)
+        self.prefixes[prefix] = jinja2.FileSystemLoader(str(folderpath))
 
     def add_module(self, module: "Any", *, prefix: "Optional[str]" = None) -> None:
         if prefix is None:
@@ -140,18 +141,6 @@ class Catalog:
 
     # Private
 
-    def _get_jinja_env(self, folderpath: "Union[str, Path]") -> "jinja2.Environment":
-        loader = jinja2.FileSystemLoader(str(folderpath))
-        env = jinja2.Environment(
-            loader=loader,
-            extensions=self.extensions,
-            undefined=jinja2.StrictUndefined,
-        )
-        env.globals.update(self.globals)
-        env.filters.update(self.filters)
-        env.tests.update(self.tests)
-        return env
-
     def _render(
         self,
         __name: str,
@@ -186,21 +175,21 @@ class Catalog:
         props[HTML_ATTRS_KEY] = HTMLAttrs(extra)
         props[CONTENT_KEY] = content or (caller() if caller else "")
 
-        jinja_env = self.prefixes[prefix]
+        self.jinja_env.loader = self.prefixes[prefix]
         tmpl_name = str(path.relative_to(root_path))
         try:
-            tmpl = jinja_env.get_template(tmpl_name)
+            tmpl = self.jinja_env.get_template(tmpl_name)
         except Exception:  # pragma: no cover
             print("*** Pre-processed source: ***")
-            print(getattr(jinja_env, DEBUG_ATTR_NAME, ""))
+            print(getattr(self.jinja_env, DEBUG_ATTR_NAME, ""))
             print("*" * 10)
             raise
 
         return tmpl.render(**props).strip()
 
     def _split_name(self, cname: str) -> "tuple[str, str]":
-        cname = cname.strip().strip(DELIMITER).replace(DELIMITER, SLASH)
-        if SLASH not in cname:
+        cname = cname.strip().strip(DELIMITER)
+        if DELIMITER not in cname:
             return DEFAULT_PREFIX, cname
         for prefix in self.prefixes:
             if cname.startswith(prefix):
@@ -208,15 +197,16 @@ class Catalog:
         return DEFAULT_PREFIX, cname
 
     def _get_root_path(self, prefix: str) -> "Path":
-        return Path(self.prefixes[prefix].loader.searchpath[0])  # type: ignore
+        return Path(self.prefixes[prefix].searchpath[0])  # type: ignore
 
     def _get_url_prefix(self, prefix: str) -> str:
-        url_prefix = prefix.strip().strip(SLASH)
+        url_prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(DELIMITER, SLASH)
         if url_prefix:
             url_prefix = f"{url_prefix}{SLASH}"
         return url_prefix
 
     def _get_component_path(self, root_path: "Path", name: str) -> "Path":
+        name = name.replace(DELIMITER, SLASH)
         glob_name = f"{name}{self.pattern}"
         try:
             return next(root_path.glob(glob_name))

@@ -49,7 +49,7 @@ def test_assets_included(catalog):
 def test_global_values():
     message = "Hello world!"
     catalog = tcom.Catalog()
-    catalog.globals["globalvar"] = message
+    catalog.jinja_env.globals["globalvar"] = message
     catalog.add_folder("tests/components")
     html = catalog.render("WithGlobal")
     print(html)

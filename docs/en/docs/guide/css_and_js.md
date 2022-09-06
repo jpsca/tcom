@@ -97,10 +97,10 @@ app = Flask(__name__)
 # Here we add the flask Jinja globals, filters, etc.
 # like `url_for()`
 catalog = tcom.Catalog(
-    globals=app.globals,
-    filters=app.filters,
-    tests=app.tests,
-    extensions=app.extensions,
+    globals=app.jinja_env.globals,
+    filters=app.jinja_env.filters,
+    tests=app.jinja_env.tests,
+    extensions=app.jinja_env.extensions,
 )
 catalog.add_folder("myapp/components")
 
