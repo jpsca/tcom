@@ -36,7 +36,7 @@ def myview():
 
 The components are `.jinja` files. The name of the file before the first dot is the component name and it **must** begin with an uppercase letter. This is the only way to distinguish themn from regular HTML tags.
 
-For example, if the filename es `PersonForm.html.jinja`, the name of the component is `PersonForm` and can be used like `<PersonForm>...</PersonForm>`.
+For example, if the filename es `PersonForm.jinja`, the name of the component is `PersonForm` and can be used like `<PersonForm>...</PersonForm>`.
 
 A component can begin with a Jinja comment where it declare what attributes it takes. This metadata is in [TOML](https://toml.io/) format.
 

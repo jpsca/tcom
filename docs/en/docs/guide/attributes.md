@@ -2,7 +2,7 @@
 
 More often than not, a component takes one or more attributes to render. Every attribute must be declared in the metadata section (the comment at the top) of the component.
 
-```html+jinja title="components/Form.html.jinja"
+```html+jinja title="components/Form.jinja"
 {#
 action = ...
 method = 'post'
@@ -68,7 +68,7 @@ So far we have seen self-closing components, but there is another, much more use
 
 A great use case is to make layout components:
 
-```html+jinja title="components/PageLayout.html.jinja"
+```html+jinja title="components/PageLayout.jinja"
 {# title = ... #}
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +81,7 @@ A great use case is to make layout components:
 </body>
 ```
 
-```html+jinja title="components/ArchivePage.html.jinja"
+```html+jinja title="components/ArchivePage.jinja"
 {# posts = ... #}
 <PageLayout title="Archive">
   {% for post in posts %}

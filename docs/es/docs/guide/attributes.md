@@ -4,7 +4,7 @@ A menudo, un componente toma uno o más atributos para renderizar, podría ser u
 
 Cada atributo debe ser declarado en la metadata (el comentario al principio) del componente.
 
-```html+jinja title="components/Form.html.jinja"
+```html+jinja title="components/Form.jinja"
 {#
 action = ...
 method = 'post'
@@ -70,7 +70,7 @@ Hasta ahora, hemos visto componentes que terminan en `/>`, sin una etiqueta de c
 
 Un gran caso de uso es hacer componentes de base:
 
-```html+jinja title="components/PageLayout.html.jinja"
+```html+jinja title="components/PageLayout.jinja"
 {# title = ... #}
 <!DOCTYPE html>
 <html lang="en">
@@ -83,7 +83,7 @@ Un gran caso de uso es hacer componentes de base:
 </body>
 ```
 
-```html+jinja title="components/ArchivePage.html.jinja"
+```html+jinja title="components/ArchivePage.jinja"
 {# posts = ... #}
 <PageLayout title="Archive">
   {% for post in posts %}

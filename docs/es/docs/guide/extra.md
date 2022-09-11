@@ -4,7 +4,7 @@ Si le pasas atributos no declarados a un componentes, estos no son descartados s
 
 Por ejemplo, este componente:
 
-```html+jinja title="components/Card.html.jinja"
+```html+jinja title="components/Card.jinja"
 {# title = ... #}
 <div {{ attrs.render() }}>
   <h1>{{ title }}</h1>

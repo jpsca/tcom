@@ -29,7 +29,7 @@ El catálogo recogerá todas las rutas de los archivos CSS y JS de los component
 
 Por ejemplo, despues de renderizar este componente:
 
-```html+jinja title="components/MyPage.html.jinja"
+```html+jinja title="components/MyPage.jinja"
 {#
 css = ['mypage.css']
 js = ['mypage.js']
@@ -56,7 +56,7 @@ catalog.collected_css
 
 Puedes agregar etiquetas `<link>` y `<script>` en tu página automáticamente, imprimiendo la variable global implícita `components_assets` en tu componente base, así:
 
-```html+jinja title="components/Layout.html.jinja" hl_lines="7"
+```html+jinja title="components/Layout.jinja" hl_lines="7"
 {# title = '' #}
 <!DOCTYPE html>
 <html lang="en">
@@ -122,7 +122,7 @@ Para protegerte de esto, *siempre* usa una clase única en la(s) etiqueta(s) ra�
 
 Ejemplo:
 
-```html+jinja title="components/Card.html.jinja"
+```html+jinja title="components/Card.jinja"
 {# css=['card.css'] }
 {% do attrs.add_class("Card") -%}
 

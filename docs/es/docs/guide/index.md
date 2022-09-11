@@ -36,7 +36,7 @@ def posts():
 
 Los components son archivos `.jinja`. El nombre del archivo antes del primer punto es el nombre del componente y **debe** empezar con mayúscula. Esta es la única forma de distinguirlos de etiquetas HTML normales.
 
-Por ejemplo, si el archivo se llama `PersonForm.html.jinja`, el nombre del componente es `PersonForm` y puede ser usado como `<PersonForm>...</PersonForm>`.
+Por ejemplo, si el archivo se llama `PersonForm.jinja`, el nombre del componente es `PersonForm` y puede ser usado como `<PersonForm>...</PersonForm>`.
 
 Un componente puede empezar con un comentario Jinja donde declaras que atributos puede recibir. Esta metadata está em formato [TOML](https://toml.io/).
 

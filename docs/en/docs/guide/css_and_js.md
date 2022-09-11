@@ -29,7 +29,7 @@ The catalog will collect all css and js file paths from the components used on a
 
 For example, after rendering this component:
 
-```html+jinja title="components/MyPage.html.jinja"
+```html+jinja title="components/MyPage.jinja"
 {#
 css = ['mypage.css']
 js = ['mypage.js']
@@ -56,7 +56,7 @@ catalog.collected_css
 
 You can add the `<link>` and `<script>` tags in your page automatically by rendering the global `components_assets` variable in your layout component like this:
 
-```html+jinja title="components/Layout.html.jinja" hl_lines="7"
+```html+jinja title="components/Layout.jinja" hl_lines="7"
 {# title = '' #}
 <!DOCTYPE html>
 <html lang="en">
@@ -110,7 +110,15 @@ app.wsgi_app = catalog.get_middleware(
 )
 ```
 
-The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and it will only respond to the *.css* and *.js* files inside the component(s) folder(s) (you can configure it to also return files with other extensions).
+The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and it will only respond to the *.css* and *.js* files inside the component(s) folder(s). You can configure it to also return files with other extensions. For example:
+
+```python
+catalog.get_middleware(app, allowed_ext=[".css", ".js", ".svg", ".png"]
+```
+
+Be aware that, if you use this option, `get_middleware()` must be called **after** all foldes are added.
+
+...
 
 
 ## Good practices
@@ -122,7 +130,7 @@ The styles of your components will not be auto-scoped. This means the styles of 
 To protect yourself against that, *always* add a custom class to the root element(s) of your component and use it to scope the rest of the component styles.
 Example:
 
-```html+jinja title="components/Card.html.jinja"
+```html+jinja title="components/Card.jinja"
 {# css=['card.css'] }
 {% do attrs.add_class("Card") -%}
 

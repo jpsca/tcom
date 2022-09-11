@@ -12,7 +12,7 @@ from .middleware import ComponentsMiddleware
 from .html_attrs import HTMLAttrs
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Iterable, Optional, Union
+    from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
 
 DEFAULT_URL_ROOT = "/static/components/"
@@ -31,7 +31,6 @@ class Catalog:
         "components",
         "prefixes",
         "root_url",
-        "allowed_ext",
         "pattern",
         "jinja_env",
         "assets_placeholder",
@@ -46,13 +45,11 @@ class Catalog:
         filters: "Optional[dict[str, Any]]" = None,
         tests: "Optional[dict[str, Any]]" = None,
         extensions: "Optional[list]" = None,
-        allowed_ext: "Optional[Iterable[str]]" = None,
         pattern: str = DEFAULT_PATTERN,
         root_url: str = DEFAULT_URL_ROOT,
     ) -> None:
         self.components: "dict[str, Component]" = {}
         self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
-        self.allowed_ext: "set[str]" = set(allowed_ext or ALLOWED_EXTENSIONS)
         self.collected_css: "list[str]" = []
         self.collected_js: "list[str]" = []
         self.assets_placeholder = f"<components_assets-{uuid4().hex} />"
@@ -78,27 +75,20 @@ class Catalog:
 
     def add_folder(
         self,
-        folderpath: "Union[str, Path]",
+        root_path: "Union[str, Path]",
         *,
-        prefix: str = ""
+        prefix: str = DEFAULT_PREFIX,
     ) -> None:
         prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(SLASH, DELIMITER)
 
+        root_path = str(root_path)
         if prefix in self.prefixes:
-            root_path = self._get_root_path(prefix)
-            if prefix == DEFAULT_PREFIX:
-                msg = (
-                    f"`{root_path}` already is the main folder. "
-                    "Use a prefix to add more folders."
-                )
-            else:
-                msg = (
-                    f"`{root_path}` already using the prefix `{prefix}`. "
-                    "Use a different prefix."
-                )
-            raise ValueError(msg)
-
-        self.prefixes[prefix] = jinja2.FileSystemLoader(str(folderpath))
+            loader = self.prefixes[prefix]
+            if root_path in loader.searchpath:
+                return
+            loader.searchpath.append(root_path)
+        else:
+            self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
     def add_module(self, module: "Any", *, prefix: "Optional[str]" = None) -> None:
         if prefix is None:
@@ -122,36 +112,34 @@ class Catalog:
             attrs.update(kw)
             return self._render_attrs(attrs)
 
-    def get_middleware(self, application, **kw) -> ComponentsMiddleware:
-        middleware = ComponentsMiddleware(
-            application, allowed_ext=self.allowed_ext, **kw
-        )
-        for prefix in self.prefixes:
-            middleware.add_files(
-                self._get_root_path(prefix),
-                f"{self.root_url}{self._get_url_prefix(prefix)}"
-            )
+    def get_middleware(
+        self,
+        application: "Callable",
+        allowed_ext: "Optional[Iterable[str]]" = ALLOWED_EXTENSIONS,
+        **kw,
+    ) -> ComponentsMiddleware:
+        middleware = ComponentsMiddleware()
+        middleware.configure(application=application, allowed_ext=allowed_ext, **kw)
+
+        for prefix, loader in self.prefixes.items():
+            url_prefix = self._get_url_prefix(prefix)
+            url = f"{self.root_url}{url_prefix}"
+            for root in loader.searchpath[::-1]:
+                middleware.add_files(root, url)
+
         return middleware
 
     def get_source(self, cname: str) -> str:
         prefix, name = self._split_name(cname)
-        root_path = self._get_root_path(prefix)
-        path = self._get_component_path(root_path, name)
+        _root_path, path = self._get_component_path(prefix, name)
         return Path(path).read_text()
 
     # Private
 
-    def _render(
-        self,
-        __name: str,
-        *,
-        caller: "Optional[Callable]" = None,
-        **kw
-    ) -> str:
+    def _render(self, __name: str, *, caller: "Optional[Callable]" = None, **kw) -> str:
         prefix, name = self._split_name(__name)
         url_prefix = self._get_url_prefix(prefix)
-        root_path = self._get_root_path(prefix)
-        path = self._get_component_path(root_path, name)
+        root_path, path = self._get_component_path(prefix, name)
         source = path.read_text()
 
         component = Component(name=__name, url_prefix=url_prefix, source=source)
@@ -191,27 +179,33 @@ class Catalog:
         cname = cname.strip().strip(DELIMITER)
         if DELIMITER not in cname:
             return DEFAULT_PREFIX, cname
-        for prefix in self.prefixes:
+        for prefix in self.prefixes.keys():
             if cname.startswith(prefix):
                 return prefix, cname.removeprefix(prefix)
         return DEFAULT_PREFIX, cname
 
-    def _get_root_path(self, prefix: str) -> "Path":
-        return Path(self.prefixes[prefix].searchpath[0])  # type: ignore
-
     def _get_url_prefix(self, prefix: str) -> str:
-        url_prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(DELIMITER, SLASH)
+        url_prefix = (
+            prefix.strip()
+            .strip(f"{DELIMITER}{SLASH}")
+            .replace(DELIMITER, SLASH)
+        )
         if url_prefix:
             url_prefix = f"{url_prefix}{SLASH}"
         return url_prefix
 
-    def _get_component_path(self, root_path: "Path", name: str) -> "Path":
+    def _get_component_path(self, prefix: str, name: str) -> "Tuple[Path, Path]":
+        root_paths = self.prefixes[prefix].searchpath
         name = name.replace(DELIMITER, SLASH)
         glob_name = f"{name}{self.pattern}"
-        try:
-            return next(root_path.glob(glob_name))
-        except StopIteration:
-            raise ComponentNotFound(glob_name)
+        for root_path in root_paths:
+            root_path = Path(root_path)
+            try:
+                path = next(root_path.glob(glob_name))
+                return root_path, path
+            except StopIteration:
+                pass
+        raise ComponentNotFound(glob_name)
 
     def _insert_assets(self, html: str) -> str:
         html_css = [

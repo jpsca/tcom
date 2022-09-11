@@ -4,7 +4,7 @@ If you pass attributes not declared in a component, those are not discarded, but
 
 For example, this component:
 
-```html+jinja title="components/Card.html.jinja"
+```html+jinja title="components/Card.jinja"
 {# title = ... #}
 <div {{ attrs.render() }}>
   <h1>{{ title }}</h1>
