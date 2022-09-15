@@ -1,11 +1,7 @@
 import re
-from typing import TYPE_CHECKING
+import typing as t
 
 from jinja2.ext import Extension
-
-if TYPE_CHECKING:
-    from typing import Optional
-    from jinja2 import Environment
 
 
 RENDER_CMD = "__render"
@@ -15,8 +11,8 @@ END_CALL = "{%- endcall %}"
 INLINE_CALL = '{{ <CMD>("<TAG>", <ATTRS>) }}'
 INLINE_CALL = INLINE_CALL.replace("<CMD>", RENDER_CMD)
 
-VAR_START = "VAR_START"
-VAR_END = "VAR_END"
+ATTR_START = "{"
+ATTR_END = "}"
 DEBUG_ATTR_NAME = "__source"
 
 re_tag_name = r"([0-9A-Za-z_-]+\.)*[A-Z][0-9A-Za-z_-]*"
@@ -34,29 +30,18 @@ re_attr = rf"""
 {re_attr_name}
 (?:
     {re_equal}
-    (?P<value>".*?"|'.*?'|{VAR_START}.*?{VAR_END})
+    (?P<value>".*?"|'.*?'|\{ATTR_START}.*?\{ATTR_END})
 )?
 """
+rx_attr = re.compile(re_attr, re.VERBOSE)
 
 
 class JinjaX(Extension):
-    def __init__(self, environment: "Environment") -> None:
-        super().__init__(environment)
-
-        self.var_start = environment.variable_start_string
-        self.var_end = environment.variable_end_string
-        _re_attr = (
-            re_attr
-            .replace(VAR_START, re.escape(self.var_start))
-            .replace(VAR_END, re.escape(self.var_end))
-        )
-        self.rx_attr = re.compile(_re_attr, re.VERBOSE)
-
     def preprocess(
         self,
         source: str,
-        name: "Optional[str]" = None,
-        filename: "Optional[str]" = None,
+        name: "t.Optional[str]" = None,
+        filename: "t.Optional[str]" = None,
     ) -> str:
         source = rx_open_tag.sub(self._process_tag, source)
         source = rx_close_tag.sub(END_CALL, source)
@@ -76,7 +61,7 @@ class JinjaX(Extension):
         if raw:
             _raw = raw[0].replace("\n", " ").strip()
             if _raw:
-                attrs_list = self.rx_attr.findall(_raw)
+                attrs_list = rx_attr.findall(_raw)
         return tag, attrs_list
 
     def _build_call(
@@ -90,8 +75,8 @@ class JinjaX(Extension):
             name = name.strip()
             if not value:
                 attrs.append(f"{name}=True")
-            elif value.startswith(self.var_start):
-                value = value[len(self.var_start) : -len(self.var_end)]
+            elif value.startswith(ATTR_START):
+                value = value[len(ATTR_START) : -len(ATTR_END)]
                 attrs.append(f"{name}={value.strip()}")
             else:
                 attrs.append(f"{name}={value.strip()}")

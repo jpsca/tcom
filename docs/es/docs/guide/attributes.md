@@ -28,7 +28,7 @@ Así que todas estas son formas válidas de usar este componente:
 ```html+jinja
 <Form action="/new">...</Form>
 <Form action="/new" method="PATCH">...</Form>
-<Form multipart={{ false }} action="/new">...</Form>
+<Form multipart={False} action="/new">...</Form>
 ```
 
 Los valores de los atributos declarados pueden usarse en la plantilla como variables con el mismo nombre.
@@ -38,20 +38,22 @@ Los valores de los atributos declarados pueden usarse en la plantilla como varia
 
 En el ejemplo anterior, tanto "action" como "method" son cadenas de texto, pero "multipart" es un booleano. No podemos pasarlo como `multipart="false"` porque eso lo volveria un texto, que además evaluaría a verdadero, que es lo opuesto a lo que queremos.
 
-En vez de eso, debemos usar la sintáxis de Jinja para imprimir valores (`{{ valor }}`). Dentro, puedes usar fechas, objetos, listas, expresiones de Python, etc.
+En vez de eso, debemos usar llaves en vez de comillas(`nombre={ valor }` en vez de `nombre="valor"`).
+
+Dentro de las llaves, puedes usar fechas, objetos, listas, o cualquier expresión de Python.
 
 ```html+jinja
 {# Un valor de fecha #}
-<DateTime date={{ datetime_value }} />
+<DateTime date={datetime_value} />
 
 {# Un objeto #}
-<Post post={{ post }} />
+<Post post={post} />
 
 {# Cálculos al vuelo #}
-<FooBar number={{ 2**10 }} />
+<FooBar number={2**10} />
 
 {# Una lista #}
-<FooBar items={{ [1, 2, 3, 4] }} />
+<FooBar items={[1,2,3,4]} />
 ```
 
 

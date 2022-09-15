@@ -26,7 +26,7 @@ So all of these are valid forms to use this component:
 ```html+jinja
 <Form action="/new">...</Form>
 <Form action="/new" method="PATCH">...</Form>
-<Form multipart={{ false }} action="/new">...</Form>
+<Form multipart={False} action="/new">...</Form>
 ```
 
 The values of the declared attributes can be used in the template as values with the same name.
@@ -37,20 +37,22 @@ The values of the declared attributes can be used in the template as values with
 In the example above, both "action" and "method" are strings, but "multipart" is a boolean, so we cannot pass it like `multipart="false"`
 because that will make it a string that evaluates as `True`, which is the opposite of what we want.
 
-Instead, we must use Jinja's print variable syntax (`{{ value }}`). Inside, you can use datetimes, objects, lists, Python expressions, etc.
+Instead, you must use curly brackets instead of quotes (`name={value}` instead of `name="value"`).
+
+Between the brackets, you can use datetimes, objects, lists, or any Python expressions.
 
 ```html+jinja
 {# A datetime value #}
-<DateTime date={{ datetime_value }} />
+<DateTime date={datetime_value} />
 
 {# A query result #}
-<Post post={{ post }} />
+<Post post={post} />
 
 {# In-place calculations #}
-<FooBar number={{ 2**10 }} />
+<FooBar number={2**10} />
 
 {# A list #}
-<FooBar items={{ [1, 2, 3, 4] }} />
+<FooBar items={[1,2,3,4]} />
 ```
 
 
@@ -85,7 +87,7 @@ A great use case is to make layout components:
 {# posts = ... #}
 <PageLayout title="Archive">
   {% for post in posts %}
-  <Post post={{ post }} />
+  <Post post={ post }} />
   {% endfor %}
 </PageLayout>
 ```

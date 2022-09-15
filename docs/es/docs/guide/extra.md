@@ -135,9 +135,14 @@ Para dar un resultado consistente, los atributos y propiedades se ordenan alfab�
     <MyButton {{ attrs.render() }} />
 
     {#--- BIEN 👍 ---#}
-    <MyButton __attrs={{ attrs }} />
+    <MyButton __attrs={ attrs } />
+    ```
 
-    {#--- TAMBIÉN UNA OPCIÓN ---#}
-    {# btn_class = '' #}
-    <MyButton class={{ btn_class }}/>
+    Otra opción es definir explícitamente que atributos necesitan los sub-componentes:
+
+    ```html+jinja
+    {#
+    btn_class = ''
+    -#}
+    <MyButton class={btn_class} />
     ```

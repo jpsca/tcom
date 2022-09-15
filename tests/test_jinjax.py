@@ -14,7 +14,7 @@ def test_nested(pre):
     source = """
 <div class="whatever">
     <Card label="Hello">
-        <MyButton color="red blue" shadowSize={{ size }}>
+        <MyButton color="red blue" shadowSize={size}>
             <Icon name="ok" /> Click Me
             {{ whatever }}
         </MyButton>
@@ -41,14 +41,14 @@ def test_nested(pre):
 
 
 def test_expr_prop(pre):
-    source = "<MyComponent foo={{1 + 2 + 3 + 4}} />"
+    source = "<MyComponent foo={1 + 2 + 3 + 4} />"
     result = pre.preprocess(source)
     print(result)
     assert result == '{{ __render("MyComponent", foo=1 + 2 + 3 + 4) }}'
 
 
 def test_multiple_args(pre):
-    source = "<MyComponent a={{ a }} b={{ b }} c={{c}} />"
+    source = "<MyComponent a={ a } b={b } c={c} />"
     result = pre.preprocess(source)
     print(result)
     assert result == '{{ __render("MyComponent", a=a, b=b, c=c) }}'

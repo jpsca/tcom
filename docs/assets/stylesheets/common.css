@@ -176,12 +176,12 @@
   top: 99.9%;
 }
 [data-md-color-scheme="slate"] #home-anatomy {
-  background-color: #bfab87;
+  background-color: #aaa;
   color: var(--tcom-color);
 }
 [data-md-color-scheme="slate"] #home-anatomy .ripped-top,
 [data-md-color-scheme="slate"] #home-anatomy .ripped-bottom {
-	fill: #bfab87;
+	fill: #aaa;
 }
 #home-anatomy .screen-demo {
   max-width: 1100px;
@@ -193,13 +193,23 @@
   position: relative;
   margin: 0 auto;
 }
-#home-anatomy .code picture {
-  width: 100%;
+
+#home-anatomy picture.code {
+  margin: 8.1% 26.5%;
+}
+#home-anatomy picture.labels {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 @media (max-width: 939px) {
-  #home-anatomy img {
+  #home-anatomy picture.labels {
+    display: none;
+  }
+  #home-anatomy picture.code {
     max-width: 470px;
     width: 100%;
+    margin: 0;
   }
 }
 

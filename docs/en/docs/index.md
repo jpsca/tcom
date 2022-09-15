@@ -85,12 +85,15 @@ is_homepage: true
         <source srcset="assets/images/anatomy-code.webp"
                 type="image/webp"
                 media="(max-width: 939px)">
-        <source srcset="assets/images/anatomy-en.webp"
-                type="image/webp"
-                media="(min-width: 940px)">
         <source srcset="assets/images/anatomy-code.png"
                 type="image/png"
                 media="(max-width: 939px)">
+        <img src="assets/images/anatomy-code.png" />
+      </picture>
+      <picture class="labels">
+        <source srcset="assets/images/anatomy-en.webp"
+                type="image/webp"
+                media="(min-width: 940px)">
         <source srcset="assets/images/anatomy-en.png"
                 type="image/png"
                 media="(min-width: 940px)">

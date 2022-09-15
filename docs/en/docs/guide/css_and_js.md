@@ -169,7 +169,7 @@ document.querySelectorAll('.Card button.share')
 /* ... etc ... */
 ```
 
-An alternative can be using the `MutationObserver` JS API to detect changes to the document and attach the events to all the new inserted components:
+A solution can be using the `MutationObserver` JS API to detect changes to the document and attach the events to all the new inserted components:
 
 ```js title="components/card.js"
 new MutationObserver( (mutationList) => {

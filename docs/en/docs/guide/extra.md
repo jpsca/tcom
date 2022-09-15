@@ -128,7 +128,7 @@ To provide consistent output, the attributes and properties are sorted by name a
 ```
 
 !!! warning
-    Using `{{ attrs.render() }}` as attributes for other component **will not work**, because the components are translated to macros before the page render.
+    Using `<Component {{ attrs.render() }}>` as attributes for other component **will not work**, because the components are translated to macros before the page render.
 
     You must pass them as the special attribute `__attrs`.
 
@@ -137,9 +137,14 @@ To provide consistent output, the attributes and properties are sorted by name a
     <MyButton {{ attrs.render() }} />
 
     {#--- GOOD 👍 ---#}
-    <MyButton __attrs={{ attrs }} />
+    <MyButton __attrs={attrs} />
+    ```
 
-    {#--- ALSO AN OPTION ---#}
-    {# btn_class = '' #}
-    <MyButton class={{ btn_class }}/>
+    Another options is to explicity define which attributes are needed for the sub-components:
+
+    ```html+jinja
+    {#
+    btn_class = ''
+    -#}
+    <MyButton class={btn_class} />
     ```
