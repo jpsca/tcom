@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 from uuid import uuid4
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
 DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js")
 DEFAULT_PREFIX = ""
-DEFAULT_PATTERN = ".*jinja"
+DEFAULT_EXTENSION = ".jinja"
 DELIMITER = "."
 SLASH = "/"
 ASSETS_PLACEHOLDER_KEY = "components_assets"
@@ -31,7 +32,7 @@ class Catalog:
         "components",
         "prefixes",
         "root_url",
-        "pattern",
+        "file_ext",
         "jinja_env",
         "assets_placeholder",
         "collected_css",
@@ -45,15 +46,15 @@ class Catalog:
         filters: "Optional[dict[str, Any]]" = None,
         tests: "Optional[dict[str, Any]]" = None,
         extensions: "Optional[list]" = None,
-        pattern: str = DEFAULT_PATTERN,
         root_url: str = DEFAULT_URL_ROOT,
+        file_ext: str = DEFAULT_EXTENSION,
     ) -> None:
         self.components: "dict[str, Component]" = {}
         self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
         self.collected_css: "list[str]" = []
         self.collected_js: "list[str]" = []
         self.assets_placeholder = f"<components_assets-{uuid4().hex} />"
-        self.pattern = pattern
+        self.file_ext = file_ext
 
         root_url = root_url.strip().rstrip(SLASH)
         self.root_url = f"{root_url}{SLASH}"
@@ -186,9 +187,7 @@ class Catalog:
 
     def _get_url_prefix(self, prefix: str) -> str:
         url_prefix = (
-            prefix.strip()
-            .strip(f"{DELIMITER}{SLASH}")
-            .replace(DELIMITER, SLASH)
+            prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(DELIMITER, SLASH)
         )
         if url_prefix:
             url_prefix = f"{url_prefix}{SLASH}"
@@ -197,15 +196,26 @@ class Catalog:
     def _get_component_path(self, prefix: str, name: str) -> "Tuple[Path, Path]":
         root_paths = self.prefixes[prefix].searchpath
         name = name.replace(DELIMITER, SLASH)
-        glob_name = f"{name}{self.pattern}"
         for root_path in root_paths:
-            root_path = Path(root_path)
-            try:
-                path = next(root_path.glob(glob_name))
-                return root_path, path
-            except StopIteration:
-                pass
-        raise ComponentNotFound(glob_name)
+            for curr_folder, _folders, files in os.walk(
+                root_path, topdown=False, followlinks=True
+            ):
+                relfolder = os.path.relpath(curr_folder, root_path).strip(".")
+                if relfolder and not name.startswith(relfolder):
+                    print("relfolder", relfolder)
+                    continue
+                for filename in files:
+                    if relfolder:
+                        filepath = f"{relfolder}/{filename}"
+                    else:
+                        filepath = filename
+                    if (
+                        filepath == name
+                        or (filepath.startswith(name) and filepath.endswith(self.file_ext))
+                    ):
+                        return Path(root_path), Path(curr_folder) / filename
+
+        raise ComponentNotFound(f"{name}*{self.file_ext}")
 
     def _insert_assets(self, html: str) -> str:
         html_css = [
