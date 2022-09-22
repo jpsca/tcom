@@ -1,6 +1,7 @@
+import logging
 import os
+from typing import Any, Callable, Iterable, Optional, Union
 from pathlib import Path
-from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import jinja2
@@ -12,9 +13,10 @@ from .jinjax import DEBUG_ATTR_NAME, JinjaX, RENDER_CMD
 from .middleware import ComponentsMiddleware
 from .html_attrs import HTMLAttrs
 
-if TYPE_CHECKING:
-    from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
+logger = logging.getLogger("tcom")
+
+TFileExt = Union[tuple[str, ...], str]
 
 DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js")
@@ -47,7 +49,7 @@ class Catalog:
         tests: "Optional[dict[str, Any]]" = None,
         extensions: "Optional[list]" = None,
         root_url: str = DEFAULT_URL_ROOT,
-        file_ext: str = DEFAULT_EXTENSION,
+        file_ext: "TFileExt" = DEFAULT_EXTENSION,
     ) -> None:
         self.components: "dict[str, Component]" = {}
         self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
@@ -136,7 +138,7 @@ class Catalog:
 
         return middleware
 
-    def get_source(self, cname: str, file_ext: str = "") -> str:
+    def get_source(self, cname: str, file_ext: "TFileExt" = "") -> str:
         prefix, name = self._split_name(cname)
         _root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
         return Path(path).read_text()
@@ -185,6 +187,7 @@ class Catalog:
             print("*" * 10)
             raise
 
+        logger.debug("Rendering %s", tmpl_name)
         return tmpl.render(**props).strip()
 
     def _split_name(self, cname: str) -> "tuple[str, str]":
@@ -205,8 +208,8 @@ class Catalog:
         return url_prefix
 
     def _get_component_path(
-        self, prefix: str, name: str, file_ext: str = ""
-    ) -> "Tuple[Path, Path]":
+        self, prefix: str, name: str, file_ext: "TFileExt" = ""
+    ) -> "tuple[Path, Path]":
         name = f"{name.replace(DELIMITER, SLASH)}."
         file_ext = file_ext or self.file_ext
         root_paths = self.prefixes[prefix].searchpath

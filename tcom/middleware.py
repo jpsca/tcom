@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from whitenoise import WhiteNoise  # type: ignore
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Iterable, Optional
+    from typing import Any, Callable, Optional
     from whitenoise.responders import StaticFile  # type: ignore
 
 
@@ -18,7 +18,7 @@ class ComponentsMiddleware(WhiteNoise):
         self,
         *,
         application: "Optional[Callable]" = None,
-        allowed_ext: "Optional[Iterable[str]]" = None,
+        allowed_ext: "Optional[tuple[str, ...]]" = None,
         **kw
     ):
         if application:
