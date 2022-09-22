@@ -23,8 +23,8 @@ DEFAULT_EXTENSION = ".jinja"
 DELIMITER = "."
 SLASH = "/"
 ASSETS_PLACEHOLDER_KEY = "components_assets"
-HTML_ATTRS_KEY = "attrs"
-CONTENT_KEY = "content"
+PROP_ATTRS = "attrs"
+PROP_CONTENT = "content"
 
 
 class Catalog:
@@ -96,11 +96,17 @@ class Catalog:
             prefix = module.prefix or ""
         self.add_folder(module.components_path, prefix=prefix)
 
-    def render(self, __name: str, *, content: str = "", **kw) -> str:
+    def render(
+        self,
+        __name: str,
+        *,
+        content: str = "",
+        **kw,
+    ) -> str:
         self.collected_css = []
         self.collected_js = []
 
-        kw[f"__{CONTENT_KEY}"] = content
+        kw["__content"] = content
         html = self._render(__name, **kw)
         html = self._insert_assets(html)
         return html
@@ -130,17 +136,27 @@ class Catalog:
 
         return middleware
 
-    def get_source(self, cname: str) -> str:
+    def get_source(self, cname: str, file_ext: str = "") -> str:
         prefix, name = self._split_name(cname)
-        _root_path, path = self._get_component_path(prefix, name)
+        _root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
         return Path(path).read_text()
 
     # Private
 
-    def _render(self, __name: str, *, caller: "Optional[Callable]" = None, **kw) -> str:
+    def _render(
+        self,
+        __name: str,
+        *,
+        caller: "Optional[Callable]" = None,
+        **kw,
+    ) -> str:
+        content = kw.pop("__content", "")
+        attrs = kw.pop("__content", None) or {}
+        file_ext = kw.pop("__file_ext", "")
+
         prefix, name = self._split_name(__name)
+        root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
         url_prefix = self._get_url_prefix(prefix)
-        root_path, path = self._get_component_path(prefix, name)
         source = path.read_text()
 
         component = Component(name=__name, url_prefix=url_prefix, source=source)
@@ -151,18 +167,13 @@ class Catalog:
             if js not in self.collected_js:
                 self.collected_js.append(js)
 
-        content = kw.get(f"__{CONTENT_KEY}")
-        attrs = kw.get(f"__{HTML_ATTRS_KEY}")
-
-        if attrs and isinstance(attrs, HTMLAttrs):
-            attrs = attrs.as_dict
-        if attrs and isinstance(attrs, dict):
-            attrs.update(kw)
-            kw = attrs
+        attrs = attrs.as_dict if isinstance(attrs, HTMLAttrs) else attrs
+        attrs.update(kw)
+        kw = attrs
 
         props, extra = component.filter_args(kw)
-        props[HTML_ATTRS_KEY] = HTMLAttrs(extra)
-        props[CONTENT_KEY] = content or (caller() if caller else "")
+        props[PROP_ATTRS] = HTMLAttrs(extra)
+        props[PROP_CONTENT] = content or (caller() if caller else "")
 
         self.jinja_env.loader = self.prefixes[prefix]
         tmpl_name = str(path.relative_to(root_path))
@@ -193,29 +204,30 @@ class Catalog:
             url_prefix = f"{url_prefix}{SLASH}"
         return url_prefix
 
-    def _get_component_path(self, prefix: str, name: str) -> "Tuple[Path, Path]":
+    def _get_component_path(
+        self, prefix: str, name: str, file_ext: str = ""
+    ) -> "Tuple[Path, Path]":
+        name = f"{name.replace(DELIMITER, SLASH)}."
+        file_ext = file_ext or self.file_ext
         root_paths = self.prefixes[prefix].searchpath
-        name = name.replace(DELIMITER, SLASH)
+
         for root_path in root_paths:
             for curr_folder, _folders, files in os.walk(
                 root_path, topdown=False, followlinks=True
             ):
                 relfolder = os.path.relpath(curr_folder, root_path).strip(".")
                 if relfolder and not name.startswith(relfolder):
-                    print("relfolder", relfolder)
                     continue
+
                 for filename in files:
                     if relfolder:
                         filepath = f"{relfolder}/{filename}"
                     else:
                         filepath = filename
-                    if (
-                        filepath == name
-                        or (filepath.startswith(name) and filepath.endswith(self.file_ext))
-                    ):
+                    if filepath.startswith(name) and filepath.endswith(file_ext):
                         return Path(root_path), Path(curr_folder) / filename
 
-        raise ComponentNotFound(f"{name}*{self.file_ext}")
+        raise ComponentNotFound(f"{name}*{file_ext}")
 
     def _insert_assets(self, html: str) -> str:
         html_css = [
