@@ -124,7 +124,7 @@ class Catalog:
     def get_middleware(
         self,
         application: "Callable",
-        allowed_ext: "Optional[Iterable[str]]" = ALLOWED_EXTENSIONS,
+        allowed_ext: "Optional[tuple[str, ...]]" = ALLOWED_EXTENSIONS,
         **kw,
     ) -> ComponentsMiddleware:
         middleware = ComponentsMiddleware()
@@ -210,7 +210,8 @@ class Catalog:
     def _get_component_path(
         self, prefix: str, name: str, file_ext: "TFileExt" = ""
     ) -> "tuple[Path, Path]":
-        name = f"{name.replace(DELIMITER, SLASH)}."
+        name = name.replace(DELIMITER, SLASH)
+        name_dot = f"{name}."
         file_ext = file_ext or self.file_ext
         root_paths = self.prefixes[prefix].searchpath
 
@@ -219,7 +220,7 @@ class Catalog:
                 root_path, topdown=False, followlinks=True
             ):
                 relfolder = os.path.relpath(curr_folder, root_path).strip(".")
-                if relfolder and not name.startswith(relfolder):
+                if relfolder and not name_dot.startswith(relfolder):
                     continue
 
                 for filename in files:
@@ -227,10 +228,13 @@ class Catalog:
                         filepath = f"{relfolder}/{filename}"
                     else:
                         filepath = filename
-                    if filepath.startswith(name) and filepath.endswith(file_ext):
+                    if filepath.startswith(name_dot) and filepath.endswith(file_ext):
                         return Path(root_path), Path(curr_folder) / filename
 
-        raise ComponentNotFound(f"{name}*{file_ext}")
+        raise ComponentNotFound(
+            f"Unable to found a file named {name}{file_ext} "
+            f"nor one following the pattern {name_dot}*{file_ext}"
+        )
 
     def _insert_assets(self, html: str) -> str:
         html_css = [
