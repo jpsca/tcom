@@ -10,5 +10,5 @@ class MissingRequiredAttr(Exception):
         super().__init__(msg)
 
 
-class InvalidFrontMatter(Exception):
+class InvalidProp(Exception):
     pass

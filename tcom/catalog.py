@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Callable, Iterable, Optional, Union
+from typing import Any, Callable, Optional, Union
 from pathlib import Path
 from uuid import uuid4
 
@@ -103,12 +103,14 @@ class Catalog:
         __name: str,
         *,
         content: str = "",
+        source: str = "",
         **kw,
     ) -> str:
         self.collected_css = []
         self.collected_js = []
 
         kw["__content"] = content
+        kw["__source"] = source
         html = self._render(__name, **kw)
         html = self._insert_assets(html)
         return html
@@ -153,13 +155,18 @@ class Catalog:
         **kw,
     ) -> str:
         content = kw.pop("__content", "")
-        attrs = kw.pop("__content", None) or {}
+        attrs = kw.pop("__attrs", None) or {}
         file_ext = kw.pop("__file_ext", "")
-
+        source = kw.pop("__source", "")
         prefix, name = self._split_name(__name)
-        root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
         url_prefix = self._get_url_prefix(prefix)
-        source = path.read_text()
+
+        if source:
+            from_source = True
+        else:
+            from_source = False
+            root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
+            source = path.read_text()
 
         component = Component(name=__name, url_prefix=url_prefix, source=source)
         for css in component.css:
@@ -178,16 +185,21 @@ class Catalog:
         props[PROP_CONTENT] = content or (caller() if caller else "")
 
         self.jinja_env.loader = self.prefixes[prefix]
-        tmpl_name = str(path.relative_to(root_path))
+
         try:
-            tmpl = self.jinja_env.get_template(tmpl_name)
+            if from_source:
+                tmpl = self.jinja_env.from_string(source)
+                logger.debug("Rendering from source %s", __name)
+            else:
+                tmpl_name = str(path.relative_to(root_path))
+                tmpl = self.jinja_env.get_template(tmpl_name)
+                logger.debug("Rendering %s", tmpl_name)
         except Exception:  # pragma: no cover
             print("*** Pre-processed source: ***")
             print(getattr(self.jinja_env, DEBUG_ATTR_NAME, ""))
             print("*" * 10)
             raise
 
-        logger.debug("Rendering %s", tmpl_name)
         return tmpl.render(**props).strip()
 
     def _split_name(self, cname: str) -> "tuple[str, str]":
