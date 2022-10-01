@@ -9,15 +9,11 @@ Your components might need custom styles or custom JavaScript for many reasons. 
 
 ## Declaring assets
 
-The css and/or the js of a component must be declared in the metatada header:
+The css and/or the js of a component must be declared in the metatada header with `{#css ... #}` and `{#js ... #}`
 
-```toml
-{#
-css = [ ... ]
-js = [ ... ]
-
-...
-#}
+```html+jinja
+{#css lorem.css ipsum.css #}
+{#js foo.js bar.js #}
 ```
 
 The filepaths must be relative to the root of your components catalog (e.g.: `components/`). Both of these list are optional.
@@ -30,10 +26,9 @@ The catalog will collect all css and js file paths from the components used on a
 For example, after rendering this component:
 
 ```html+jinja title="components/MyPage.jinja"
-{#
-css = ['mypage.css']
-js = ['mypage.js']
--#}
+{#css mypage.css #}
+{#js mypage.js #}
+
 <Layout title="My page">
   <Card>
     <CardBody>
@@ -57,7 +52,8 @@ catalog.collected_css
 You can add the `<link>` and `<script>` tags in your page automatically by rendering the global `components_assets` variable in your layout component like this:
 
 ```html+jinja title="components/Layout.jinja" hl_lines="7"
-{# title = '' #}
+{#def title #}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -131,9 +127,9 @@ To protect yourself against that, *always* add a custom class to the root elemen
 Example:
 
 ```html+jinja title="components/Card.jinja"
-{# css=['card.css'] }
-{% do attrs.add_class("Card") -%}
+{#css card.css #}
 
+{% do attrs.add_class("Card") -%}
 <div {{ attrs.render() }}>
   <h1>My Card</h1>
   ...

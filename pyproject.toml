@@ -18,7 +18,6 @@ exclude = '''
   | _build
   | build
   | dist
-  | tests/toml-test
 )/
 '''
 
@@ -29,5 +28,4 @@ atomic = true
 lines_after_imports = 2
 lines_between_types = 1
 
-known_first_party = ["tomlkit"]
 known_third_party = ["pytest"]

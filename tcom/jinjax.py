@@ -1,5 +1,4 @@
 import re
-import typing as t
 
 from jinja2.ext import Extension
 
@@ -37,12 +36,7 @@ rx_attr = re.compile(re_attr, re.VERBOSE)
 
 
 class JinjaX(Extension):
-    def preprocess(
-        self,
-        source: str,
-        name: "t.Optional[str]" = None,
-        filename: "t.Optional[str]" = None,
-    ) -> str:
+    def preprocess(self, source: str, *args, **kw) -> str:
         source = rx_open_tag.sub(self._process_tag, source)
         source = rx_close_tag.sub(END_CALL, source)
         setattr(self.environment, DEBUG_ATTR_NAME, source)  # type: ignore
@@ -59,10 +53,15 @@ class JinjaX(Extension):
         tag = tag.strip()
         attrs_list = []
         if raw:
-            _raw = raw[0].replace("\n", " ").strip()
-            if _raw:
-                attrs_list = rx_attr.findall(_raw)
+            attrs_list = self._parse_attrs(raw[0])
+        print(tag, attrs_list)
         return tag, attrs_list
+
+    def _parse_attrs(self, raw: str) -> "list[tuple[str, str]]":
+        raw = raw.replace("\n", " ").strip()
+        if not raw:
+            return []
+        return rx_attr.findall(raw)
 
     def _build_call(
         self,
@@ -75,11 +74,8 @@ class JinjaX(Extension):
             name = name.strip()
             if not value:
                 attrs.append(f"{name}=True")
-            elif value.startswith(ATTR_START):
-                value = value[len(ATTR_START) : -len(ATTR_END)]
-                attrs.append(f"{name}={value.strip()}")
             else:
-                attrs.append(f"{name}={value.strip()}")
+                attrs.append(f"{name}={value.strip(' {}')}")
 
         if inline:
             return INLINE_CALL \

@@ -33,12 +33,10 @@ is_homepage: true
     </ul>
     <div class="card">
       <picture class="card-screen">
-        <source srcset="assets/images/card.webp" type="image/webp">
         <source srcset="assets/images/card.png" type="image/png">
         <img src="assets/images/card.png" alt="Card rendered" width="351" height="326">
       </picture>
       <picture class="card-code">
-        <source srcset="assets/images/card-code.webp" type="image/webp">
         <source srcset="assets/images/card-code.png" type="image/png">
         <img src="assets/images/card-code.png" alt="Card code" width="365" height="422">
       </picture>
@@ -77,22 +75,14 @@ is_homepage: true
     <p>Así es como se vé un&nbsp;componente:</p>
     <div class="screen-demo">
       <picture class="code">
-        <source srcset="assets/images/anatomy-code.webp"
-                type="image/webp"
-                media="(max-width: 939px)">
-        <source srcset="assets/images/anatomy-code.png"
-                type="image/png"
-                media="(max-width: 939px)">
-        <img src="assets/images/anatomy-code.png" />
+        <source srcset="assets/images/anatomy-code.png" type="image/png">
+        <img src="assets/images/anatomy-code.png" width="730" height="917" />
       </picture>
       <picture class="labels">
-        <source srcset="assets/images/anatomy-es.webp"
-                type="image/webp"
-                media="(min-width: 940px)">
         <source srcset="assets/images/anatomy-es.png"
-                type="image/png"
-                media="(min-width: 940px)">
-        <img src="assets/images/anatomy-es.png" />
+          type="image/png"
+          media="(min-width: 940px)">
+        <img src="assets/images/anatomy-es.png" width="1436" height="929" />
       </picture>
     </div>
     <svg class="ripped-top" preserveAspectRatio="xMinYMin" version="1.1" viewBox="0 0 1129.8 45.13" xmlns="http://www.w3.org/2000/svg">

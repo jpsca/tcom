@@ -1,80 +1,136 @@
 import re
+from keyword import iskeyword
 from typing import Any
 
-import tomlkit
-import uuid
-
-from .exceptions import InvalidFrontMatter, MissingRequiredAttr
+from .exceptions import InvalidProp, MissingRequiredAttr
 
 
-FRONT_MATTER_START = "{#"
-FRONT_MATTER_END = "#}"
-CSS_KEY = "css"
-JS_KEY = "js"
+RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
+RX_CSS_START = re.compile(r"{#-?\s*css\s+")
+RX_JS_START = re.compile(r"{#-?\s*js\s+")
+RX_META_END = re.compile(r"\s*-?#}")
+RX_COMMA = re.compile(r"\s*,\s*")
 
-RX_REQUIRED = re.compile(r"=\s*(?:\.\.\.|…)(\s+\n?)")
+ALLOWED_NAMES_IN_EXPRESSIONS = {
+    "len": len,
+    "max": max,
+    "min": min,
+    "pow": pow,
+    "sum": sum,
+}
+
+
+def eval_expression(input_string):
+    code = compile(input_string, "<string>", "eval")
+    for name in code.co_names:
+        if name not in ALLOWED_NAMES_IN_EXPRESSIONS:
+            raise InvalidProp(f"Use of {name} not allowed")
+    return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSIONS)
+
+
+def is_valid_variable_name(name):
+    return name.isidentifier() and not iskeyword(name)
 
 
 class Component:
-    __slots__ = ("args", "css", "js", "name", "required")
-
-    def __init__(self, *, name: str, url_prefix: str, source: str) -> None:
+    def __init__(self, *, name: str, source: str, url_prefix: str = "") -> None:
         self.name = name
+        self.url_prefix = url_prefix
+        self.required: "list[str]" = []
+        self.optional: "dict[str, Any]" = {}
+        self.css: "list[str]" = []
+        self.js: "list[str]" = []
+        self.parse_props(source)
+        self.parse_css(source)
+        self.parse_js(source)
 
-        placeholder = f"required-{uuid.uuid4().hex}"
-        fmdict = self.load_front_matter(source, placeholder)
-
-        css = []
-        for url in fmdict.pop(CSS_KEY, []):
-            url = url.strip("/")
-            css.append(f"{url_prefix}{url}")
-        self.css = css
-
-        js = []
-        for url in fmdict.pop(JS_KEY, []):
-            url = url.strip("/")
-            js.append(f"{url_prefix}{url}")
-        self.js = js
-
-        args = {}
-        required = set()
-        for name, default in fmdict.items():
-            if default == placeholder:
-                required.add(name)
-            else:
-                args[name] = default
-
-        self.args = args
+    def parse_props(self, source: str) -> None:
+        expr = self.load_metadata(source, RX_PROPS_START)
+        if not expr:
+            return
+        required, optional = self.parse_props_expr(expr)
         self.required = required
+        self.optional = optional
 
-    def load_front_matter(self, source: str, placeholder: str) -> "dict[str, Any]":
-        if not source.startswith(FRONT_MATTER_START):
-            return {}
-        front_matter = source.split(FRONT_MATTER_END, 1)[0]
-        front_matter = (
-            front_matter[2:]
-            .strip("-")
-            .replace(" False\n", " false\n")
-            .replace(" True\n", " true\n")
-        )
-        front_matter = RX_REQUIRED.sub(f"= '{placeholder}'\\1", front_matter)
-        try:
-            return tomlkit.parse(front_matter)
-        except tomlkit.exceptions.TOMLKitError as err:
-            raise InvalidFrontMatter(self.name, *err.args)
+    def parse_css(self, source: str) -> None:
+        css_expr = self.load_metadata(source, RX_CSS_START)
+        if not css_expr:
+            return
+        self.css = self.parse_files_expr(css_expr)
+
+    def parse_js(self, source: str) -> None:
+        js_expr = self.load_metadata(source, RX_JS_START)
+        if not js_expr:
+            return
+        self.js = self.parse_files_expr(js_expr)
+
+    def load_metadata(self, source: str, rx_start: re.Pattern) -> str:
+        start = rx_start.search(source)
+        if not start:
+            return ""
+        end = RX_META_END.search(source, pos=start.end())
+        if not end:
+            raise InvalidProp(self.name)
+        return source[start.end() : end.start()].strip()
+
+    def parse_props_expr(self, expr: str) -> "tuple[list[str], dict[str, Any]]":
+        required = []
+        optional = {}
+        for key in RX_COMMA.split(expr):
+            if "=" in key:
+                key, value = key.split("=")
+                key = key.strip()
+                if not is_valid_variable_name(key):
+                    raise InvalidProp(
+                        self.name, f"`{key}` is not a valid variable name"
+                    )
+
+                value = value.strip()
+                # Jinja allows using lowercase booleans, so we do
+                # it too for consistency
+                if value == "false":
+                    value = "False"
+                elif value == "true":
+                    value = "True"
+
+                optional[key] = eval_expression(value)
+            else:
+                key = key.strip()
+                if not is_valid_variable_name(key):
+                    raise InvalidProp(
+                        self.name, f"`{key}` is not a valid variable name"
+                    )
+                if optional:
+                    raise InvalidProp(
+                        self.name, "Required argument follows optional argument"
+                    )
+                if key in required:
+                    raise InvalidProp(self.name, "Duplicated argument")
+
+                required.append(key)
+
+        return required, optional
+
+    def parse_files_expr(self, expr: str) -> "list[str]":
+        files = []
+        for url in RX_COMMA.split(expr):
+            url = url.strip("\"'/")
+            if url:
+                files.append(f"{self.url_prefix}{url}")
+        return files
 
     def filter_args(
         self, kw: "dict[str, Any]"
     ) -> "tuple[dict[str, Any], dict[str, Any]]":
         props = {}
 
-        for attr in self.required:
-            if attr not in kw:
-                raise MissingRequiredAttr(self.name, attr)
-            props[attr] = kw.pop(attr)
+        for key in self.required:
+            if key not in kw:
+                raise MissingRequiredAttr(self.name, key)
+            props[key] = kw.pop(key)
 
-        for attr, default_value in self.args.items():
-            props[attr] = kw.pop(attr, default_value)
+        for key, default_value in self.optional.items():
+            props[key] = kw.pop(key, default_value)
         extra = kw.copy()
         return props, extra
 

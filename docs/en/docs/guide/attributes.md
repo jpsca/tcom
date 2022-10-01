@@ -1,13 +1,10 @@
 # Component Attributes
 
-More often than not, a component takes one or more attributes to render. Every attribute must be declared in the metadata section (the comment at the top) of the component.
+More often than not, a component takes one or more attributes to render. Every attribute must be declared at the beginning of the component with `{#def attributes #}`. The syntax is very similar to the declaration od a python function:
 
 ```html+jinja title="components/Form.jinja"
-{#
-action = ...
-method = 'post'
-multipart = false
-#}
+{#def action, method='post', multipart=False #}
+
 <form method="{{ method }}" action="{{ action }}"
   {%- if multipart %} enctype="multipart/form-data"{% endif %}
 >
@@ -15,11 +12,7 @@ multipart = false
 </form>
 ```
 
-In this example, the component takes three attributes: "action", "method", and "multipart". The last two have a default value, so they are optional, but the first one has `...` as value. That means that it must be passed when rendering this component.
-
-!!! note
-
-    Required attributes must have a value of three dots **without quotes**.
+In this example, the component takes three attributes: "action", "method", and "multipart". The last two have a default value, so they are optional, but the first one doesn't. That means it must be passed a value when rendering the component.
 
 So all of these are valid forms to use this component:
 
@@ -71,7 +64,8 @@ So far we have seen self-closing components, but there is another, much more use
 A great use case is to make layout components:
 
 ```html+jinja title="components/PageLayout.jinja"
-{# title = ... #}
+{#def title #}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,10 +78,11 @@ A great use case is to make layout components:
 ```
 
 ```html+jinja title="components/ArchivePage.jinja"
-{# posts = ... #}
+{#def posts #}
+
 <PageLayout title="Archive">
   {% for post in posts %}
-  <Post post={ post }} />
+  <Post post={post} />
   {% endfor %}
 </PageLayout>
 ```

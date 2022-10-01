@@ -9,16 +9,13 @@ Tus componentes pueden necesitar estilos propios o JavaScript por muchas razones
 
 ## Declarando CSS/JS
 
-El CSS y/o el JS de un componente deben ser declarados en la metadata de la cabecera:
+El CSS y/o el JS de un componente deben ser declarados en la metadata de la cabecera usando `{#css ... #}` y `{#js ... #}`
 
-```toml
-{#
-css = [ ... ]
-js = [ ... ]
-
-...
-#}
+```html+jinja
+{#css lorem.css ipsum.css #}
+{#js foo.js bar.js #}
 ```
+
 Ambas listas son opcionales.
 Las rutas deben ser relativas a la raíz del folder de componentes (e.g.: `components/`).
 
@@ -30,10 +27,9 @@ El catálogo recogerá todas las rutas de los archivos CSS y JS de los component
 Por ejemplo, despues de renderizar este componente:
 
 ```html+jinja title="components/MyPage.jinja"
-{#
-css = ['mypage.css']
-js = ['mypage.js']
--#}
+{#css mypage.css #}
+{#js mypage.js #}
+
 <Layout title="My page">
   <Card>
     <CardBody>
@@ -57,7 +53,8 @@ catalog.collected_css
 Puedes agregar etiquetas `<link>` y `<script>` en tu página automáticamente, imprimiendo la variable global implícita `components_assets` en tu componente base, así:
 
 ```html+jinja title="components/Layout.jinja" hl_lines="7"
-{# title = '' #}
+{#def title #}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,9 +120,9 @@ Para protegerte de esto, *siempre* usa una clase única en la(s) etiqueta(s) ra�
 Ejemplo:
 
 ```html+jinja title="components/Card.jinja"
-{# css=['card.css'] }
-{% do attrs.add_class("Card") -%}
+{#css card.css #}
 
+{% do attrs.add_class("Card") -%}
 <div {{ attrs.render() }}>
   <h1>My Card</h1>
   ...

@@ -38,13 +38,11 @@ Los components son archivos `.jinja`. El nombre del archivo antes del primer pun
 
 Por ejemplo, si el archivo se llama `PersonForm.jinja`, el nombre del componente es `PersonForm` y puede ser usado como `<PersonForm>...</PersonForm>`.
 
-Un componente puede empezar con un comentario Jinja donde declaras que atributos puede recibir. Esta metadata está em formato [TOML](https://toml.io/).
+Un componente puede empezar con un comentario Jinja donde declaras que atributos puede recibir. Algunos de estos atributos pueden tener un valor por defecto (haciéndolos opcionales):
 
 ```html+jinja
-{#
-title = ...
-message = ...
-#}
+{#def title, message='Hi' #}
+
 <h1>{{ title }}</h1>
 <div>{{ message }}. Este archivo es un componente</div>
 ```

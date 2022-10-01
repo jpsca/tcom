@@ -5,7 +5,8 @@ Si le pasas atributos no declarados a un componentes, estos no son descartados s
 Por ejemplo, este componente:
 
 ```html+jinja title="components/Card.jinja"
-{# title = ... #}
+{#def title #}
+
 <div {{ attrs.render() }}>
   <h1>{{ title }}</h1>
   {{ content }}
@@ -32,9 +33,9 @@ será renderizado a:
 Puedes agregar o quitar atributos, antes de renderizarlos, usando los otros métodos del objeto `attrs`. Por ejemplo:
 
 ```html+jinja
-{# title = ... #}
-{% do attrs.add_class("card") -%}
+{#def title #}
 
+{% do attrs.add_class("card") -%}
 <div {{ attrs.render() }}>
   <h1>{{ title }}</h1>
   {{ content }}
@@ -141,8 +142,7 @@ Para dar un resultado consistente, los atributos y propiedades se ordenan alfab�
     Otra opción es definir explícitamente que atributos necesitan los sub-componentes:
 
     ```html+jinja
-    {#
-    btn_class = ''
-    -#}
+    {#def btn_class='' #}
+
     <MyButton class={btn_class} />
     ```
