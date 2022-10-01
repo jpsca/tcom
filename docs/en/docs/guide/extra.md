@@ -5,7 +5,8 @@ If you pass attributes not declared in a component, those are not discarded, but
 For example, this component:
 
 ```html+jinja title="components/Card.jinja"
-{# title = ... #}
+{#def title #}
+
 <div {{ attrs.render() }}>
   <h1>{{ title }}</h1>
   {{ content }}
@@ -32,9 +33,9 @@ Will be rendered as:
 You can add or remove attributes before rendering them using the other methods of the `attrs` object. For example:
 
 ```html+jinja
-{# title = ... #}
-{% do attrs.add_class("card") -%}
+{#def title #}
 
+{% do attrs.add_class("card") -%}
 <div {{ attrs.render() }}>
   <h1>{{ title }}</h1>
   {{ content }}
@@ -143,8 +144,7 @@ To provide consistent output, the attributes and properties are sorted by name a
     Another options is to explicity define which attributes are needed for the sub-components:
 
     ```html+jinja
-    {#
-    btn_class = ''
-    -#}
+    {#def btn_class='' #}
+
     <MyButton class={btn_class} />
     ```

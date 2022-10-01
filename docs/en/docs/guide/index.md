@@ -38,13 +38,11 @@ The components are `.jinja` files. The name of the file before the first dot is 
 
 For example, if the filename es `PersonForm.jinja`, the name of the component is `PersonForm` and can be used like `<PersonForm>...</PersonForm>`.
 
-A component can begin with a Jinja comment where it declare what attributes it takes. This metadata is in [TOML](https://toml.io/) format.
+A component can begin with a Jinja comment where it declare what attributes it takes. Some of these attributes might have a default value (making them optional):
 
 ```html+jinja
-{#
-title = ...
-message = ...
-#}
+{#def title, message='Hi' #}
+
 <h1>{{ title }}</h1>
 <div>{{ message }}. This is my component</div>
 ```

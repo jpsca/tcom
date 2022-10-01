@@ -2,14 +2,11 @@
 
 A menudo, un componente toma uno o más atributos para renderizar, podría ser una fecha, una lista de artículos o un texto.
 
-Cada atributo debe ser declarado en la metadata (el comentario al principio) del componente.
+Cada atributo debe ser declarado en la metadata (el comentario al principio) del componente con `{#def attributes #}`. La sintaxis es muy similar a la declaración de una función en python:
 
 ```html+jinja title="components/Form.jinja"
-{#
-action = ...
-method = 'post'
-multipart = false
-#}
+{#def action, method='post', multipart=False #}
+
 <form method="{{ method }}" action="{{ action }}"
   {%- if multipart %} enctype="multipart/form-data"{% endif %}
 >
@@ -17,11 +14,8 @@ multipart = false
 </form>
 ```
 
-En este ejemplo, el componente toma tres atributos: "action", "method", y "multipart". Los últimos dos tienen un valor por defecto, de modo que son opcionales - no necesitas pasarlos para llamar al componente - pero el primer argumento tiene un `...` como valor. Esto signifca que tienes que pasarle un valor cuando llames al componente.
+En este ejemplo, el componente toma tres atributos: "action", "method", y "multipart". Los últimos dos tienen un valor por defecto, de modo que son opcionales - no necesitas pasarlos para llamar al componente. El primer argumento no tiene un valor, asi que tienes que pasarle un valor cuando llames al componente.
 
-!!! note "Nota"
-
-    Atributos requeridos tienen un valor de tres puntos **sin comillas**.
 
 Así que todas estas son formas válidas de usar este componente:
 
@@ -73,7 +67,8 @@ Hasta ahora, hemos visto componentes que terminan en `/>`, sin una etiqueta de c
 Un gran caso de uso es hacer componentes de base:
 
 ```html+jinja title="components/PageLayout.jinja"
-{# title = ... #}
+{#def title #}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -86,7 +81,8 @@ Un gran caso de uso es hacer componentes de base:
 ```
 
 ```html+jinja title="components/ArchivePage.jinja"
-{# posts = ... #}
+{#def posts #}
+
 <PageLayout title="Archive">
   {% for post in posts %}
   <Post post={{ post }} />
