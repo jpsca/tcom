@@ -3,15 +3,16 @@ from keyword import iskeyword
 from typing import Any
 
 from .exceptions import InvalidProp, MissingRequiredAttr
-
+r'^'
 
 RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
+RX_PROP = re.compile(r"(\w+(?:,|=.+?,)?)", re.UNICODE)
 RX_CSS_START = re.compile(r"{#-?\s*css\s+")
 RX_JS_START = re.compile(r"{#-?\s*js\s+")
 RX_META_END = re.compile(r"\s*-?#}")
 RX_COMMA = re.compile(r"\s*,\s*")
 
-ALLOWED_NAMES_IN_EXPRESSIONS = {
+ALLOWED_NAMES_IN_EXPRESSION_VALUES = {
     "len": len,
     "max": max,
     "min": min,
@@ -23,9 +24,9 @@ ALLOWED_NAMES_IN_EXPRESSIONS = {
 def eval_expression(input_string):
     code = compile(input_string, "<string>", "eval")
     for name in code.co_names:
-        if name not in ALLOWED_NAMES_IN_EXPRESSIONS:
+        if name not in ALLOWED_NAMES_IN_EXPRESSION_VALUES:
             raise InvalidProp(f"Use of {name} not allowed")
-    return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSIONS)
+    return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSION_VALUES)
 
 
 def is_valid_variable_name(name):
@@ -76,13 +77,17 @@ class Component:
     def parse_props_expr(self, expr: str) -> "tuple[list[str], dict[str, Any]]":
         required = []
         optional = {}
-        for key in RX_COMMA.split(expr):
+
+        expr = f"{expr},"  # To match the last prop with the regexp
+        for key in RX_PROP.findall(expr):
+            key = key.strip(",")
+
             if "=" in key:
                 key, value = key.split("=")
                 key = key.strip()
                 if not is_valid_variable_name(key):
                     raise InvalidProp(
-                        self.name, f"`{key}` is not a valid variable name"
+                        self.name, f"`{key}` is not a valid attribute name"
                     )
 
                 value = value.strip()
@@ -98,7 +103,7 @@ class Component:
                 key = key.strip()
                 if not is_valid_variable_name(key):
                     raise InvalidProp(
-                        self.name, f"`{key}` is not a valid variable name"
+                        self.name, f"`{key}` is not a valid attribute name"
                     )
                 if optional:
                     raise InvalidProp(

@@ -17,10 +17,10 @@ DEBUG_ATTR_NAME = "__source"
 re_tag_name = r"([0-9A-Za-z_-]+\.)*[A-Z][0-9A-Za-z_-]*"
 re_raw_attrs = r"[^\>]*"
 re_open_tag = fr"<\s*{re_tag_name}{re_raw_attrs}>"
-rx_open_tag = re.compile(re_open_tag, re.VERBOSE)
+RX_OPEN_TAG = re.compile(re_open_tag, re.VERBOSE)
 
 re_close_tag = fr"</\s*{re_tag_name}\s*>"
-rx_close_tag = re.compile(re_close_tag, re.VERBOSE)
+RX_CLOSE_TAG = re.compile(re_close_tag, re.VERBOSE)
 
 re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_]*)"
 re_equal = r"\s*=\s*"
@@ -32,13 +32,13 @@ re_attr = rf"""
     (?P<value>".*?"|'.*?'|\{ATTR_START}.*?\{ATTR_END})
 )?
 """
-rx_attr = re.compile(re_attr, re.VERBOSE)
+RX_ATTR = re.compile(re_attr, re.VERBOSE)
 
 
 class JinjaX(Extension):
     def preprocess(self, source: str, *args, **kw) -> str:
-        source = rx_open_tag.sub(self._process_tag, source)
-        source = rx_close_tag.sub(END_CALL, source)
+        source = RX_OPEN_TAG.sub(self._process_tag, source)
+        source = RX_CLOSE_TAG.sub(END_CALL, source)
         setattr(self.environment, DEBUG_ATTR_NAME, source)  # type: ignore
         return source
 
@@ -61,7 +61,7 @@ class JinjaX(Extension):
         raw = raw.replace("\n", " ").strip()
         if not raw:
             return []
-        return rx_attr.findall(raw)
+        return RX_ATTR.findall(raw)
 
     def _build_call(
         self,
