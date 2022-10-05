@@ -1,6 +1,6 @@
-# Component Attributes
+# Component Arguments
 
-More often than not, a component takes one or more attributes to render. Every attribute must be declared at the beginning of the component with `{#def attributes #}`. The syntax is very similar to the declaration od a python function:
+More often than not, a component takes one or more arguments to render. Every argument must be declared at the beginning of the component with `{#def arguments #}`. The syntax is very similar to the declaration od a python function:
 
 ```html+jinja title="components/Form.jinja"
 {#def action, method='post', multipart=False #}
@@ -12,7 +12,7 @@ More often than not, a component takes one or more attributes to render. Every a
 </form>
 ```
 
-In this example, the component takes three attributes: "action", "method", and "multipart". The last two have a default value, so they are optional, but the first one doesn't. That means it must be passed a value when rendering the component.
+In this example, the component takes three arguments: "action", "method", and "multipart". The last two have a default value, so they are optional, but the first one doesn't. That means it must be passed a value when rendering the component.
 
 So all of these are valid forms to use this component:
 
@@ -22,10 +22,10 @@ So all of these are valid forms to use this component:
 <Form multipart={False} action="/new">...</Form>
 ```
 
-The values of the declared attributes can be used in the template as values with the same name.
+The values of the declared arguments can be used in the template as values with the same name.
 
 
-## Non-string attributes
+## Non-string arguments
 
 In the example above, both "action" and "method" are strings, but "multipart" is a boolean, so we cannot pass it like `multipart="false"`
 because that will make it a string that evaluates as `True`, which is the opposite of what we want.
@@ -55,10 +55,10 @@ So far we have seen self-closing components, but there is another, much more use
 
 ```html+jinja
 {# Self-closing component #}
-<Name attributes />
+<Name arguments />
 
 {# Component with content #}
-<Name attributes> ...content here... </Name>
+<Name arguments> ...content here... </Name>
 ```
 
 A great use case is to make layout components:
@@ -89,12 +89,12 @@ A great use case is to make layout components:
 
 Everything between the open and close tags of the components will be rendered and passed to the `PageLayout` component as a special, implicit, `content` variable.
 
-To test a component in isolation, you can also manually send a content attribute using the special `__content` attribute:
+To test a component in isolation, you can also manually send a content argument using the special `__content` argument:
 
 ```python
 catalog.render("PageLayout", title="Hello world", __content="TEST")
 ```
 
-## Extra attributes
+## Extra arguments
 
-If you pass attributes not declared in a component, those are not discarded, but rather collected in a `attrs` object. Read more about it in the next section.
+If you pass arguments not declared in a component, those are not discarded, but rather collected in a `attrs` object. Read more about it in the next section.

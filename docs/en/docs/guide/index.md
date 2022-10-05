@@ -38,7 +38,7 @@ The components are `.jinja` files. The name of the file before the first dot is 
 
 For example, if the filename es `PersonForm.jinja`, the name of the component is `PersonForm` and can be used like `<PersonForm>...</PersonForm>`.
 
-A component can begin with a Jinja comment where it declare what attributes it takes. Some of these attributes might have a default value (making them optional):
+A component can begin with a Jinja comment where it declare what arguments it takes. Some of these arguments might have a default value (making them optional):
 
 ```html+jinja
 {#def title, message='Hi' #}

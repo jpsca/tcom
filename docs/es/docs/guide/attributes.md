@@ -2,7 +2,7 @@
 
 A menudo, un componente toma uno o más atributos para renderizar, podría ser una fecha, una lista de artículos o un texto.
 
-Cada atributo debe ser declarado en la metadata (el comentario al principio) del componente con `{#def attributes #}`. La sintaxis es muy similar a la declaración de una función en python:
+Cada atributo debe ser declarado en la metadata (el comentario al principio) del componente con `{#def arguments #}`. La sintaxis es muy similar a la declaración de una función en python:
 
 ```html+jinja title="components/Form.jinja"
 {#def action, method='post', multipart=False #}
@@ -58,10 +58,10 @@ Hasta ahora, hemos visto componentes que terminan en `/>`, sin una etiqueta de c
 
 ```html+jinja
 {# Componente de cierre automático #}
-<Name attributes />
+<Name arguments />
 
 {# Componente con contenido #}
-<Name attributes> ...content here... </Name>
+<Name arguments> ...content here... </Name>
 ```
 
 Un gran caso de uso es hacer componentes de base:
