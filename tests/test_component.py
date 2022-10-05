@@ -1,6 +1,6 @@
 import pytest
 
-from tcom import Component, InvalidProp
+from tcom import Component, InvalidArgument
 
 
 def test_load_props():
@@ -48,39 +48,38 @@ def test_no_props():
 
 
 def test_fails_when_invalid_name():
-    with pytest.raises(InvalidProp):
+    with pytest.raises(InvalidArgument):
         source = "{#def 000abc -#}\n"
-        Component(name="", source=source)
+        co = Component(name="", source=source)
+        print(co.required, co.optional)
 
 
 def test_fails_when_missing_comma_between_props():
-    with pytest.raises(InvalidProp):
+    with pytest.raises(InvalidArgument):
         source = "{#def lorem ipsum -#}\n"
-        Component(name="", source=source)
+        co = Component(name="", source=source)
+        print(co.required, co.optional)
 
 
 def test_fails_when_missing_quotes_arround_default_value():
-    with pytest.raises(InvalidProp):
+    with pytest.raises(InvalidArgument):
         source = "{#def lorem=ipsum -#}\n"
-        Component(name="", source=source)
-
-
-def test_fails_when_required_after_optional_prop():
-    with pytest.raises(InvalidProp):
-        source = "{#def lorem='ipsum', wat -#}\n"
-        Component(name="", source=source)
+        co = Component(name="", source=source)
+        print(co.required, co.optional)
 
 
 def test_fails_when_prop_is_expression():
-    with pytest.raises(InvalidProp):
+    with pytest.raises(InvalidArgument):
         source = "{#def a-b -#}\n"
-        Component(name="", source=source)
+        co = Component(name="", source=source)
+        print(co.required, co.optional)
 
 
 def test_fails_when_extra_comma_between_props():
-    with pytest.raises(InvalidProp):
+    with pytest.raises(InvalidArgument):
         source = "{#def a, , b -#}\n"
-        Component(name="", source=source)
+        co = Component(name="", source=source)
+        print(co.required, co.optional)
 
 
 def test_comma_in_default_value():
@@ -104,7 +103,7 @@ def test_load_assets():
 def test_no_comma_in_assets_list_is_your_problem():
     com = Component(
         name="Test.jinja",
-        source='{#js a.js b.js c.js -#}\n',
+        source="{#js a.js b.js c.js -#}\n",
         url_prefix="/static/"
     )
     assert com.js == ["/static/a.js b.js c.js"]

@@ -57,5 +57,5 @@ def test_global_values():
 
 
 def test_required_attr_are_required(catalog):
-    with pytest.raises(tcom.MissingRequiredAttr):
+    with pytest.raises(tcom.MissingRequiredArgument):
         catalog.render("Page")

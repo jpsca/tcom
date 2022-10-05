@@ -1,12 +1,12 @@
+import ast
 import re
 from keyword import iskeyword
 from typing import Any
 
-from .exceptions import InvalidProp, MissingRequiredAttr
-r'^'
+from .exceptions import InvalidArgument, MissingRequiredArgument
+
 
 RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
-RX_PROP = re.compile(r"(\w+(?:,|=.+?,)?)", re.UNICODE)
 RX_CSS_START = re.compile(r"{#-?\s*css\s+")
 RX_JS_START = re.compile(r"{#-?\s*js\s+")
 RX_META_END = re.compile(r"\s*-?#}")
@@ -18,6 +18,9 @@ ALLOWED_NAMES_IN_EXPRESSION_VALUES = {
     "min": min,
     "pow": pow,
     "sum": sum,
+    # Jinja allows using lowercase booleans, so we do it too for consistency
+    "false": False,
+    "true": True,
 }
 
 
@@ -25,7 +28,7 @@ def eval_expression(input_string):
     code = compile(input_string, "<string>", "eval")
     for name in code.co_names:
         if name not in ALLOWED_NAMES_IN_EXPRESSION_VALUES:
-            raise InvalidProp(f"Use of {name} not allowed")
+            raise InvalidArgument(f"Use of {name} not allowed")
     return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSION_VALUES)
 
 
@@ -49,7 +52,7 @@ class Component:
         expr = self.load_metadata(source, RX_PROPS_START)
         if not expr:
             return
-        required, optional = self.parse_props_expr(expr)
+        required, optional = self.parse_args_expr(expr)
         self.required = required
         self.optional = optional
 
@@ -71,48 +74,25 @@ class Component:
             return ""
         end = RX_META_END.search(source, pos=start.end())
         if not end:
-            raise InvalidProp(self.name)
+            raise InvalidArgument(self.name)
         return source[start.end() : end.start()].strip()
 
-    def parse_props_expr(self, expr: str) -> "tuple[list[str], dict[str, Any]]":
+    def parse_args_expr(self, expr: str) -> "tuple[list[str], dict[str, Any]]":
         required = []
         optional = {}
 
-        expr = f"{expr},"  # To match the last prop with the regexp
-        for key in RX_PROP.findall(expr):
-            key = key.strip(",")
-
-            if "=" in key:
-                key, value = key.split("=")
-                key = key.strip()
-                if not is_valid_variable_name(key):
-                    raise InvalidProp(
-                        self.name, f"`{key}` is not a valid attribute name"
-                    )
-
-                value = value.strip()
-                # Jinja allows using lowercase booleans, so we do
-                # it too for consistency
-                if value == "false":
-                    value = "False"
-                elif value == "true":
-                    value = "True"
-
-                optional[key] = eval_expression(value)
-            else:
-                key = key.strip()
-                if not is_valid_variable_name(key):
-                    raise InvalidProp(
-                        self.name, f"`{key}` is not a valid attribute name"
-                    )
-                if optional:
-                    raise InvalidProp(
-                        self.name, "Required argument follows optional argument"
-                    )
-                if key in required:
-                    raise InvalidProp(self.name, "Duplicated argument")
-
-                required.append(key)
+        try:
+            p = ast.parse(f"def meh(*, {expr}): pass")
+        except SyntaxError as err:
+            raise InvalidArgument(err)
+        args = p.body[0].args  # type: ignore
+        arg_names = [arg.arg for arg in args.kwonlyargs]
+        for name, value in zip(arg_names, args.kw_defaults):
+            if value is None:
+                required.append(name)
+                continue
+            expr = ast.unparse(value)
+            optional[name] = eval_expression(expr)
 
         return required, optional
 
@@ -131,7 +111,7 @@ class Component:
 
         for key in self.required:
             if key not in kw:
-                raise MissingRequiredAttr(self.name, key)
+                raise MissingRequiredArgument(self.name, key)
             props[key] = kw.pop(key)
 
         for key, default_value in self.optional.items():
