@@ -1,4 +1,4 @@
-# Extra Attributes
+# Extra Arguments
 
 If you pass arguments not declared in a component, those are not discarded, but rather collected in a `attrs` object that can render these extra arguments calling `attrs.render()`
 
@@ -16,15 +16,13 @@ For example, this component:
 Called as:
 
 ```html+jinja
-<Card title="Products" class="bg-blue-500 mb-10" open>
-bla
-</Card>
+<Card title="Products" class="mb-10" open>bla</Card>
 ```
 
 Will be rendered as:
 
 ```html
-<div class="bg-blue-500 mb-10" open>
+<div class="mb-10" open>
   <h1>Products</h1>
   bla
 </div>
@@ -46,7 +44,7 @@ You can add or remove arguments before rendering them using the other methods of
 
 ### `.add(name, value=True)`
 
-Adds an argument (e.g. `type="text"`) or sets a property (e.g. `disabled`). Pass a name and a value to set an argument. Omit the value or use `True` as value to set a property instead.
+Adds an attribute (e.g. `type="text"`) or sets a property (e.g. `disabled`). Pass a name and a value to set an attribute. Omit the value or use `True` as value to set a property instead.
 
 ```html+jinja
 {% do attrs.add("disabled") %}
@@ -57,7 +55,7 @@ Adds an argument (e.g. `type="text"`) or sets a property (e.g. `disabled`). Pass
 
 ### `.remove(name)`
 
-Removes an argument or property.
+Removes an attribute or property.
 
 ```html+jinja
 {% if active -%}
@@ -88,7 +86,7 @@ Removes one or more classes from the list of classes
 
 ### `.setdefault(name, value=True)`
 
-Adds an argument or sets a property, *but only if it's not already present*. Pass a name and a value to set an argument. Omit the value or use `True` as value to set a property instead.
+Adds an attribute or sets a property, *but only if it's not already present*. Pass a name and a value to set an attribute. Omit the value or use `True` as value to set a property instead.
 
 ```html+jinja
 {% do attrs.setdefault("aria-label", "Products") %}
@@ -96,7 +94,7 @@ Adds an argument or sets a property, *but only if it's not already present*. Pas
 
 ### `.update(dd=None, **kw)`
 
-Updates several arguments/properties with the values of `dd` and `kw` dicts.
+Updates several attributes/properties with the values of `dd` and `kw` dicts.
 
 ```html+jinja
 {%- do attrs.update(
@@ -107,11 +105,11 @@ Updates several arguments/properties with the values of `dd` and `kw` dicts.
 ) -%}
 ```
 
-The underscores in the names will be translated automatically to dashes, so `aria_selected` will become the argument `aria-selected`.
+The underscores in the names will be translated automatically to dashes, so `aria_selected` will become the attribute `aria-selected`.
 
 ### `.get(name, default=None)`
 
-Returns the value of the argument or property, or the default value if it doesn't exists.
+Returns the value of the attribute or property, or the default value if it doesn't exists.
 
 ```html+jinja
 {%- set role = attrs.get("role", "tab")
@@ -119,8 +117,8 @@ Returns the value of the argument or property, or the default value if it doesn'
 
 ### `.render()`
 
-Renders the arguments and properties as a string.
-To provide consistent output, the arguments and properties are sorted by name and rendered like this: `<sorted arguments> + <sorted properties>`.
+Renders the attributes and properties as a string.
+To provide consistent output, the attributes and properties are sorted by name and rendered like this: `<sorted attributes> + <sorted properties>`.
 
 ```html+jinja
 <button {{ attrs.render() }}>
@@ -129,7 +127,7 @@ To provide consistent output, the arguments and properties are sorted by name an
 ```
 
 !!! warning
-    Using `<Component {{ attrs.render() }}>` as arguments for other component **will not work**, because the components are translated to macros before the page render.
+    Using `<Component {{ attrs.render() }}>` to pass the extra arguments to other components **WILL NOT WORK**. That is because the components are translated to macros before the page render.
 
     You must pass them as the special argument `__attrs`.
 

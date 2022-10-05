@@ -38,7 +38,7 @@ Los components son archivos `.jinja`. El nombre del archivo antes del primer pun
 
 Por ejemplo, si el archivo se llama `PersonForm.jinja`, el nombre del componente es `PersonForm` y puede ser usado como `<PersonForm>...</PersonForm>`.
 
-Un componente puede empezar con un comentario Jinja donde declaras que atributos puede recibir. Algunos de estos atributos pueden tener un valor por defecto (haciéndolos opcionales):
+Un componente puede empezar con un comentario Jinja donde declaras que argumentos puede recibir. Algunos de estos argumentos pueden tener un valor por defecto (haciéndolos opcionales):
 
 ```html+jinja
 {#def title, message='Hi' #}

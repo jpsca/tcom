@@ -78,11 +78,12 @@ class Component:
         return source[start.end() : end.start()].strip()
 
     def parse_args_expr(self, expr: str) -> "tuple[list[str], dict[str, Any]]":
+        expr = expr.strip(" *,/")
         required = []
         optional = {}
 
         try:
-            p = ast.parse(f"def meh(*, {expr}): pass")
+            p = ast.parse(f"def component(*, {expr}): pass")
         except SyntaxError as err:
             raise InvalidArgument(err)
         args = p.body[0].args  # type: ignore

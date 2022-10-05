@@ -1,6 +1,6 @@
-# Atributos extra
+# Argumentos extra
 
-Si le pasas atributos no declarados a un componentes, estos no son descartados si no, en cambio, recogidos en un objeto `attrs` que puede renderizar estos atributos extra llamando a `attrs.render()`
+Si le pasas argumentos no declarados a un componentes, estos no son descartados si no, en cambio, recogidos en un objeto `attrs` que puede renderizar estos argumentos extra llamando a `attrs.render()`
 
 Por ejemplo, este componente:
 
@@ -30,7 +30,7 @@ será renderizado a:
 </div>
 ```
 
-Puedes agregar o quitar atributos, antes de renderizarlos, usando los otros métodos del objeto `attrs`. Por ejemplo:
+Puedes agregar o quitar argumentos, antes de renderizarlos, usando los otros métodos del objeto `attrs`. Por ejemplo:
 
 ```html+jinja
 {#def title #}
@@ -127,9 +127,9 @@ Para dar un resultado consistente, los atributos y propiedades se ordenan alfab�
 ```
 
 !!! warning "Cuidado"
-    Usar `{{ attrs.render() }}` como un atributo en otros componentes **no funcionará**, porque los componentes se convierten a macros antes que renderizar la página.
+    Usar `{{ attrs.render() }}` para pasar los argumentos extra a otros componentes **NO FUNCIONARÁ**. Esto es porque los componentes se convierten a macros antes de renderizar la página.
 
-    Si necesitas que funcione, debes usar el atributo especial `__attrs`.
+    Si necesitas que funcione, debes usar el argumento especial `__attrs`.
 
     ```html+jinja
     {#--- MUY MAL 😵 ---#}
@@ -139,7 +139,7 @@ Para dar un resultado consistente, los atributos y propiedades se ordenan alfab�
     <MyButton __attrs={ attrs } />
     ```
 
-    Otra opción es definir explícitamente que atributos necesitan los sub-componentes:
+    Otra opción es definir explícitamente que argumentos necesitan los sub-componentes:
 
     ```html+jinja
     {#def btn_class='' #}

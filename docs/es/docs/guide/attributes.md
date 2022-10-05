@@ -1,8 +1,8 @@
 # Atributos de componentes
 
-A menudo, un componente toma uno o más atributos para renderizar, podría ser una fecha, una lista de artículos o un texto.
+A menudo, un componente toma uno o más argumentos para renderizar, podría ser una fecha, una lista de artículos o un texto.
 
-Cada atributo debe ser declarado en la metadata (el comentario al principio) del componente con `{#def arguments #}`. La sintaxis es muy similar a la declaración de una función en python:
+Cada argumento debe ser declarado en la metadata (el comentario al principio) del componente con `{#def arguments #}`. La sintaxis es muy similar a la declaración de una función en python:
 
 ```html+jinja title="components/Form.jinja"
 {#def action, method='post', multipart=False #}
@@ -14,7 +14,7 @@ Cada atributo debe ser declarado en la metadata (el comentario al principio) del
 </form>
 ```
 
-En este ejemplo, el componente toma tres atributos: "action", "method", y "multipart". Los últimos dos tienen un valor por defecto, de modo que son opcionales - no necesitas pasarlos para llamar al componente. El primer argumento no tiene un valor, asi que tienes que pasarle un valor cuando llames al componente.
+En este ejemplo, el componente toma tres argumentos: "action", "method", y "multipart". Los últimos dos tienen un valor por defecto, de modo que son opcionales - no necesitas pasarlos para llamar al componente. El primer argumento no tiene un valor, asi que tienes que pasarle un valor cuando llames al componente.
 
 
 Así que todas estas son formas válidas de usar este componente:
@@ -25,7 +25,7 @@ Así que todas estas son formas válidas de usar este componente:
 <Form multipart={False} action="/new">...</Form>
 ```
 
-Los valores de los atributos declarados pueden usarse en la plantilla como variables con el mismo nombre.
+Los valores de los argumentos declarados pueden usarse en la plantilla como variables con el mismo nombre.
 
 
 ## Atributos que no son textos
@@ -92,7 +92,7 @@ Un gran caso de uso es hacer componentes de base:
 
 Todo entre las etiquetas inicial y de cierre del componente será renderizado y pasado al componente `PageLayout` en una variable implícita especial `content`.
 
-Para probar un componente en aislamiento, puedes también definir manualmente el contenido con el atributo especial `__content`:
+Para probar un componente en aislamiento, puedes también definir manualmente el contenido con el argumento especial `__content`:
 
 ```python
 catalog.render("PageLayout", title="Hello world", __content="TEST")
@@ -100,4 +100,4 @@ catalog.render("PageLayout", title="Hello world", __content="TEST")
 
 ## Atributos extra
 
-Si le pasas atributos no declarados a un componentes, estos no son descartados, si no, en cambio, recogidos en un objeto `attrs`. Lee más acerca de esto en la siguiente sección.
+Si le pasas argumentos no declarados a un componentes, estos no son descartados, si no, en cambio, recogidos en un objeto `attrs`. Lee más acerca de esto en la siguiente sección.

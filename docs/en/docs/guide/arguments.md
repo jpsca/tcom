@@ -1,6 +1,6 @@
 # Component Arguments
 
-More often than not, a component takes one or more arguments to render. Every argument must be declared at the beginning of the component with `{#def arguments #}`. The syntax is very similar to the declaration od a python function:
+More often than not, a component takes one or more arguments to render. Every argument must be declared at the beginning of the component with `{#def arguments #}`. The syntax is very similar to how you declare the arguments of a python function:
 
 ```html+jinja title="components/Form.jinja"
 {#def action, method='post', multipart=False #}
@@ -30,7 +30,10 @@ The values of the declared arguments can be used in the template as values with 
 In the example above, both "action" and "method" are strings, but "multipart" is a boolean, so we cannot pass it like `multipart="false"`
 because that will make it a string that evaluates as `True`, which is the opposite of what we want.
 
-Instead, you must use curly brackets instead of quotes (`name={value}` instead of `name="value"`).
+Instead, you must use curly brackets: `multipart={False}`, instead of quotes: `multipart="False"`.
+
+!!! info
+    Using lowercase booleans (`true` or `false`) is also valid.
 
 Between the brackets, you can use datetimes, objects, lists, or any Python expressions.
 
