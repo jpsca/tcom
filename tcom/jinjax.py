@@ -54,7 +54,6 @@ class JinjaX(Extension):
         attrs_list = []
         if raw:
             attrs_list = self._parse_attrs(raw[0])
-        print(tag, attrs_list)
         return tag, attrs_list
 
     def _parse_attrs(self, raw: str) -> "list[tuple[str, str]]":
