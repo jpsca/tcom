@@ -44,32 +44,40 @@ class Component:
         self.optional: "dict[str, Any]" = {}
         self.css: "list[str]" = []
         self.js: "list[str]" = []
-        self.parse_props(source)
-        self.parse_css(source)
-        self.parse_js(source)
+        self.load_metadata(source)
 
-    def parse_props(self, source: str) -> None:
-        expr = self.load_metadata(source, RX_PROPS_START)
-        if not expr:
-            return
-        required, optional = self.parse_args_expr(expr)
-        self.required = required
-        self.optional = optional
+    def load_metadata(self, source: str) -> None:
+        # The metadata must be before anything else, so if it's present
+        # must be in the first three lines
+        header = source.lstrip().split("\n", maxsplit=3)[:3][::-1]
 
-    def parse_css(self, source: str) -> None:
-        css_expr = self.load_metadata(source, RX_CSS_START)
-        if not css_expr:
-            return
-        self.css = self.parse_files_expr(css_expr)
+        while header:
+            line = header.pop()
+            line = line.strip()
 
-    def parse_js(self, source: str) -> None:
-        js_expr = self.load_metadata(source, RX_JS_START)
-        if not js_expr:
-            return
-        self.js = self.parse_files_expr(js_expr)
+            if not (self.required or self.optional):
+                expr = self.read_metadata_line(line, RX_PROPS_START)
+                if expr:
+                    self.required, self.optional = self.parse_args_expr(expr)
+                    continue
 
-    def load_metadata(self, source: str, rx_start: re.Pattern) -> str:
-        start = rx_start.search(source)
+            if not self.css:
+                expr = self.read_metadata_line(line, RX_CSS_START)
+                if expr:
+                    self.css = self.parse_files_expr(expr)
+                    continue
+
+            if not self.js:
+                expr = self.read_metadata_line(line, RX_JS_START)
+                if expr:
+                    self.js = self.parse_files_expr(expr)
+                    continue
+
+            # Stop searching if the line didn't contain any parseable metadata
+            break
+
+    def read_metadata_line(self, source: str, rx_start: re.Pattern) -> str:
+        start = rx_start.match(source)
         if not start:
             return ""
         end = RX_META_END.search(source, pos=start.end())

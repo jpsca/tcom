@@ -3,7 +3,7 @@ import pytest
 from tcom import Component, InvalidArgument
 
 
-def test_load_props():
+def test_load_args():
     com = Component(
         name="Test.jinja",
         source='{#def message, lorem=4, ipsum="bar" -#}\n',
@@ -15,7 +15,7 @@ def test_load_props():
     }
 
 
-def test_expression_props():
+def test_expression_args():
     com = Component(
         name="Test.jinja",
         source="{#def expr=1 + 2 + 3, a=1 -#}\n",
@@ -38,7 +38,7 @@ def test_lowercase_booleans():
     }
 
 
-def test_no_props():
+def test_no_args():
     com = Component(
         name="Test.jinja",
         source="\n",
@@ -54,7 +54,7 @@ def test_fails_when_invalid_name():
         print(co.required, co.optional)
 
 
-def test_fails_when_missing_comma_between_props():
+def test_fails_when_missing_comma_between_args():
     with pytest.raises(InvalidArgument):
         source = "{#def lorem ipsum -#}\n"
         co = Component(name="", source=source)
@@ -75,7 +75,7 @@ def test_fails_when_prop_is_expression():
         print(co.required, co.optional)
 
 
-def test_fails_when_extra_comma_between_props():
+def test_fails_when_extra_comma_between_args():
     with pytest.raises(InvalidArgument):
         source = "{#def a, , b -#}\n"
         co = Component(name="", source=source)
@@ -107,3 +107,82 @@ def test_no_comma_in_assets_list_is_your_problem():
         url_prefix="/static/"
     )
     assert com.js == ["/static/a.js b.js c.js"]
+
+
+def test_load_metadata_in_any_order():
+    com = Component(
+        name="Test.jinja",
+        source="""
+        {#css a.css #}
+        {#def lorem, ipsum=4 #}
+        {#js a.js #}
+        """,
+    )
+    assert com.required == ["lorem"]
+    assert com.optional == {"ipsum": 4}
+    assert com.css == ["a.css"]
+    assert com.js == ["a.js"]
+
+
+def test_ignore_metadata_if_not_first():
+    com = Component(
+        name="Test.jinja",
+        source="""
+        I am content
+        {#css a.css #}
+        {#def lorem, ipsum=4 #}
+        {#js a.js #}
+        """,
+    )
+    assert com.required == []
+    assert com.optional == {}
+    assert com.css == []
+    assert com.js == []
+
+
+def test_ignore_repeated_args_declaration_and_everything_after():
+    com = Component(
+        name="Test.jinja",
+        source="""
+        {#def lorem, ipsum=4 #}
+        {#def a, b, c, ipsum="nope" #}
+        {#css a.css #}
+        {#js a.js #}
+        """,
+    )
+    assert com.required == ["lorem"]
+    assert com.optional == {"ipsum": 4}
+    assert com.css == []
+    assert com.js == []
+
+
+def test_ignore_repeated_css_declaration_and_everything_after():
+    com = Component(
+        name="Test.jinja",
+        source="""
+        {#css a.css #}
+        {#def lorem, ipsum=4 #}
+        {#css b.css #}
+        {#js a.js #}
+        """,
+    )
+    assert com.required == ["lorem"]
+    assert com.optional == {"ipsum": 4}
+    assert com.css == ["a.css"]
+    assert com.js == []
+
+
+def test_ignore_repeated_js_declaration_and_everything_after():
+    com = Component(
+        name="Test.jinja",
+        source="""
+        {#css a.css #}
+        {#js a.js #}
+        {#js b.js #}
+        {#def lorem, ipsum=4 #}
+        """,
+    )
+    assert com.required == []
+    assert com.optional == {}
+    assert com.css == ["a.css"]
+    assert com.js == ["a.js"]
