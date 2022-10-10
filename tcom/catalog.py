@@ -1,6 +1,5 @@
-import logging
 import os
-from typing import Any, Callable, Optional, Union
+import typing as t
 from pathlib import Path
 from uuid import uuid4
 
@@ -12,11 +11,12 @@ from .exceptions import ComponentNotFound
 from .jinjax import DEBUG_ATTR_NAME, JinjaX, RENDER_CMD
 from .middleware import ComponentsMiddleware
 from .html_attrs import HTMLAttrs
+from .utils import logger
 
 
-logger = logging.getLogger("tcom")
+if t.TYPE_CHECKING:
+    TFileExt = t.Union[tuple[str, ...], str]
 
-TFileExt = Union[tuple[str, ...], str]
 
 DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js")
@@ -44,15 +44,15 @@ class Catalog:
     def __init__(
         self,
         *,
-        globals: "Optional[dict[str, Any]]" = None,
-        filters: "Optional[dict[str, Any]]" = None,
-        tests: "Optional[dict[str, Any]]" = None,
-        extensions: "Optional[list]" = None,
+        globals: "t.Optional[dict[str,t.Any]]" = None,
+        filters: "t.Optional[dict[str,t.Any]]" = None,
+        tests: "t.Optional[dict[str,t.Any]]" = None,
+        extensions: "t.Optional[list]" = None,
         root_url: str = DEFAULT_URL_ROOT,
         file_ext: "TFileExt" = DEFAULT_EXTENSION,
     ) -> None:
-        self.components: "dict[str, Component]" = {}
-        self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
+        self.components: "dict[str,Component]" = {}
+        self.prefixes: "dict[str,jinja2.FileSystemLoader]" = {}
         self.collected_css: "list[str]" = []
         self.collected_js: "list[str]" = []
         self.assets_placeholder = f"<components_assets-{uuid4().hex} />"
@@ -78,7 +78,7 @@ class Catalog:
 
     def add_folder(
         self,
-        root_path: "Union[str, Path]",
+        root_path: "t.Union[str,Path]",
         *,
         prefix: str = DEFAULT_PREFIX,
     ) -> None:
@@ -93,9 +93,8 @@ class Catalog:
         else:
             self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
-    def add_module(self, module: "Any", *, prefix: "Optional[str]" = None) -> None:
-        if prefix is None:
-            prefix = module.prefix or ""
+    def add_module(self, module: "t.Any", *, prefix: str = "") -> None:
+        prefix = prefix or module.prefix or DEFAULT_PREFIX
         self.add_folder(module.components_path, prefix=prefix)
 
     def render(
@@ -125,8 +124,8 @@ class Catalog:
 
     def get_middleware(
         self,
-        application: "Callable",
-        allowed_ext: "Optional[tuple[str, ...]]" = ALLOWED_EXTENSIONS,
+        application: "t.Callable",
+        allowed_ext: "t.Optional[tuple[str, ...]]" = ALLOWED_EXTENSIONS,
         **kw,
     ) -> ComponentsMiddleware:
         middleware = ComponentsMiddleware()
@@ -151,7 +150,7 @@ class Catalog:
         self,
         __name: str,
         *,
-        caller: "Optional[Callable]" = None,
+        caller: "t.Optional[t.Callable]" = None,
         **kw,
     ) -> str:
         content = kw.pop("__content", "")
@@ -160,13 +159,23 @@ class Catalog:
         source = kw.pop("__source", "")
         prefix, name = self._split_name(__name)
         url_prefix = self._get_url_prefix(prefix)
+        self.jinja_env.loader = self.prefixes[prefix]
 
-        if source:
-            from_source = True
-        else:
-            from_source = False
-            root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
-            source = path.read_text()
+        try:
+            if source:
+                logger.debug("Rendering from source %s", __name)
+                tmpl = self.jinja_env.from_string(source)
+            else:
+                root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
+                tmpl_name = str(path.relative_to(root_path))
+                logger.debug("Rendering %s", tmpl_name)
+                tmpl = self.jinja_env.get_template(tmpl_name)
+                source = path.read_text()
+        except Exception:  # pragma: no cover
+            print("*** Pre-processed source: ***")
+            print(getattr(self.jinja_env, DEBUG_ATTR_NAME, ""))
+            print("*" * 10)
+            raise
 
         component = Component(name=__name, url_prefix=url_prefix, source=source)
         for css in component.css:
@@ -183,22 +192,6 @@ class Catalog:
         props, extra = component.filter_args(kw)
         props[PROP_ATTRS] = HTMLAttrs(extra)
         props[PROP_CONTENT] = content or (caller() if caller else "")
-
-        self.jinja_env.loader = self.prefixes[prefix]
-
-        try:
-            if from_source:
-                tmpl = self.jinja_env.from_string(source)
-                logger.debug("Rendering from source %s", __name)
-            else:
-                tmpl_name = str(path.relative_to(root_path))
-                tmpl = self.jinja_env.get_template(tmpl_name)
-                logger.debug("Rendering %s", tmpl_name)
-        except Exception:  # pragma: no cover
-            print("*** Pre-processed source: ***")
-            print(getattr(self.jinja_env, DEBUG_ATTR_NAME, ""))
-            print("*" * 10)
-            raise
 
         return tmpl.render(**props).strip()
 

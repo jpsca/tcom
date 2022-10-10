@@ -43,7 +43,7 @@ class HTMLAttrs:
         if classes:
             attributes[CLASS_KEY] = classes
 
-        out = dict(sorted(attributes.items()))
+        out: dict[str, Any] = dict(sorted(attributes.items()))
         for name in sorted(list(self.__properties)):
             out[name] = True
         return out

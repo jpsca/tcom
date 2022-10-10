@@ -12,7 +12,6 @@ exclude = '''
 /(
     \.git
   | \.hg
-  | \.mypy_cache
   | \.tox
   | \.venv
   | _build
@@ -29,3 +28,6 @@ lines_after_imports = 2
 lines_between_types = 1
 
 known_third_party = ["pytest"]
+
+
+[tool.pyright]

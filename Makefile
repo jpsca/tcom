@@ -12,7 +12,7 @@ coverage:
 
 .PHONY: types
 types:
-	mypy tcom
+	pyright tcom
 
 .PHONY: install
 install:
