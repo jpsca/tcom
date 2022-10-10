@@ -77,3 +77,10 @@ def test_subfolder(pre):
         result
         == '{% call __render("Pages.Show", title="wat") -%}wat{%- endcall %}'
     )
+
+
+def test_if_a_space_between_lt_and_uppercase_then_not_a_component(pre):
+    source = '{% if a < MAX %}'
+    result = pre.preprocess(source)
+    print(result)
+    assert result == "{% if a < MAX %}"

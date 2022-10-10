@@ -16,10 +16,10 @@ DEBUG_ATTR_NAME = "__source"
 
 re_tag_name = r"([0-9A-Za-z_-]+\.)*[A-Z][0-9A-Za-z_-]*"
 re_raw_attrs = r"[^\>]*"
-re_open_tag = fr"<\s*{re_tag_name}{re_raw_attrs}>"
+re_open_tag = fr"<{re_tag_name}{re_raw_attrs}>"
 RX_OPEN_TAG = re.compile(re_open_tag, re.VERBOSE)
 
-re_close_tag = fr"</\s*{re_tag_name}\s*>"
+re_close_tag = fr"</{re_tag_name}>"
 RX_CLOSE_TAG = re.compile(re_close_tag, re.VERBOSE)
 
 re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_]*)"
