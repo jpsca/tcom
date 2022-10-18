@@ -1,10 +1,11 @@
 import re
-from typing import Any, Optional
+from typing import Any
 from xml.sax.saxutils import quoteattr
 
 
 CLASS_KEY = "class"
 CLASS_ALT_KEY = "classes"
+CLASS_KEYS = (CLASS_KEY, CLASS_ALT_KEY)
 
 
 def split(ssl: str) -> "list[str]":
@@ -33,11 +34,11 @@ class HTMLAttrs:
         self.__properties = properties
 
     @property
-    def classes(self):
+    def classes(self) -> str:
         return " ".join(sorted(list(self.__classes)))
 
     @property
-    def as_dict(self):
+    def as_dict(self) -> dict[str, Any]:
         attributes = self.__attributes.copy()
         classes = self.classes
         if classes:
@@ -48,81 +49,82 @@ class HTMLAttrs:
             out[name] = True
         return out
 
-    def add(self, name: str, value: "Any" = True) -> None:
-        """
-        Adds an attribute or sets a property.
-        Pass a name and a value to set an attribute.
-        Omit the value or use `True` as value to set a property instead
-        """
-        if name == "class":
-            return self.add_class(value)
+    def __getitem__(self, name: str) -> Any:
+        return self.get(name)
 
-        name = name.replace("_", "-")
-        if value is True:
-            self.__properties.add(name)
-        else:
-            self.__attributes[name] = value
+    def __delitem__(self, name: str) -> None:
+        self._remove(name)
 
-    def remove(self, name: str) -> None:
+    def set(self, **kw) -> None:
         """
-        Removes an attribute or property."""
-        name = name.replace("_", "-")
-        if name in self.__attributes:
-            del self.__attributes[name]
-        if name in self.__properties:
-            self.__properties.remove(name)
+        Sets an attribute or property:
+        - Pass a name and a value to set an attribute
+        - Use `True` as value to set a property
+        - Use `False` to remove an attribute or property
 
-    def add_class(self, *names: str) -> None:
+        If the attribute is "class", the new classes are appended to
+        the old ones instead of replacing them.
         """
-        """
-        for name in names:
-            for name_ in split(name):
-                self.__classes.add(name_)
+        for name, value in kw.items():
+            name = name.replace("_", "-")
+            if value in (False, None):
+                return self._remove(name)
 
-    add_classes = add_class
+            if name in CLASS_KEYS:
+                self.add_class(value)
+            elif value is True:
+                self.__properties.add(name)
+            else:
+                self.__attributes[name] = value
+
+    def setdefault(self, **kw) -> None:
+        """
+        Adds an attribute or sets a property, but only if it's not
+        already present. Doesn't work with properties.
+        """
+        for name, value in kw.items():
+            if value in (True, False, None):
+                continue
+
+            if name in CLASS_KEYS:
+                if not self.__classes:
+                    self.add_class(value)
+
+            name = name.replace("_", "-")
+            if name not in self.__attributes:
+                self.set(**{name: value})
+
+    def add_class(self, *values: str) -> None:
+        for names in values:
+            for name in split(names):
+                self.__classes.add(name)
 
     def remove_class(self, *names: str) -> None:
-        """
-        """
         for name in names:
             self.__classes.remove(name)
 
-    remove_classes = remove_class
-
-    def setdefault(self, name: str, value: "Any" = True) -> None:
-        """
-        Adds an attribute or sets a property, but only if it's not
-        already present. Pass a name and a value to set an attribute.
-        Omit the value or use `True` as value to set a
-        property instead."""
-        name = name.replace("_", "-")
-        if value is True:
-            self.__properties.add(name)
-        elif name not in self.__attributes:
-            self.__attributes[name] = value
-
-    def update(self, dd: "Optional[dict]" = None, **kw) -> None:
-        """
-        Updates several attributes/properties with the values
-        of `dd` and `kw` dicts.
-        """
-        dd = dd or {}
-        dd.update(kw)
-        name: "Any"
-        value: "Any"
-        for name, value in dd.items():
-            self.add(name, value)
-
-    def get(self, name: str, default: "Any" = None) -> "Any":
+    def get(self, name: str, default: Any = None) -> Any:
         """
         Returns the value of the attribute or property,
         or the default value if it doesn't exists."""
         name = name.replace("_", "-")
+        if name in CLASS_KEYS:
+            return self.classes
         if name in self.__attributes:
             return self.__attributes[name]
         if name in self.__properties:
             return True
         return default
+
+    def _remove(self, name: str) -> None:
+        """
+        Removes an attribute or property."""
+        if name in CLASS_KEYS:
+            self.__classes = set()
+        if name in self.__attributes:
+            del self.__attributes[name]
+        if name in self.__properties:
+            self.__properties.remove(name)
 
     def render(self) -> str:
         """

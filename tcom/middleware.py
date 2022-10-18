@@ -1,10 +1,9 @@
-from typing import TYPE_CHECKING
+import typing as t
 
 from whitenoise import WhiteNoise  # type: ignore
 
-if TYPE_CHECKING:
-    from typing import Any, Callable, Optional
-    from whitenoise.responders import StaticFile  # type: ignore
+if t.TYPE_CHECKING:
+    from whitenoise.responders import Redirect, StaticFile  # type: ignore
 
 
 class ComponentsMiddleware(WhiteNoise):
@@ -17,23 +16,23 @@ class ComponentsMiddleware(WhiteNoise):
     def configure(
         self,
         *,
-        application: "Optional[Callable]" = None,
-        allowed_ext: "Optional[tuple[str, ...]]" = None,
+        application: t.Optional[t.Callable] = None,
+        allowed_ext: t.Optional[tuple[str, ...]] = None,
         **kw
     ):
-        if application:
+        if application:  # pragma: no cover
             self.application = application
-        if allowed_ext:
+        if allowed_ext:  # pragma: no cover
             self.allowed_ext = tuple(allowed_ext)
         for attr in self.config_attrs:
             if attr in kw:
                 setattr(self, attr, kw[attr])
 
-    def find_file(self, url: str) -> "Optional[StaticFile]":
+    def find_file(self, url: str) -> "t.Union[StaticFile, Redirect, None]":
         if not self.allowed_ext or url.endswith(self.allowed_ext):
             return super().find_file(url)
         return None
 
-    def add_file_to_dictionary(self, url: str, path: str, stat_cache: "Any") -> None:
+    def add_file_to_dictionary(self, url: str, path: str, stat_cache: t.Any) -> None:
         if not self.allowed_ext or url.endswith(self.allowed_ext):
             super().add_file_to_dictionary(url, path, stat_cache)

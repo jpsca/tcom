@@ -23,11 +23,25 @@ exclude = '''
 [tool.isort]
 profile = "black"
 force_single_line = true
+include_trailing_comma=true
 atomic = true
 lines_after_imports = 2
 lines_between_types = 1
 
-known_third_party = ["pytest"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "TYPE_CHECKING",
+    "def __repr__",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:"
+]
 
 
 [tool.pyright]

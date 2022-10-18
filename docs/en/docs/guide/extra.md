@@ -33,7 +33,8 @@ You can add or remove arguments before rendering them using the other methods of
 ```html+jinja
 {#def title #}
 
-{% do attrs.add_class("card") -%}
+{% do attrs.set(class="card") -%}
+
 <div {{ attrs.render() }}>
   <h1>{{ title }}</h1>
   {{ content }}
@@ -42,70 +43,62 @@ You can add or remove arguments before rendering them using the other methods of
 
 ## `attrs` methods
 
-### `.add(name, value=True)`
+### `.set(name, value=True)`
 
-Adds an attribute (e.g. `type="text"`) or sets a property (e.g. `disabled`). Pass a name and a value to set an attribute. Omit the value or use `True` as value to set a property instead.
+Sets an attribute or property:
+- Pass a name and a value to set an attribute (e.g. `type="text"`)
+- Use `True` as value to set a property (e.g. `disabled`)
+- Use `False` to remove an attribute or property
 
-```html+jinja
-{% do attrs.add("disabled") %}
-{% do attrs.add("readonly", True) %}
-{% do attrs.add("data-test", "foobar") %}
-{% do attrs.add("id", 3) %}
+The current attribute/property are overwritten **except** if is "class" or "classes".
+In those cases, the new classes are appended to the old ones instead of replacing them.
+
+The underscores in the names will be translated automatically to dashes, so `aria_selected`
+becomes the attribute `aria-selected`.
+
+```html+jinja title="Adding attibutes/properties"
+{% do attrs.set(
+  id="loremipsum",
+  disabled=True,
+  data_test="foobar",
+  class="m-2 p-4",
+) %}
 ```
 
-### `.remove(name)`
-
-Removes an attribute or property.
-
-```html+jinja
-{% if active -%}
-{% do attrs.remove("disabled") %}
-{%- endif %}
+```html+jinja title="Removing attibutes/properties"
+{% do attrs.set(
+  title=False,
+  disabled=False,
+  data_test=False,
+  class=False,
+) %}
 ```
 
-### `.add_class(name)` / `.add_classes(name1, name2, ...)`
-
-Adds one or more classes to the list of classes
-(both are actually the same method).
-
-```html+jinja
-{% do attrs.add_class("card") %}
-{% do attrs.add_classes("active", "animated", "bright") %}
-{% do attrs.add_classes("active animated bright") %}
-```
-
-### `.remove_class(name)` / `.remove_classes(name1, name2, ...)`
-
-Removes one or more classes from the list of classes
-(both are actually the same method).
-
-```html+jinja
-{% do attrs.remove_class("hidden") %}
-{% do attrs.remove_classes("active", "animated") %}
-```
 
 ### `.setdefault(name, value=True)`
 
-Adds an attribute or sets a property, *but only if it's not already present*. Pass a name and a value to set an attribute. Omit the value or use `True` as value to set a property instead.
+Adds an attribute or sets a property, *but only if it's not already present*.
+Doesn't work eith properties.
+
+The underscores in the names will be translated automatically to dashes, so `aria_selected`
+becomes the attribute `aria-selected`.
 
 ```html+jinja
-{% do attrs.setdefault("aria-label", "Products") %}
+{% do attrs.setdefault(
+    aria_label="Products"
+) %}
 ```
 
-### `.update(dd=None, **kw)`
 
-Updates several attributes/properties with the values of `dd` and `kw` dicts.
+### `.remove_class(name)`
+
+Removes one or more classes from the list of classes.
 
 ```html+jinja
-{%- do attrs.update(
-    role="tab",
-    aria_selected="true" if active else "false",
-    aria_controls=target,
-    tabindex="0" if active else "-1",
-) -%}
+{% do attrs.remove_class("hidden") %}
+{% do attrs.remove_class("active", "animated") %}
 ```
 
-The underscores in the names will be translated automatically to dashes, so `aria_selected` will become the attribute `aria-selected`.
 
 ### `.get(name, default=None)`
 
@@ -114,6 +107,7 @@ Returns the value of the attribute or property, or the default value if it doesn
 ```html+jinja
 {%- set role = attrs.get("role", "tab")
 ```
+
 
 ### `.render()`
 

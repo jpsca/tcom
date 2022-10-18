@@ -1,6 +1,6 @@
 .PHONY: test
 test:
-	pytest -x tcom tests
+	pytest -x -vv tcom tests
 
 .PHONY: lint
 lint:
@@ -8,7 +8,7 @@ lint:
 
 .PHONY: coverage
 coverage:
-	pytest --cov-config=.coveragerc --cov-report html --cov tcom tcom tests
+	pytest --cov-config=pyproject.toml --cov-report html --cov tcom tcom tests
 
 .PHONY: types
 types:
