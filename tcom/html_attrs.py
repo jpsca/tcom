@@ -48,29 +48,33 @@ class HTMLAttrs:
             out[name] = True
         return out
 
-    def add(self, name: str, value: "Any" = True) -> None:
+    def add(self, name: str = "", value: Any = True, **kw) -> None:
         """
         Adds an attribute or sets a property.
         Pass a name and a value to set an attribute.
         Omit the value or use `True` as value to set a property instead
         """
-        if name == "class":
-            return self.add_class(value)
+        if name:
+            kw[name] = value
+        for name, value in kw.items():
+            if name == "class":
+                return self.add_class(value)
 
-        name = name.replace("_", "-")
-        if value is True:
-            self.__properties.add(name)
-        else:
-            self.__attributes[name] = value
+            name = name.replace("_", "-")
+            if value is True:
+                self.__properties.add(name)
+            else:
+                self.__attributes[name] = value
 
-    def remove(self, name: str) -> None:
+    def remove(self, *names: str) -> None:
         """
         Removes an attribute or property."""
-        name = name.replace("_", "-")
-        if name in self.__attributes:
-            del self.__attributes[name]
-        if name in self.__properties:
-            self.__properties.remove(name)
+        for name in names:
+            name = name.replace("_", "-")
+            if name in self.__attributes:
+                del self.__attributes[name]
+            if name in self.__properties:
+                self.__properties.remove(name)
 
     def add_class(self, *names: str) -> None:
         """
@@ -89,31 +93,34 @@ class HTMLAttrs:
 
     remove_classes = remove_class
 
-    def setdefault(self, name: str, value: "Any" = True) -> None:
+    def setdefault(self, name: str = "", value: Any = True, **kw) -> None:
         """
         Adds an attribute or sets a property, but only if it's not
         already present. Pass a name and a value to set an attribute.
         Omit the value or use `True` as value to set a
         property instead."""
-        name = name.replace("_", "-")
-        if value is True:
-            self.__properties.add(name)
-        elif name not in self.__attributes:
-            self.__attributes[name] = value
+        if name:
+            kw[name] = value
+        for name, value in kw.items():
+            name = name.replace("_", "-")
+            if value is True:
+                self.__properties.add(name)
+            elif name not in self.__attributes:
+                self.__attributes[name] = value
 
-    def update(self, dd: "Optional[dict]" = None, **kw) -> None:
+    def update(self, dd: Optional[dict] = None, **kw) -> None:
         """
         Updates several attributes/properties with the values
         of `dd` and `kw` dicts.
         """
         dd = dd or {}
         dd.update(kw)
-        name: "Any"
-        value: "Any"
+        name: Any
+        value: Any
         for name, value in dd.items():
             self.add(name, value)
 
-    def get(self, name: str, default: "Any" = None) -> "Any":
+    def get(self, name: str, default: Any = None) -> Any:
         """
         Returns the value of the attribute or property,
         or the default value if it doesn't exists."""
