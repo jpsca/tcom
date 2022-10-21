@@ -44,47 +44,38 @@ Puedes agregar o quitar argumentos, antes de renderizarlos, usando los otros mé
 
 ## Métodos de `attrs`
 
-### `.add(name, value=True)`
+### `.set(name=value, ...)`
 
-Agrega un atributo (ej. `type="text"`) o activa una propiedad (ej. `disabled`). Usa un nombre y un valor para agregar un atributo, u omite el valor o usa `True` como valor para activar una propiedad.
+Agrega un atributo o activa una propiedad:
+- Usa un nombre y un valor para agregar un atributo (ej. `type="text"`)
+- Usa `True` como valor para activar una propiedad (ej. `disabled`)
+- Usa `False` como valor para quitar un atributo o propiedad
 
-```html+jinja
-{% do attrs.add("disabled") %}
-{% do attrs.add("readonly", True) %}
-{% do attrs.add("data-test", "foobar") %}
-{% do attrs.add("id", 3) %}
+Los guiones bajos en los nombres serán reemplazados automáticamente por guiones, así que `aria_selected` se volverá el atributo `aria-selected`.
+
+Los atributos o propiedades son sobreescritos **excepto** si se trata de "class" o "classes".
+En esos casos, las nuevas clases se agregan a las antiguas en vez de reemplazarlas.
+
+```html+jinja title="Agregando atributos/propiedades"
+{% do attrs.set(
+  id="loremipsum",
+  disabled=True,
+  data_test="foobar",
+  class="m-2 p-4",
+) %}
 ```
 
-### `.remove(name)`
-
-Elimina un atributo o propiedad.
-
-```html+jinja
-{% if active -%}
-{% do attrs.remove("disabled") %}
-{%- endif %}
+```html+jinja title="Quitando atributos/propiedades"
+{% do attrs.set(
+  title=False,
+  disabled=False,
+  data_test=False,
+  class=False,
+) %}
 ```
 
-### `.add_class(name)` / `.add_classes(name1, name2, ...)`
 
-Agrega una o más clases a la lista de clases.
-
-```html+jinja
-{% do attrs.add_class("card") %}
-{% do attrs.add_classes("active", "animated", "bright") %}
-{% do attrs.add_classes("active animated bright") %}
-```
-
-### `.remove_class(name)` / `.remove_classes(name1, name2, ...)`
-
-Elimina una o más clases de la lista de clases.
-
-```html+jinja
-{% do attrs.remove_class("hidden") %}
-{% do attrs.remove_classes("active", "animated") %}
-```
-
-### `.setdefault(name, value)`
+### `.setdefault(name=value, ...)`
 
 Agrega un atributo (ej. `type="text"`), *pero solo si no está ya presente*.
 
@@ -92,20 +83,15 @@ Agrega un atributo (ej. `type="text"`), *pero solo si no está ya presente*.
 {% do attrs.setdefault("aria-label", "Products") %}
 ```
 
-### `.update(dd=None, **kw)`
 
-Actualiza varios atributos o propiedades al mismo tiempo.
+### `.remove_class(name1, name2, ...)`
+
+Elimina una o más clases de la lista de clases.
 
 ```html+jinja
-{%- do attrs.update(
-    role="tab",
-    aria_selected="true" if active else "false",
-    aria_controls=target,
-    tabindex="0" if active else "-1",
-) -%}
+{% do attrs.remove_class("hidden") %}
+{% do attrs.remove_classes("active", "animated") %}
 ```
-
-Los guiones bajos en los nombres serán reemplazados automáticamente por guiones, así que `aria_selected` se volverá el atributo `aria-selected`.
 
 ### `.get(name, default=None)`
 

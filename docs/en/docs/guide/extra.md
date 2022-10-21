@@ -43,20 +43,20 @@ You can add or remove arguments before rendering them using the other methods of
 
 ## `attrs` methods
 
-### `.set(name, value=True)`
+### `.set(name=value, ...)`
 
 Sets an attribute or property:
 - Pass a name and a value to set an attribute (e.g. `type="text"`)
 - Use `True` as value to set a property (e.g. `disabled`)
 - Use `False` to remove an attribute or property
 
-The current attribute/property are overwritten **except** if is "class" or "classes".
-In those cases, the new classes are appended to the old ones instead of replacing them.
-
 The underscores in the names will be translated automatically to dashes, so `aria_selected`
 becomes the attribute `aria-selected`.
 
-```html+jinja title="Adding attibutes/properties"
+The current attribute/property are overwritten **except** if is "class" or "classes".
+In those cases, the new classes are appended to the old ones instead of replacing them.
+
+```html+jinja title="Adding attributes/properties"
 {% do attrs.set(
   id="loremipsum",
   disabled=True,
@@ -65,7 +65,7 @@ becomes the attribute `aria-selected`.
 ) %}
 ```
 
-```html+jinja title="Removing attibutes/properties"
+```html+jinja title="Removing attributes/properties"
 {% do attrs.set(
   title=False,
   disabled=False,
@@ -75,7 +75,7 @@ becomes the attribute `aria-selected`.
 ```
 
 
-### `.setdefault(name, value=True)`
+### `.setdefault(name=value, ...)`
 
 Adds an attribute or sets a property, *but only if it's not already present*.
 Doesn't work eith properties.
@@ -90,7 +90,7 @@ becomes the attribute `aria-selected`.
 ```
 
 
-### `.remove_class(name)`
+### `.remove_class(name1, name2, ...)`
 
 Removes one or more classes from the list of classes.
 
