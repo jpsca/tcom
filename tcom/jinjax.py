@@ -22,7 +22,7 @@ RX_OPEN_TAG = re.compile(re_open_tag, re.VERBOSE)
 re_close_tag = fr"</{re_tag_name}>"
 RX_CLOSE_TAG = re.compile(re_close_tag, re.VERBOSE)
 
-re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_]*)"
+re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_-]*)"
 re_equal = r"\s*=\s*"
 
 re_attr = rf"""
@@ -70,7 +70,7 @@ class JinjaX(Extension):
     ) -> str:
         attrs = []
         for name, value in attrs_list:
-            name = name.strip()
+            name = name.strip().replace("-", "_")
             if not value:
                 attrs.append(f"{name}=True")
             else:
