@@ -80,7 +80,7 @@ def test_subfolder(pre):
 
 
 def test_if_a_space_between_lt_and_uppercase_then_not_a_component(pre):
-    source = '{% if a < MAX %}'
+    source = "{% if a < MAX %}"
     result = pre.preprocess(source)
     print(result)
     assert result == "{% if a < MAX %}"

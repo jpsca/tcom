@@ -44,6 +44,51 @@ Puedes agregar o quitar argumentos, antes de renderizarlos, usando los otros mé
 
 ## Métodos de `attrs`
 
+### `.render()`
+
+Renderiza los atributos y propiedades como un texto.
+
+Cualquier atributo/propiedad que le pases a este método, será usado para llamar `attrs.set(**kwargs)` antes de renderizar.
+
+- Usa un nombre y un valor para agregar un atributo (ej. `type="text"`)
+- Usa `True` como valor para activar una propiedad (ej. `disabled`)
+- Usa `False` como valor para quitar un atributo o propiedad
+
+Los guiones bajos en los nombres serán reemplazados automáticamente por guiones, así que `aria_selected` se volverá el atributo `aria-selected`.
+
+Los atributos o propiedades son sobreescritos **excepto** si se trata de "class" o "classes".
+En esos casos, las nuevas clases se agregan a las antiguas en vez de reemplazarlas.
+
+Para dar un resultado consistente, los atributos y propiedades se ordenan alfabéticamente por nombre y renderizados así: `<attributor ordenados> + <propiedades ordenadas>`.
+
+```html+jinja
+<button {{ attrs.render() }}>
+  {{ content }}
+</button>
+```
+
+!!! warning "Cuidado"
+    Usar `{{ attrs.render() }}` para pasar los argumentos extra a otros componentes **NO FUNCIONARÁ**. Esto es porque los componentes se convierten a macros antes de renderizar la página.
+
+    Si necesitas que funcione, debes usar el argumento especial `__attrs`.
+
+    ```html+jinja
+    {#--- MUY MAL 😵 ---#}
+    <MyButton {{ attrs.render() }} />
+
+    {#--- BIEN 👍 ---#}
+    <MyButton __attrs={ attrs } />
+    ```
+
+    Otra opción es definir explícitamente que argumentos necesitan los sub-componentes:
+
+    ```html+jinja
+    {#def btn_class='' #}
+
+    <MyButton class={btn_class} />
+    ```
+
+
 ### `.set(name=value, ...)`
 
 Agrega un atributo o activa una propiedad:
@@ -100,35 +145,3 @@ Devuelve el valor del atributo, o el valor de `default` si el atributo no existe
 ```html+jinja
 {%- set role = attrs.get("role", "tab")
 ```
-
-### `.render()`
-
-Renderiza los atributos y propiedades como un texto.
-Para dar un resultado consistente, los atributos y propiedades se ordenan alfabéticamente por nombre y renderizados así: `<attributor ordenados> + <propiedades ordenadas>`.
-
-```html+jinja
-<button {{ attrs.render() }}>
-  {{ content }}
-</button>
-```
-
-!!! warning "Cuidado"
-    Usar `{{ attrs.render() }}` para pasar los argumentos extra a otros componentes **NO FUNCIONARÁ**. Esto es porque los componentes se convierten a macros antes de renderizar la página.
-
-    Si necesitas que funcione, debes usar el argumento especial `__attrs`.
-
-    ```html+jinja
-    {#--- MUY MAL 😵 ---#}
-    <MyButton {{ attrs.render() }} />
-
-    {#--- BIEN 👍 ---#}
-    <MyButton __attrs={ attrs } />
-    ```
-
-    Otra opción es definir explícitamente que argumentos necesitan los sub-componentes:
-
-    ```html+jinja
-    {#def btn_class='' #}
-
-    <MyButton class={btn_class} />
-    ```

@@ -43,6 +43,51 @@ You can add or remove arguments before rendering them using the other methods of
 
 ## `attrs` methods
 
+
+### `.render(name=value, ...)`
+
+Renders the current attributes and properties as a string.
+Any attributes/properties you pass to this method, will be used to call `attrs.set(**kwargs)` before rendering.
+
+- Pass a name and a value to set an attribute (e.g. `type="text"`)
+- Use `True` as value to set a property (e.g. `disabled`)
+- Use `False` to remove an attribute or property
+
+The underscores in the names will be translated automatically to dashes, so `aria_selected`
+becomes the attribute `aria-selected`.
+
+The current attribute/property are overwritten **except** if is "class" or "classes".
+In those cases, the new classes are appended to the old ones instead of replacing them.
+
+To provide consistent output, the attributes and properties are sorted by name and rendered like this: `<sorted attributes> + <sorted properties>`.
+
+```html+jinja
+<button {{ attrs.render() }}>
+  {{ content }}
+</button>
+```
+
+!!! warning
+    Using `<Component {{ attrs.render() }}>` to pass the extra arguments to other components **WILL NOT WORK**. That is because the components are translated to macros before the page render.
+
+    You must pass them as the special argument `__attrs`.
+
+    ```html+jinja
+    {#--- WRONG 😵 ---#}
+    <MyButton {{ attrs.render() }} />
+
+    {#--- GOOD 👍 ---#}
+    <MyButton __attrs={attrs} />
+    ```
+
+    Another options is to explicity define which arguments are needed for the sub-components:
+
+    ```html+jinja
+    {#def btn_class='' #}
+
+    <MyButton class={btn_class} />
+    ```
+
 ### `.set(name=value, ...)`
 
 Sets an attribute or property:
@@ -107,36 +152,3 @@ Returns the value of the attribute or property, or the default value if it doesn
 ```html+jinja
 {%- set role = attrs.get("role", "tab")
 ```
-
-
-### `.render()`
-
-Renders the attributes and properties as a string.
-To provide consistent output, the attributes and properties are sorted by name and rendered like this: `<sorted attributes> + <sorted properties>`.
-
-```html+jinja
-<button {{ attrs.render() }}>
-  {{ content }}
-</button>
-```
-
-!!! warning
-    Using `<Component {{ attrs.render() }}>` to pass the extra arguments to other components **WILL NOT WORK**. That is because the components are translated to macros before the page render.
-
-    You must pass them as the special argument `__attrs`.
-
-    ```html+jinja
-    {#--- WRONG 😵 ---#}
-    <MyButton {{ attrs.render() }} />
-
-    {#--- GOOD 👍 ---#}
-    <MyButton __attrs={attrs} />
-    ```
-
-    Another options is to explicity define which arguments are needed for the sub-components:
-
-    ```html+jinja
-    {#def btn_class='' #}
-
-    <MyButton class={btn_class} />
-    ```

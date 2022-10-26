@@ -68,7 +68,8 @@ class HTMLAttrs:
         for name, value in kw.items():
             name = name.replace("_", "-")
             if value in (False, None):
-                return self._remove(name)
+                self._remove(name)
+                continue
 
             if name in CLASS_KEYS:
                 self.add_class(value)
@@ -126,13 +127,16 @@ class HTMLAttrs:
         if name in self.__properties:
             self.__properties.remove(name)
 
-    def render(self) -> str:
+    def render(self, **kw) -> str:
         """
         Renders the attributes and properties as a string.
         To provide consistent output, the attributes and properties
         are sorted by name and rendered like this:
         `<sorted attributes> + <sorted properties>`.
         """
+        if kw:
+            self.set(**kw)
+
         attributes = self.__attributes.copy()
 
         classes = self.classes
