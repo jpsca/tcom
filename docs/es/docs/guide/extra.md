@@ -92,6 +92,7 @@ Para dar un resultado consistente, los atributos y propiedades se ordenan alfab√
 ### `.set(name=value, ...)`
 
 Agrega un atributo o activa una propiedad:
+
 - Usa un nombre y un valor para agregar un atributo (ej. `type="text"`)
 - Usa `True` como valor para activar una propiedad (ej. `disabled`)
 - Usa `False` como valor para quitar un atributo o propiedad

@@ -91,6 +91,7 @@ To provide consistent output, the attributes and properties are sorted by name a
 ### `.set(name=value, ...)`
 
 Sets an attribute or property:
+
 - Pass a name and a value to set an attribute (e.g. `type="text"`)
 - Use `True` as value to set a property (e.g. `disabled`)
 - Use `False` to remove an attribute or property
