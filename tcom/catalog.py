@@ -7,7 +7,7 @@ import jinja2
 from markupsafe import Markup
 
 from .component import Component
-from .exceptions import ComponentNotFound
+from .exceptions import ComponentNotFound, InvalidArgument
 from .jinjax import DEBUG_ATTR_NAME, JinjaX, RENDER_CMD
 from .middleware import ComponentsMiddleware
 from .html_attrs import HTMLAttrs
@@ -190,7 +190,14 @@ class Catalog:
         kw = attrs
 
         props, extra = component.filter_args(kw)
-        props[PROP_ATTRS] = HTMLAttrs(extra)
+        try:
+            props[PROP_ATTRS] = HTMLAttrs(extra)
+        except Exception as exc:
+            raise InvalidArgument(
+                f"The arguments of the component <{component.name}>" \
+                f"were parsed incorrectly as:\n {str(kw)}"
+            ) from exc
+
         props[PROP_CONTENT] = content or (caller() if caller else "")
 
         return tmpl.render(**props).strip()
