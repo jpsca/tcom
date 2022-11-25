@@ -2,6 +2,8 @@ import re
 
 from jinja2.ext import Extension
 
+from .utils import logger
+
 
 RENDER_CMD = "__render"
 START_CALL = '{% call <CMD>("<TAG>", <ATTRS>) -%}'
@@ -68,6 +70,7 @@ class JinjaX(Extension):
         attrs_list: "list[tuple[str, str]]",
         inline: bool = False,
     ) -> str:
+        logger.debug(f"<{tag}> {attrs_list} {'inline' if inline else ''}")
         attrs = []
         for name, value in attrs_list:
             name = name.strip().replace("-", "_")
@@ -77,10 +80,13 @@ class JinjaX(Extension):
                 attrs.append(f"{name}={value.strip(' {}')}")
 
         if inline:
-            return INLINE_CALL \
+            call = INLINE_CALL \
+                .replace("<TAG>", tag) \
+                .replace("<ATTRS>", ", ".join(attrs))
+        else:
+            call = START_CALL \
                 .replace("<TAG>", tag) \
                 .replace("<ATTRS>", ", ".join(attrs))
 
-        return START_CALL \
-            .replace("<TAG>", tag) \
-            .replace("<ATTRS>", ", ".join(attrs))
+        logger.debug(f"-> {call}")
+        return call
