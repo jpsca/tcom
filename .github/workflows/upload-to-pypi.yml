@@ -2,8 +2,8 @@ name: Upload to PyPI
 
 on:
   # Triggers the workflow when a release is created
-  release: 
-    types: [created]
+  release:
+    types: [released]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -18,15 +18,12 @@ jobs:
 
       - name: "Installs dependencies"
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install setuptools wheel build twine
+          curl -sSL https://install.python-poetry.org | python3 -
 
       - name: "Builds and uploads to PyPI"
         run: |
-          python3 -m build
-          python3 -m twine check dist/*
-          python3 -m twine upload dist/*
-          
+          ~/.local/share/pypoetry/venv/bin/poetry build
+          ~/.local/share/pypoetry/venv/bin/poetry publish
+
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.TOKEN_PYPI }}

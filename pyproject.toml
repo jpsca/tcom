@@ -1,9 +1,48 @@
-[build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
+[tool.poetry]
+name = "tcom"
+version = "0.16"
+description = "Replace your HTML templates with Python server-Side components"
+authors = ["Juan-Pablo Scaletti <juanpablo@jpscaletti.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://tcom.scaletti.dev/"
+repository = "https://github.com/jpsca/tcom"
+documentation = "https://tcom.scaletti.dev/guides/"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Topic :: Text Processing :: Markup :: HTML",
 ]
-build-backend = "setuptools.build_meta"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+jinja2 = ">=3.0"
+markupsafe = ">=2.0"
+whitenoise = ">=5.3"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+ipdb = "^0.13.9"
+pyright = "^1.1.282"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-quotes = "*"
+pytest = "*"
+coverage = "*"
+tox = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 88
@@ -28,7 +67,6 @@ atomic = true
 lines_after_imports = 2
 lines_between_types = 1
 
-
 [tool.coverage.run]
 branch = true
 
@@ -43,5 +81,7 @@ exclude_lines = [
     "if __name__ == .__main__.:"
 ]
 
-
 [tool.pyright]
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
